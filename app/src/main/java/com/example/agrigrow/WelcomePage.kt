@@ -56,7 +56,9 @@ class WelcomePage : AppCompatActivity() {
             signInWithGoogle()
         }
 
-
+binding.button6.setOnClickListener {
+    startActivity(Intent(this@WelcomePage,LoginPage::class.java))
+}
 binding.button4.setOnClickListener {
     startActivity(Intent(this@WelcomePage,BuyerOrSellerDecider::class.java))
 }
