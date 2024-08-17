@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "1054481860590",
+    "project_id": "agrigrow-f966c",
+    "storage_bucket": "agrigrow-f966c.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1054481860590:android:20738452d8359ad58b30ff",
+        "android_client_info": {
+          "package_name": "com.example.agrigrow"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1054481860590-0d8u5h28fnnsdgthrqq272je4n8qieq4.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.agrigrow",
+            "certificate_hash": "e112afe4865fc38fd7014663ae09a41e86457100"
+          }
+        },
+        {
+          "client_id": "1054481860590-h8nr9qbh2uc1qlvg6a17eiajt4uurbgc.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAmniho58AszEyVDqssaAupk7iyY4j0uPc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1054481860590-h8nr9qbh2uc1qlvg6a17eiajt4uurbgc.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
