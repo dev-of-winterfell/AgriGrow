@@ -50,6 +50,7 @@ dependencies {
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
     implementation (libs.firebase.auth.v2101)
+    implementation (libs.gson)
 
     implementation (libs.play.services.auth)
     implementation(platform(libs.firebase.bom))
