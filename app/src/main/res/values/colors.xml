@@ -3,6 +3,13 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
     <color name="green">#34A753</color>
+    <color name="green11">#FFF200</color>
+    <color name="green22">#029F2D</color>
+    <color name="red">#FF0000</color>
+
+    <color name="yellow">#FF2600</color>
+    <color name="yellow1">#95FF00</color>
+    <color name="yellow2">#FF7700</color>
     <color name="green2">#24EC5B</color>
     <color name="transparent">#00000000</color>
     <color name="translucent">#56000000</color>

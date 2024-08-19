@@ -11,6 +11,7 @@ import android.widget.EditText
 import android.widget.ProgressBar
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import com.google.common.reflect.TypeToken
 import com.google.firebase.Firebase
 import com.google.firebase.FirebaseException
 import com.google.firebase.FirebaseTooManyRequestsException
@@ -20,6 +21,7 @@ import com.google.firebase.auth.PhoneAuthCredential
 import com.google.firebase.auth.PhoneAuthOptions
 import com.google.firebase.auth.PhoneAuthProvider
 import com.google.firebase.auth.auth
+import com.google.gson.Gson
 import java.util.concurrent.TimeUnit
 
 class PhoneAuth : AppCompatActivity() {
@@ -29,20 +31,30 @@ class PhoneAuth : AppCompatActivity() {
     private lateinit var callbacks: PhoneAuthProvider.OnVerificationStateChangedCallbacks
     private lateinit var sharedPreferences: SharedPreferences
     private val SESSION_KEY_PHONE_AUTH = "PHONE_AUTH_SESSION"
-
+    private val MAX_OTP_ATTEMPTS = 3
+    private val PHONE_ATTEMPTS_KEY = "PHONE_ATTEMPTS"
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_phone_auth)
 
         progressBar = findViewById(R.id.progressBar2)
         auth = FirebaseAuth.getInstance()
+
+        if (intent.getBooleanExtra("FROM_OTP_VERIFICATION", false)) {
+            Toast.makeText(this, "Try Again", Toast.LENGTH_SHORT).show()
+        }
         sharedPreferences = getSharedPreferences("GradxPrefs", Context.MODE_PRIVATE)
         val sendOTPbtn = findViewById<Button>(R.id.button3)
 
         sendOTPbtn.setOnClickListener {
             val phoneNumber = findViewById<EditText>(R.id.editTextPhone).text.toString().trim()
             if (phoneNumber.isNotEmpty()) {
-                startPhoneNumberVerification("+91$phoneNumber")
+                val attemptCount = getAttemptCount(phoneNumber)
+                if (attemptCount < MAX_OTP_ATTEMPTS) {
+                    startPhoneNumberVerification("+91$phoneNumber")
+                } else {
+                    showToast("You have exceeded the maximum number of attempts for this number. Try again later.")
+                }
             } else {
                 showToast("Please enter a phone number")
             }
@@ -66,10 +78,14 @@ class PhoneAuth : AppCompatActivity() {
                 Log.d("com.example.gradx.PhoneAuth", "Code sent: $verificationId")
                 val storedVerificationId = verificationId
                 val   resendToken = token
-
+                val phoneNumber = findViewById<EditText>(R.id.editTextPhone).text.toString().trim()
+                val attemptCount = getAttemptCount(phoneNumber)
+               // val attemptCount = sharedPreferences.getInt("OTP_ATTEMPTS", 0)
                 sharedPreferences.edit().putString(SESSION_KEY_PHONE_AUTH, verificationId).apply()
                 val intent = Intent(this@PhoneAuth, OTPVerification::class.java)
                 intent.putExtra("storedVerificationId", verificationId)
+                intent.putExtra("OTP_ATTEMPTS_LEFT", MAX_OTP_ATTEMPTS - attemptCount)
+                intent.putExtra("PHONE_NUMBER", phoneNumber)
                 startActivity(intent)
             }
         }
@@ -91,6 +107,10 @@ class PhoneAuth : AppCompatActivity() {
     }
 
     private fun startPhoneNumberVerification(phoneNumber: String) {
+       // val attemptCount = sharedPreferences.getInt("OTP_ATTEMPTS", 0)
+
+        incrementAttemptCount(phoneNumber)
+
         progressBar.visibility = View.VISIBLE
         val options = PhoneAuthOptions.newBuilder(Firebase.auth)
             .setPhoneNumber(phoneNumber)
@@ -99,6 +119,7 @@ class PhoneAuth : AppCompatActivity() {
             .setCallbacks(callbacks)
             .build()
         PhoneAuthProvider.verifyPhoneNumber(options)
+      //  sharedPreferences.edit().putInt("OTP_ATTEMPTS", attemptCount + 1).apply()
     }
 
     private fun handleVerificationFailure(exception: Exception) {
@@ -121,5 +142,19 @@ class PhoneAuth : AppCompatActivity() {
 
     private fun showToast(message: String) {
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
+    } private inline fun <reified T> Gson.fromJson(json: String): T =
+        fromJson(json, object : TypeToken<T>() {}.type)
+
+    private fun getAttemptCount(phoneNumber: String): Int {
+        val attemptsJson = sharedPreferences.getString(PHONE_ATTEMPTS_KEY, "{}")
+        val attemptsMap: Map<String, Int> = attemptsJson?.let { Gson().fromJson(it) } ?: emptyMap()
+        return attemptsMap[phoneNumber] ?: 0
+    }
+
+    private fun incrementAttemptCount(phoneNumber: String) {
+        val attemptsJson = sharedPreferences.getString(PHONE_ATTEMPTS_KEY, "{}")
+        val attemptsMap: MutableMap<String, Int> = attemptsJson?.let { Gson().fromJson(it) } ?: mutableMapOf()
+        attemptsMap[phoneNumber] = (attemptsMap[phoneNumber] ?: 0) + 1
+        sharedPreferences.edit().putString(PHONE_ATTEMPTS_KEY, Gson().toJson(attemptsMap)).apply()
     }
 }
