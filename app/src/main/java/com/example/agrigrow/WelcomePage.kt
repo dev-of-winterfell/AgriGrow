@@ -11,6 +11,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.lifecycle.lifecycleScope
 import com.example.agrigrow.databinding.ActivityWelcomePageBinding
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
@@ -19,31 +20,38 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
+import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
+import kotlin.math.log
 
 class WelcomePage : AppCompatActivity() {
     private lateinit var binding: ActivityWelcomePageBinding
     private lateinit var auth:FirebaseAuth
     private lateinit var sharedPreferences: SharedPreferences
     private lateinit var googleSignInClient: GoogleSignInClient
-
+private lateinit var db:FirebaseFirestore
     override fun onCreate(savedInstanceState: Bundle?) {
 
         super.onCreate(savedInstanceState)
-
+db= FirebaseFirestore.getInstance()
         auth = FirebaseAuth.getInstance()
         binding=ActivityWelcomePageBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
         sharedPreferences = getSharedPreferences("GradxPrefs", Context.MODE_PRIVATE)
         if (isUserLoggedIn()) {
-            startActivity(Intent(this, BuyerOrSellerDecider2::class.java).apply {
-                putExtra("USER_EMAIL", sharedPreferences.getString("USER_EMAIL", null))
-            })
-            finish()
+            val userEmail = sharedPreferences.getString("USER_EMAIL", null)
+            if (userEmail != null) {
+                lifecycleScope.launch {
+                    redirectToAppropriateLandingPage(userEmail)
+                }
+            } else {
+                // If email is null, clear preferences and stay on WelcomePage
+                clearUserLoginState()
+            }
         }
         val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
             .requestIdToken(getString(R.string.default_web_client_id))
@@ -58,9 +66,6 @@ class WelcomePage : AppCompatActivity() {
 
 binding.button6.setOnClickListener {
     startActivity(Intent(this@WelcomePage,LoginPage::class.java))
-}
-binding.button4.setOnClickListener {
-    startActivity(Intent(this@WelcomePage,BuyerOrSellerDecider::class.java))
 }
 
 
@@ -105,8 +110,10 @@ binding.button4.setOnClickListener {
             auth.signInWithCredential(credentials).await()
 
             saveUserLoginState(account.email)
+            account.email?.let { redirectToAppropriateLandingPage(it) }
 
-            startActivity(Intent(this, landingPage::class.java).apply {
+
+            startActivity(Intent(this, BuyerLandingPage::class.java).apply {
                 putExtra("USER_EMAIL", account.email)
             })
             overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out)
@@ -121,6 +128,41 @@ binding.button4.setOnClickListener {
         editor.putBoolean("IS_LOGGED_IN", true)
         editor.putString("USER_EMAIL", email)
         editor.apply()
+    }
+    private suspend fun redirectToAppropriateLandingPage(email: String) {
+        try {
+            val buyerDoc = db.collection("BUYERS").document(email).get().await()
+            val sellerDoc = db.collection("SELLERS").document(email).get().await()
+
+            when {
+                buyerDoc.exists() -> {
+                    startActivity(Intent(this, BuyerLandingPage::class.java).apply {
+                        putExtra("USER_EMAIL", email)
+                    })
+                }
+                sellerDoc.exists() -> {
+                    startActivity(Intent(this, SellerLandingPage::class.java).apply {
+                        putExtra("USER_EMAIL", email)
+                    })
+                }
+                else -> {
+                    Toast.makeText(this, "User role not recognized.", Toast.LENGTH_SHORT).show()
+                    clearUserLoginState()
+                    return
+                }
+            }
+            finish()
+        } catch (e: Exception) {
+            Toast.makeText(this, "Error: ${e.message}", Toast.LENGTH_SHORT).show()
+            clearUserLoginState()
+        }
+    }
+
+    private fun clearUserLoginState() {
+        sharedPreferences.edit()
+            .clear()
+            .putBoolean("IS_LOGGED_IN", false)
+            .apply()
     }
 
     private fun isUserLoggedIn(): Boolean {

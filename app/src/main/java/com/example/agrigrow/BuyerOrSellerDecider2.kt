@@ -22,6 +22,6 @@ class BuyerOrSellerDecider2 : AppCompatActivity() {
         val seller=findViewById<Button>(R.id.button20)
 
         buyer.setOnClickListener { startActivity(Intent(this@BuyerOrSellerDecider2,phoneAuthBuyerDetails::class.java) )}
-        seller.setOnClickListener { startActivity(Intent(this@BuyerOrSellerDecider2,phoneAuthSellerDetails::class.java) )}
+        seller.setOnClickListener { startActivity(Intent(this@BuyerOrSellerDecider2,phoneAuthUserDetailsPage::class.java) )}
     }
 }

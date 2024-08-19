@@ -5,15 +5,15 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".BuyerLandingPage">
+    tools:context=".SellerLandingPage">
 
     <Button
-        android:id="@+id/buyerlogoutbtn"
+        android:id="@+id/sellerlogoutbtn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Buyer Log Out"
-        android:backgroundTint="@color/green"
+        android:text="Seller Log Out"
         android:textStyle="bold"
+        android:backgroundTint="@color/green"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

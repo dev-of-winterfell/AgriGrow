@@ -13,15 +13,11 @@ import android.util.Log
 import android.view.MotionEvent
 import android.widget.EditText
 import android.widget.Toast
-import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.lifecycleScope
 import com.example.agrigrow.databinding.ActivityBuyerSignupPageBinding
-import com.example.agrigrow.databinding.ActivitySignupPageBinding
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
@@ -230,7 +226,7 @@ class BuyerSignupPage : AppCompatActivity() {
 
                 Toast.makeText(this@BuyerSignupPage, "User registered successfully", Toast.LENGTH_SHORT).show()
                 saveUserLoginState(email)
-                startActivity(Intent(this@BuyerSignupPage, landingPage::class.java).apply {
+                startActivity(Intent(this@BuyerSignupPage, BuyerLandingPage::class.java).apply {
                     putExtra("USER_NAME", userData["Name"])
                 })
                 overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out)
@@ -262,7 +258,7 @@ class BuyerSignupPage : AppCompatActivity() {
         if (isSuccessful) {
             saveUserLoginState(email)
 
-            startActivity(Intent(this@BuyerSignupPage, landingPage::class.java).apply {
+            startActivity(Intent(this@BuyerSignupPage, BuyerLandingPage::class.java).apply {
                 putExtra("USER_NAME", name)
             })
 

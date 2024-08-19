@@ -13,7 +13,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 
-class landingPage : AppCompatActivity() {
+class BuyerLandingPage : AppCompatActivity() {
     private lateinit var auth: FirebaseAuth
     private lateinit var sharedPreferences: SharedPreferences
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -27,14 +27,15 @@ class landingPage : AppCompatActivity() {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
-        val signout=findViewById<Button>(R.id.logoutbtn)
+        val signout=findViewById<Button>(R.id.buyerlogoutbtn)
         signout.setOnClickListener {
 
 auth.signOut()
             sharedPreferences.edit()
+                .clear()
                 .putBoolean("IS_LOGGED_IN", false)
                 .apply()
-            startActivity(Intent(this@landingPage,WelcomePage::class.java))
+            startActivity(Intent(this@BuyerLandingPage,WelcomePage::class.java))
             finish()
         }
     }

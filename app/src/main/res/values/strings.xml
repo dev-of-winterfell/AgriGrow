@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">AgriGrow</string>
     <string name="farming_made_easy_with_faster_delivery_at_your_doorstep">Farming made easy with faster\ndelivery at your doorstep...</string>
-    <string name="sign_in_with">  <u>sign in with</u>  </string>
+    <string name="sign_in_with">\t\t\t OR\n\n<u>sign in with</u>  </string>
     <string name="signin"><u>Signin</u></string>
     <string name="default_web_client_id">default_web_client_id</string>
     <string name="_0">0</string>

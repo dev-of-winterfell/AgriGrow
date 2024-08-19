@@ -13,19 +13,14 @@ import android.util.Log
 import android.view.MotionEvent
 import android.widget.EditText
 import android.widget.Toast
-import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.lifecycleScope
 import com.example.agrigrow.databinding.ActivityPhoneAuthBuyerDetailsBinding
-import com.example.agrigrow.databinding.ActivitySignupPageBinding
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
-import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
@@ -228,7 +223,7 @@ class phoneAuthBuyerDetails : AppCompatActivity() {
 
                 Toast.makeText(this@phoneAuthBuyerDetails, "User registered successfully", Toast.LENGTH_SHORT).show()
                 saveUserLoginState(email)
-                startActivity(Intent(this@phoneAuthBuyerDetails, landingPage::class.java).apply {
+                startActivity(Intent(this@phoneAuthBuyerDetails, BuyerLandingPage::class.java).apply {
                     putExtra("USER_NAME", userData["Name"])
                 })
                 overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out)
@@ -260,7 +255,7 @@ class phoneAuthBuyerDetails : AppCompatActivity() {
         if (isSuccessful) {
             saveUserLoginState(email)
 
-            startActivity(Intent(this@phoneAuthBuyerDetails, landingPage::class.java).apply {
+            startActivity(Intent(this@phoneAuthBuyerDetails, BuyerLandingPage::class.java).apply {
                 putExtra("USER_NAME", name)
             })
 

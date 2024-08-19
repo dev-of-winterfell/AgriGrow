@@ -7,10 +7,7 @@ import android.text.TextWatcher
 import android.util.Log
 import android.view.View
 import android.widget.Toast
-import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.lifecycleScope
 import com.example.agrigrow.databinding.ActivityOtpverificationBinding
 import com.google.firebase.auth.FirebaseAuth
@@ -91,7 +88,7 @@ binding=ActivityOtpverificationBinding.inflate(layoutInflater)
                 // Store user authentication state (e.g., user ID) for session management
                 val userId = authResult.user?.uid
                 // Pass user data to com.example.gradx.com.example.gradx.LandingPage
-                val intent = Intent(this@OTPVerification, BuyerOrSellerDecider2::class.java)
+                val intent = Intent(this@OTPVerification, phoneAuthUserDetailsPage::class.java)
                 intent.putExtra("userId", userId)
                 intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
                 startActivity(intent)

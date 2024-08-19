@@ -226,7 +226,7 @@ class SellersSignupPage : AppCompatActivity() {
 
                 Toast.makeText(this@SellersSignupPage, "User registered successfully", Toast.LENGTH_SHORT).show()
                 saveUserLoginState(email)
-                startActivity(Intent(this@SellersSignupPage, landingPage::class.java).apply {
+                startActivity(Intent(this@SellersSignupPage, BuyerLandingPage::class.java).apply {
                     putExtra("USER_NAME", userData["Name"])
                 })
                 overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out)
@@ -258,7 +258,7 @@ class SellersSignupPage : AppCompatActivity() {
         if (isSuccessful) {
             saveUserLoginState(email)
 
-            startActivity(Intent(this@SellersSignupPage, landingPage::class.java).apply {
+            startActivity(Intent(this@SellersSignupPage, BuyerLandingPage::class.java).apply {
                 putExtra("USER_NAME", name)
             })
 
