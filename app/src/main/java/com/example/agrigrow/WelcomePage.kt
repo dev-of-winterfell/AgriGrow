@@ -77,7 +77,17 @@ binding.button6.setOnClickListener {
         }
         val phoneAuth=findViewById<Button>(R.id.button3)
         phoneAuth.setOnClickListener {
-            startActivity(Intent(this@WelcomePage,PhoneAuth::class.java))
+           // startActivity(Intent(this@WelcomePage,PhoneAuth::class.java))
+            val existingDialog = supportFragmentManager.findFragmentByTag("PhoneVerificationDialog") as? ItemsSharedDialogFragment
+            if (existingDialog == null) {
+                // The dialog is not currently shown, so show it
+                val dialog = ItemsSharedDialogFragment()
+                dialog.show(supportFragmentManager, "PhoneVerificationDialog")
+            } else {
+                // The dialog is already shown, maybe bring it to the front or interact with it
+            }
+
+
         }
     }
 

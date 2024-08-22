@@ -6,17 +6,19 @@ import android.os.Bundle
 import android.os.CountDownTimer
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Log
+import android.view.LayoutInflater
 import android.view.View
-import android.view.animation.Animation
-import android.view.animation.AnimationUtils
+import android.view.ViewGroup
 import android.view.animation.LinearInterpolator
 import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.lifecycleScope
-import com.example.agrigrow.databinding.ActivityOtpverificationBinding
+import com.example.agrigrow.databinding.FragmentOtpBottomSheetBinding
+import com.google.android.material.bottomsheet.BottomSheetBehavior
+import com.google.android.material.bottomsheet.BottomSheetDialog
+import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
 import com.google.firebase.auth.PhoneAuthCredential
@@ -26,48 +28,62 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 
-class OTPVerification : AppCompatActivity() {
-    private lateinit var binding: ActivityOtpverificationBinding
+class OTPVerificationFragment : BottomSheetDialogFragment() {
+    private lateinit var binding: FragmentOtpBottomSheetBinding
     private lateinit var auth: FirebaseAuth
     private lateinit var tvTimer: TextView
     private lateinit var progressBarTimer: ProgressBar
- //   private lateinit var progressAnimation: Animation
     private var countDownTimer: CountDownTimer? = null
     private var valueAnimator: ValueAnimator? = null
-    private lateinit var phoneNumber: String
     private var timeRemaining = 60 // Total time in seconds
-
-
-
     private var storedVerificationId: String? = null
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
 
-binding=ActivityOtpverificationBinding.inflate(layoutInflater)
-        setContentView(binding.root)
-        tvTimer = findViewById(R.id.tvTimer)
-        progressBarTimer = findViewById(R.id.progressBarTimer)
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
 
-        phoneNumber = intent.getStringExtra("PHONE_NUMBER") ?: ""
-        val attemptsLeft = intent.getIntExtra("OTP_ATTEMPTS_LEFT", 3)
-        when (attemptsLeft) {
-            2 -> showToast("Two OTP attempts left for $phoneNumber")
-            1 -> showToast("One OTP attempt left for $phoneNumber")
-            0 -> showToast("No OTP attempts left for $phoneNumber. Please try again later.")}
+    ): View {
+
+        binding = FragmentOtpBottomSheetBinding.inflate(inflater, container, false)
+        return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+
+        dialog?.setOnShowListener { dialogInterface ->
+            val bottomSheetDialog = dialogInterface as BottomSheetDialog
+            val bottomSheet = bottomSheetDialog.findViewById<View>(com.google.android.material.R.id.design_bottom_sheet)
+            bottomSheet?.let {
+                val behavior = BottomSheetBehavior.from(it)
+                it.layoutParams.height = convertDpToPx(450)
+                behavior.peekHeight = convertDpToPx(450)
+                behavior.state = BottomSheetBehavior.STATE_EXPANDED
+            }
+        }
+        tvTimer = binding.tvTimer
+        progressBarTimer = binding.progressBarTimer
+
+        // Retrieve data from arguments or use default values
+        val phoneNumber = arguments?.getString("PHONE_NUMBER") ?: ""
+        val attemptsLeft = arguments?.getInt("OTP_ATTEMPTS_LEFT", 3) ?: 3
+        storedVerificationId = arguments?.getString("storedVerificationId")
+
+        // Initialize Firebase Auth
+        auth = FirebaseAuth.getInstance()
+
         progressBarTimer.max = timeRemaining
         progressBarTimer.progress = 0
 
         // Start the countdown timer
         startTimer()
-        storedVerificationId = intent.getStringExtra("storedVerificationId")
+
         if (storedVerificationId == null) {
-            Toast.makeText(this, "Verification ID not found", Toast.LENGTH_SHORT).show()
-            finish()
+            Toast.makeText(context, "Verification ID not found", Toast.LENGTH_SHORT).show()
+            dismiss()
             return
         }
-
-        auth = FirebaseAuth.getInstance()
-        binding.progressBar3.visibility = View.INVISIBLE
 
         binding.buttonVerify.setOnClickListener {
             val otp = getEnteredOTP()
@@ -75,7 +91,7 @@ binding=ActivityOtpverificationBinding.inflate(layoutInflater)
                 binding.progressBar3.visibility = View.VISIBLE
                 verifyPhoneNumberWithCode(storedVerificationId, otp)
             } else {
-                Toast.makeText(this, "Please enter a valid 6-digit OTP", Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, "Please enter a valid 6-digit OTP", Toast.LENGTH_SHORT).show()
             }
         }
 
@@ -102,7 +118,7 @@ binding=ActivityOtpverificationBinding.inflate(layoutInflater)
             }
         } else {
             binding.progressBar3.visibility = View.INVISIBLE
-            Toast.makeText(this, "Verification ID is null", Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, "Verification ID is null", Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -118,21 +134,20 @@ binding=ActivityOtpverificationBinding.inflate(layoutInflater)
                 // Store user authentication state (e.g., user ID) for session management
                 val userId = authResult.user?.uid
                 // Pass user data to com.example.gradx.com.example.gradx.LandingPage
-                val intent = Intent(this@OTPVerification, phoneAuthUserDetailsPage::class.java)
+                val intent = Intent(context, phoneAuthUserDetailsPage::class.java)
                 intent.putExtra("userId", userId)
                 intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
                 startActivity(intent)
-                finish()
+                dismiss()
             } else {
-                Log.w("failed", "signInWithCredential:failure")
-                Toast.makeText(this@OTPVerification, "Authentication failed. Please try again.", Toast.LENGTH_LONG).show()
+                Toast.makeText(context, "Authentication failed. Please try again.", Toast.LENGTH_LONG).show()
             }
         } catch (e: FirebaseAuthInvalidCredentialsException) {
             binding.progressBar3.visibility = View.INVISIBLE
-            Toast.makeText(this@OTPVerification, "Invalid OTP", Toast.LENGTH_LONG).show()
+            Toast.makeText(context, "Invalid OTP", Toast.LENGTH_LONG).show()
         } catch (e: Exception) {
             binding.progressBar3.visibility = View.INVISIBLE
-            Toast.makeText(this@OTPVerification, "Authentication failed. Please try again.", Toast.LENGTH_LONG).show()
+            Toast.makeText(context, "Authentication failed. Please try again.", Toast.LENGTH_LONG).show()
         }
     }
 
@@ -163,7 +178,6 @@ binding=ActivityOtpverificationBinding.inflate(layoutInflater)
         }
     }
 
-
     private fun startTimer() {
         countDownTimer = object : CountDownTimer(timeRemaining * 1000L, 1000) {
             override fun onTick(millisUntilFinished: Long) {
@@ -181,6 +195,25 @@ binding=ActivityOtpverificationBinding.inflate(layoutInflater)
             override fun onFinish() {
                 tvTimer.text = "00:00"
                 updateProgressBar(60)
+
+                // Check if the dialog is already shown
+                val existingDialog = parentFragmentManager.findFragmentByTag("PhoneVerificationDialog") as? ItemsSharedDialogFragment
+
+                if (existingDialog == null) {
+                    // The dialog is not currently shown, so show it
+                    val dialog = ItemsSharedDialogFragment()
+                    dialog.show(parentFragmentManager, "PhoneVerificationDialog")
+                } else {
+                    // Optionally, you can dismiss the existing dialog or update it if needed
+                    existingDialog.dismiss()
+                }
+
+                // Dismiss the current fragment
+                dismiss()
+
+//                val intent = Intent(requireContext(), ItemsSharedDialogFragment::class.java)
+//                intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+//                startActivity(intent)
             }
         }.start()
     }
@@ -197,15 +230,27 @@ binding=ActivityOtpverificationBinding.inflate(layoutInflater)
         }
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
+    override fun onDestroyView() {
+        super.onDestroyView()
         countDownTimer?.cancel()
         valueAnimator?.cancel()
-    }
-    private fun showToast(message: String) {
-        Toast.makeText(this, message, Toast.LENGTH_LONG).show()
+        dismiss()
     }
 
+    companion object {
+        fun newInstance(phoneNumber: String, otpAttemptsLeft: Int, verificationId: String): OTPVerificationFragment {
+            val fragment = OTPVerificationFragment()
+            val args = Bundle().apply {
+                putString("PHONE_NUMBER", phoneNumber)
+                putInt("OTP_ATTEMPTS_LEFT", otpAttemptsLeft)
+                putString("storedVerificationId", verificationId)
+            }
+            fragment.arguments = args
+            return fragment
+        }
+    }
+    private fun convertDpToPx(dp: Int): Int {
+        val density = resources.displayMetrics.density
+        return (dp * density).toInt()
+    }
 }
-
-
