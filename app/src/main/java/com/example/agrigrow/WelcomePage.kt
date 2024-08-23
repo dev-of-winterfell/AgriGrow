@@ -140,17 +140,33 @@ binding.button6.setOnClickListener {
         editor.apply()
     }
     private suspend fun redirectToAppropriateLandingPage(email: String) {
+        // 1. Check for cached role
+        val cachedRole = sharedPreferences.getString("USER_ROLE", null)
+        if (cachedRole != null) {
+            // Redirect immediately based on cached role
+            startActivity(Intent(this, if(cachedRole == "BUYER") BuyerLandingPage::class.java else SellerLandingPage::class.java).apply {
+                putExtra("USER_EMAIL", email)
+            })
+            finish()
+            return // Stop further execution
+        }
+
+        // 2. Role not cached, query Firestore
         try {
             val buyerDoc = db.collection("BUYERS").document(email).get().await()
             val sellerDoc = db.collection("SELLERS").document(email).get().await()
 
             when {
                 buyerDoc.exists() -> {
+                    // Cachethe role for future use
+                    sharedPreferences.edit().putString("USER_ROLE", "BUYER").apply()
                     startActivity(Intent(this, BuyerLandingPage::class.java).apply {
                         putExtra("USER_EMAIL", email)
                     })
                 }
                 sellerDoc.exists() -> {
+                    // Cache the role for future use
+                    sharedPreferences.edit().putString("USER_ROLE", "SELLER").apply()
                     startActivity(Intent(this, SellerLandingPage::class.java).apply {
                         putExtra("USER_EMAIL", email)
                     })
@@ -158,10 +174,10 @@ binding.button6.setOnClickListener {
                 else -> {
                     Toast.makeText(this, "User role not recognized.", Toast.LENGTH_SHORT).show()
                     clearUserLoginState()
-                    return
+                    return // Stop further execution
                 }
             }
-            finish()
+            finish() // Close WelcomePage after redirection
         } catch (e: Exception) {
             Toast.makeText(this, "Error: ${e.message}", Toast.LENGTH_SHORT).show()
             clearUserLoginState()

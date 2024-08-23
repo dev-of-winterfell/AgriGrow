@@ -1,8 +1,8 @@
+
+
 package com.example.agrigrow
 
-import android.app.Dialog
 import android.content.Context
-import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
 import android.util.Log
@@ -13,35 +13,38 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.ProgressBar
 import android.widget.Toast
-import androidx.fragment.app.DialogFragment
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
+import com.google.common.reflect.TypeToken
 import com.google.firebase.FirebaseException
 import com.google.firebase.FirebaseTooManyRequestsException
 import com.google.firebase.auth.*
 import com.google.gson.Gson
-import com.google.common.reflect.TypeToken
 import java.util.concurrent.TimeUnit
 
 class ItemsSharedDialogFragment : BottomSheetDialogFragment() {
-
     private lateinit var auth: FirebaseAuth
     private lateinit var progressBar: ProgressBar
     private lateinit var callbacks: PhoneAuthProvider.OnVerificationStateChangedCallbacks
     private lateinit var sharedPreferences: SharedPreferences
+
     private val SESSION_KEY_PHONE_AUTH = "PHONE_AUTH_SESSION"
+
     private val MAX_OTP_ATTEMPTS = 3
+
     private val PHONE_ATTEMPTS_KEY = "PHONE_ATTEMPTS"
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        return inflater.inflate(R.layout.signup_dialog_box, container, false)
-    }
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?,
+    ): View? = inflater.inflate(R.layout.signup_dialog_box, container, false)
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
         super.onViewCreated(view, savedInstanceState)
         dialog?.setOnShowListener { dialogInterface ->
             val bottomSheetDialog = dialogInterface as BottomSheetDialog
@@ -75,43 +78,46 @@ class ItemsSharedDialogFragment : BottomSheetDialogFragment() {
             }
         }
 
-        callbacks = object : PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
-            override fun onVerificationCompleted(credential: PhoneAuthCredential) {
-                progressBar.visibility = View.INVISIBLE
-                Log.d("PhoneVerificationDialogFragment", "Verification completed: $credential")
-                signInWithPhoneAuthCredential(credential)
-            }
+        callbacks =
+            object : PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
+                override fun onVerificationCompleted(credential: PhoneAuthCredential) {
+                    progressBar.visibility = View.INVISIBLE
+                    Log.d("PhoneVerificationDialogFragment", "Verification completed: $credential")
+                    signInWithPhoneAuthCredential(credential)
+                }
 
-            override fun onVerificationFailed(e: FirebaseException) {
-                progressBar.visibility = View.INVISIBLE
-                Log.e("PhoneVerificationDialogFragment", "Verification failed", e)
-                handleVerificationFailure(e)
-            }
+                override fun onVerificationFailed(e: FirebaseException) {
+                    progressBar.visibility = View.INVISIBLE
+                    Log.e("PhoneVerificationDialogFragment", "Verification failed", e)
+                    handleVerificationFailure(e)
+                }
 
-            override fun onCodeSent(verificationId: String, token: PhoneAuthProvider.ForceResendingToken) {
-                progressBar.visibility = View.INVISIBLE
-                Log.d("PhoneVerificationDialogFragment", "Code sent: $verificationId")
+                override fun onCodeSent(
+                    verificationId: String,
+                    token: PhoneAuthProvider.ForceResendingToken,
+                ) {
+                    progressBar.visibility = View.INVISIBLE
+                    Log.d("PhoneVerificationDialogFragment", "Code sent: $verificationId")
 
-                sharedPreferences.edit().putString(SESSION_KEY_PHONE_AUTH, verificationId).apply()
+                    sharedPreferences.edit().putString(SESSION_KEY_PHONE_AUTH, verificationId).apply()
 
-                val phoneNumber = phoneNumberEditText.text.toString().trim()
-                val attemptCount = getAttemptCount(phoneNumber)
-                dismiss()
+                    val phoneNumber = phoneNumberEditText.text.toString().trim()
+                    val attemptCount = getAttemptCount(phoneNumber)
+                    dismiss()
 //                val intent = Intent(requireContext(), OTPVerificationFragment::class.java)
 //                intent.putExtra("storedVerificationId", verificationId)
 //                intent.putExtra("OTP_ATTEMPTS_LEFT", MAX_OTP_ATTEMPTS - attemptCount)
 //                intent.putExtra("PHONE_NUMBER", phoneNumber)
 //                startActivity(intent)
-                val otpBottomSheet = OTPVerificationFragment.newInstance(phoneNumber, MAX_OTP_ATTEMPTS - attemptCount, verificationId)
-                otpBottomSheet.show(requireFragmentManager(), otpBottomSheet.tag)
-
-
+                    val otpBottomSheet = OTPVerificationFragment.newInstance(phoneNumber, MAX_OTP_ATTEMPTS - attemptCount, verificationId)
+                    otpBottomSheet.show(parentFragmentManager, otpBottomSheet.tag)
+                }
             }
-        }
     }
 
     private fun signInWithPhoneAuthCredential(credential: PhoneAuthCredential) {
-        auth.signInWithCredential(credential)
+        auth
+            .signInWithCredential(credential)
             .addOnCompleteListener(requireActivity()) { task ->
                 if (task.isSuccessful) {
                     Log.d("PhoneVerificationDialogFragment", "signInWithCredential:success")
@@ -128,12 +134,14 @@ class ItemsSharedDialogFragment : BottomSheetDialogFragment() {
         incrementAttemptCount(phoneNumber)
         progressBar.visibility = View.VISIBLE
 
-        val options = PhoneAuthOptions.newBuilder(auth)
-            .setPhoneNumber(phoneNumber)
-            .setTimeout(60L, TimeUnit.SECONDS)
-            .setActivity(requireActivity())
-            .setCallbacks(callbacks)
-            .build()
+        val options =
+            PhoneAuthOptions
+                .newBuilder(auth)
+                .setPhoneNumber(phoneNumber)
+                .setTimeout(60L, TimeUnit.SECONDS)
+                .setActivity(requireActivity())
+                .setCallbacks(callbacks)
+                .build()
         PhoneAuthProvider.verifyPhoneNumber(options)
     }
 
@@ -159,8 +167,7 @@ class ItemsSharedDialogFragment : BottomSheetDialogFragment() {
         Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
     }
 
-    private inline fun <reified T> Gson.fromJson(json: String): T =
-        fromJson(json, object : TypeToken<T>() {}.type)
+    private inline fun <reified T> Gson.fromJson(json: String): T = fromJson(json, object : TypeToken<T>() {}.type)
 
     private fun getAttemptCount(phoneNumber: String): Int {
         val attemptsJson = sharedPreferences.getString(PHONE_ATTEMPTS_KEY, "{}")
@@ -185,9 +192,9 @@ class ItemsSharedDialogFragment : BottomSheetDialogFragment() {
 //
 //        dialog?.window?.setBackgroundDrawableResource(android.R.color.transparent)
     }
+
     private fun convertDpToPx(dp: Int): Int {
         val density = resources.displayMetrics.density
         return (dp * density).toInt()
     }
-
 }

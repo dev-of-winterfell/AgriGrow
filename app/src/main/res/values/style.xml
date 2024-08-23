@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Other styles... -->
+
+    <style name="CustomBottomNavigationView" parent="Widget.Design.BottomNavigationView">
+        <item name="android:minHeight">61dp</item> <!-- Adjust this value to change the height -->
+        <item name="itemIconSize">25dp</item> <!-- Adjust icon size -->
+        <item name="labelVisibilityMode">labeled</item> <!-- or unlabeled, selected, or auto -->
+        <item name="itemTextAppearanceActive">@style/CustomBottomNavigationView.TextAppearance</item>
+        <item name="itemTextAppearanceInactive">@style/CustomBottomNavigationView.TextAppearance</item>
+    </style>
+    <!-- res/values/styles.xml -->
+    <style name="CustomMenuItemTextAppearance" parent="TextAppearance.AppCompat">
+        <item name="android:textColor">@color/yellow2</item>
+    </style>
+    <!-- res/values/styles.xml -->
+    <style name="CustomPopupMenu" parent="ThemeOverlay.AppCompat.Light">
+        <item name="android:itemTextAppearance">@style/CustomMenuItemTextAppearance</item>
+    </style>
+
+    <style name="CustomBottomNavigationView.TextAppearance" parent="TextAppearance.MaterialComponents.Caption">
+        <item name="android:textSize">15sp</item> <!-- Adjust text size -->
+    </style>
+</resources>

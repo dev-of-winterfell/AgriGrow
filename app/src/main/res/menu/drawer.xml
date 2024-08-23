@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/colormode"
+
+        android:icon="@drawable/baseline_color_lens_24"
+        android:title="थीम (दिन/रात)"/>
+    <item
+        android:id="@+id/aboutus"
+        android:icon="@drawable/baseline_info_24"
+
+        android:title="हमारे बारे में"/>
+    <item
+        android:id="@+id/Feedback"
+
+        android:icon="@drawable/baseline_feedback_24"
+        android:title="राय"/>
+
+    <item
+        android:id="@+id/termsconditions"
+
+        android:icon="@drawable/baseline_text_snippet_24"
+        android:iconTintMode="src_over"
+        android:title="नियम और शर्तें"/>
+    <item
+        android:id="@+id/contactus"
+
+        android:icon="@drawable/sharp_contact_support_24"
+        android:title="हमसे संपर्क करें"/>
+    <item
+        android:id="@+id/share"
+
+        android:icon="@drawable/baseline_share_24"
+        android:title="शेयर"/>
+    <item
+        android:id="@+id/logout"
+
+        android:icon="@drawable/baseline_logout_24"
+        android:title="लॉग आउट"/>
+
+</menu>
