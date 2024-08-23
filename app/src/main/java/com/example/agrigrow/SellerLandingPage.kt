@@ -182,7 +182,7 @@ class SellerLandingPage : AppCompatActivity() {
         lifecycleScope.launch {
             try {
                 val documents = withContext(Dispatchers.IO) {
-                    firestore.collection("BUYERS").whereEqualTo("Email", email).get().await()
+                    firestore.collection("SELLERS").whereEqualTo("Email", email).get().await()
                 }
                 if (!documents.isEmpty) {
                     val document = documents.documents[0]
@@ -293,7 +293,7 @@ class SellerLandingPage : AppCompatActivity() {
 
     private fun updateUserProfileImage(downloadUrl: String, email: String) {
         progressBar.visibility = View.VISIBLE
-        val userDocument = firestore.collection("BUYERS").document(email)
+        val userDocument = firestore.collection("SELLERS").document(email)
         userDocument.update("profileImageUrl", downloadUrl)
             .addOnSuccessListener {
                 progressBar.visibility = View.GONE
