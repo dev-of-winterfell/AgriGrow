@@ -144,11 +144,11 @@ class SellerLandingPage : AppCompatActivity() {
 
         binding.bottomNavigationView1.setOnItemSelectedListener {
             when (it.itemId) {
-                R.id.home -> FragmentHandler(sellerHomeFragment())
+                R.id.home -> FragmentHandler(SellerHomePage())
                 R.id.connect -> FragmentHandler(connectFragment())
                 R.id.profile -> FragmentHandler(sellerProfileFragment())
                 R.id.message -> FragmentHandler(AIFragment())
-                else -> showFragment(sellerHomeFragment())
+                else -> showFragment(SellerHomePage())
             }
             true
         }
@@ -324,4 +324,3 @@ class SellerLandingPage : AppCompatActivity() {
         return auth.currentUser != null
     }
 }
-

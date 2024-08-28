@@ -1,7 +1,7 @@
 [versions]
 agp = "8.5.2"
-firebaseAuthVersion = "21.0.1"
-firebaseBom = "33.1.2"
+firebaseAuthVersion = "23.0.0"
+firebaseBom = "33.2.0"
 gson = "2.10.1"
 kotlin = "1.9.0"
 coreKtx = "1.13.1"
@@ -13,14 +13,16 @@ material = "1.12.0"
 activity = "1.9.1"
 constraintlayout = "2.1.4"
 googleServices = "4.4.2"
-firebaseFirestore = "25.0.0"
+firebaseFirestore = "25.1.0"
 firebaseAuth = "23.0.0"
 playServicesAuth = "21.2.0"
 annotation = "1.8.2"
-lifecycleLivedataKtx = "2.8.1"
-lifecycleViewmodelKtx = "2.8.1"
-firebaseMessagingKtx = "24.0.0"
+lifecycleLivedataKtx = "2.8.4"
+lifecycleViewmodelKtx = "2.8.4"
+firebaseMessagingKtx = "24.0.1"
 firebaseStorage = "21.0.0"
+playServicesLocation = "21.3.0"
+
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -43,6 +45,7 @@ androidx-lifecycle-livedata-ktx = { group = "androidx.lifecycle", name = "lifecy
 androidx-lifecycle-viewmodel-ktx = { group = "androidx.lifecycle", name = "lifecycle-viewmodel-ktx", version.ref = "lifecycleViewmodelKtx" }
 firebase-messaging-ktx = { group = "com.google.firebase", name = "firebase-messaging-ktx", version.ref = "firebaseMessagingKtx" }
 firebase-storage = { group = "com.google.firebase", name = "firebase-storage", version.ref = "firebaseStorage" }
+play-services-location = { group = "com.google.android.gms", name = "play-services-location", version.ref = "playServicesLocation" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }

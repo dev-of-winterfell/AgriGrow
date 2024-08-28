@@ -115,23 +115,47 @@ binding.button6.setOnClickListener {
         }
     }
     private suspend fun firebaseAuthWithGoogle(account: GoogleSignInAccount) {
-        val credentials = GoogleAuthProvider.getCredential(account.idToken, null)
-        try {
-            auth.signInWithCredential(credentials).await()
 
-            saveUserLoginState(account.email)
-            account.email?.let { redirectToAppropriateLandingPage(it) }
+            val credentials = GoogleAuthProvider.getCredential(account.idToken, null)
+            try {
+                auth.signInWithCredential(credentials).await()
 
+                // Cache user login state
+                saveUserLoginState(account.email)
 
-            startActivity(Intent(this, BuyerLandingPage::class.java).apply {
-                putExtra("USER_EMAIL", account.email)
-            })
-            overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out)
-            finish()
-        } catch (e: Exception) {
-            Toast.makeText(this, "Authentication failed.", Toast.LENGTH_SHORT).show()
+                // Determine the role and cache it
+                account.email?.let { email ->
+                    val buyerDoc = db.collection("BUYERS").document(email).get().await()
+                    val sellerDoc = db.collection("SELLERS").document(email).get().await()
+
+                    val userRole = when {
+                        buyerDoc.exists() -> "BUYER"
+                        sellerDoc.exists() -> "SELLER"
+                        else -> null
+                    }
+
+                    if (userRole != null) {
+                        // Cache the role for future use
+                        sharedPreferences.edit().putString("USER_ROLE", userRole).apply()
+
+                        // Redirect based on role
+                        startActivity(Intent(this, if (userRole == "BUYER") BuyerLandingPage::class.java else SellerLandingPage::class.java).apply {
+                            putExtra("USER_EMAIL", email)
+                        })
+                        overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out)
+                        finish()
+                    } else {
+                        Toast.makeText(this, "User role6  not recognized.", Toast.LENGTH_SHORT).show()
+                        clearUserLoginState()
+                    }
+                }
+
+            } catch (e: Exception) {
+                Toast.makeText(this, "Authentication failed.", Toast.LENGTH_SHORT).show()
+            }
         }
-    }
+
+
 
     private fun saveUserLoginState(email: String?) {
         val editor = sharedPreferences.edit()

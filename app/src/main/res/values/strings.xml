@@ -16,4 +16,21 @@
     <string name="login_failed">"Login failed"</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="title_activity_main3">MainActivity3</string>
+    <string-array name="growing_methods">
+        <item>Growing Method</item>
+        <item>Organic</item>
+        <item>Inorganic</item>
+    </string-array>
+
+    <string name="title_activity_chat_page">ChatPage</string>
+    <string name="msp">MSP फसलों के नाम और मूल्य नीति\n\n "इस एप्लिकेशन में, निम्नलिखित MSP फसलों के नाम इंग्लिश में दिए गए हैं:\n"
+                "इस एप्लिकेशन में, निम्नलिखित MSP फसलों के नाम इंग्लिश में दिए गए हैं:\n"
+                "- गेहूं (Wheat)\n"
+                "- चावल (RiceA)\n"
+                "- धान (Rice)\n"
+                "- मक्का (Corn)\n"
+                "- ज्वार (Jawar)\n"
+                "- बाजरा (Bajra)\n"
+        "- जौ" (Barley)\n""- उड़द (Black Gram)\n""- मसूर (Lentil)\n""- अरहर (Arhar)\n""- सोयाबीन (Soybean)\n""- तिल (Sesame)\n""- सरसों (Mustard)\n""- गन्ना (Sugarcane)\n""- चने (Chickpea)\n""- मटर (Pea)\n""MSP फसलों के लिए न्यूनतम मूल्य स्वचालित रूप से सरकार की नीतियों के अनुसार लाया जाएगा।\n""यदि आप एक गैर-MSP फसल जोड़ते हैं, तो आप न्यूनतम मूल्य को मैन्युअली सेट कर सकते हैं।\n""इस जानकारी के माध्यम से, हम यह सुनिश्चित करना चाहते हैं कि आप फसल के मूल्य निर्धारण को समझें और सही तरीके से जानकारी प्रदान करें।"  </string>
 </resources>

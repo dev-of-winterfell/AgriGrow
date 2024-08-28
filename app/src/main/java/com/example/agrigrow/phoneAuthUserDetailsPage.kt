@@ -57,7 +57,7 @@ class phoneAuthUserDetailsPage : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         binding= ActivityPhoneAuthSellerDetailsBinding.inflate(layoutInflater)
-setContentView(binding.root)
+        setContentView(binding.root)
         val items = arrayOf("विकल्प के रूप में किसान या खरीदार का चयन करें", "खरीददार", "किसान")
         val adapter: ArrayAdapter<String> = object : ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, items) {
             override fun isEnabled(position: Int): Boolean {
@@ -91,7 +91,7 @@ setContentView(binding.root)
                 Toast.makeText(this, "Please select a user type", Toast.LENGTH_SHORT).show()
             }
             else{
-            signInWithGoogle()
+                signInWithGoogle()
             }
         }
 //        binding.spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
@@ -116,7 +116,7 @@ setContentView(binding.root)
         binding.cnfpasss.setupPasswordVisibilityToggle()
         auth = Firebase.auth
         db = Firebase.firestore
-       sharedPreferences = getSharedPreferences("GradxPrefs", Context.MODE_PRIVATE)
+        sharedPreferences = getSharedPreferences("GradxPrefs", Context.MODE_PRIVATE)
 //        try{
 //            if (isUserLoggedIn()) {
 //                val userEmail = sharedPreferences.getString("USER_EMAIL", null)
@@ -363,9 +363,11 @@ setContentView(binding.root)
         }
     }
     private fun saveUserLoginState(email: String?) {
+        val selectedRole = binding.spinner.selectedItem.toString()
         val editor = sharedPreferences.edit()
         editor.putBoolean("IS_LOGGED_IN", true)
         editor.putString("USER_EMAIL", email)
+        editor.putString("USER_ROLE", selectedRole)  // Store the user role
         editor.apply()
     }
 
@@ -432,5 +434,4 @@ setContentView(binding.root)
 //}
 
 }
-
 

@@ -45,6 +45,7 @@ android {
 
 dependencies {
     //noinspection UseTomlInstead
+    implementation ("com.squareup.okhttp3:okhttp:4.11.0")
     implementation("com.google.firebase:firebase-analytics")
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
@@ -53,6 +54,7 @@ dependencies {
     implementation (libs.gson)
     implementation("de.hdodenhof:circleimageview:3.1.0")
     implementation ("com.github.bumptech.glide:glide:4.16.0")
+    implementation(libs.play.services.location)
     annotationProcessor ("com.github.bumptech.glide:compiler:4.15.1")
     implementation (libs.play.services.auth)
     implementation(platform(libs.firebase.bom))

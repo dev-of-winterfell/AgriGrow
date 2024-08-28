@@ -4,8 +4,8 @@
             <gradient
                 android:angle="0"
                 android:startColor="@color/green"
-                android:centerColor="@color/yellow1"
-                android:endColor="@color/red"
+                android:centerColor="@color/green"
+                android:endColor="@color/green"
                 android:useLevel="false"/>
             <corners android:radius="10dp"/>
         </shape>
@@ -16,8 +16,8 @@
                 <gradient
                     android:angle="270"
                     android:startColor="@color/green"
-                    android:centerColor="@color/yellow1"
-                    android:endColor="@color/red"
+                    android:centerColor="@color/green"
+                    android:endColor="@color/green"
                     android:useLevel="true"/>
                 <corners android:radius="10dp"/>
             </shape>

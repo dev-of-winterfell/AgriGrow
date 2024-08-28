@@ -51,8 +51,8 @@ class BuyerLandingPage : AppCompatActivity() {
     private lateinit var drawerLayout: DrawerLayout
     private lateinit var progressBar: ProgressBar
     private val REQUEST_IMAGE_PICK = 1002
-//    private val PROFILE_IMAGE_URI_KEY = "ProfileImageUri"
-//    private val SHARED_PREFS_KEY = "GradxPrefs"
+  //private val PROFILE_IMAGE_URI_KEY = "ProfileImageUri"
+ //private val SHARED_PREFS_KEY = "GradxPrefs"
     private lateinit var auth: FirebaseAuth
     private lateinit var sharedPreferences: SharedPreferences
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -60,6 +60,9 @@ class BuyerLandingPage : AppCompatActivity() {
         enableEdgeToEdge()
         binding = ActivityLandingPageBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        firestore = FirebaseFirestore.getInstance()
+        storage = Firebase.storage
+        sharedPreferences = getSharedPreferences(SHARED_PREFS_KEY, Context.MODE_PRIVATE)
         val navigationView = findViewById<NavigationView>(R.id.navigationView1)
         val headerView = navigationView.getHeaderView(0)
         val profileImageView = headerView.findViewById<CircleImageView>(R.id.profilepic)
@@ -88,9 +91,7 @@ class BuyerLandingPage : AppCompatActivity() {
             insets
         }
 
-        firestore = FirebaseFirestore.getInstance()
-        storage = Firebase.storage
-        sharedPreferences = getSharedPreferences(SHARED_PREFS_KEY, Context.MODE_PRIVATE)
+
 
         drawerLayout = binding.drawer
 
