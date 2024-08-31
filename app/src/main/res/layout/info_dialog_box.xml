@@ -6,7 +6,7 @@
     android:layout_height="wrap_content"
     android:orientation="vertical"
     android:padding="16dp"
-    android:background="@color/white">
+    android:background="@color/ocher">
 
     <TextView
         android:id="@+id/infoText"
@@ -27,7 +27,7 @@
         android:layout_width="wrap_content"
         android:layout_height="39dp"
 
-        android:backgroundTint="@color/green"
+        android:backgroundTint="#718a87"
         android:text="वापस जाएँ"
         android:textColor="@color/white"
 

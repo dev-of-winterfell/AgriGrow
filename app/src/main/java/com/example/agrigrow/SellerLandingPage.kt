@@ -25,6 +25,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import com.bumptech.glide.Glide
 import com.example.agrigrow.databinding.ActivityLandingPageBinding
+import com.example.agrigrow.databinding.ActivitySellerLandingPageBinding
 import com.example.sellerProfileFragment
 import com.google.android.material.navigation.NavigationView
 import com.google.firebase.auth.FirebaseAuth
@@ -44,7 +45,7 @@ class SellerLandingPage : AppCompatActivity() {
         private const val PROFILE_IMAGE_URI_KEY = "ProfileImageUri"
         private const val SHARED_PREFS_KEY = "GradxPrefs"
     }
-    private lateinit var binding: ActivityLandingPageBinding
+    private lateinit var binding: ActivitySellerLandingPageBinding
 
     private lateinit var firestore: FirebaseFirestore
     private lateinit var storage: FirebaseStorage
@@ -58,28 +59,25 @@ class SellerLandingPage : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        binding = ActivityLandingPageBinding.inflate(layoutInflater)
+        binding = ActivitySellerLandingPageBinding.inflate(layoutInflater)
         setContentView(binding.root)
         val navigationView = findViewById<NavigationView>(R.id.navigationView1)
         val headerView = navigationView.getHeaderView(0)
         val profileImageView = headerView.findViewById<CircleImageView>(R.id.profilepic)
-        val nameTextView = headerView.findViewById<TextView>(R.id.name)
-        val emailTextView = headerView.findViewById<TextView>(R.id.email)
+//        val nameTextView = headerView.findViewById<TextView>(R.id.name)
+//        val emailTextView = headerView.findViewById<TextView>(R.id.email)
 
         sharedPreferences = getSharedPreferences("GradxPrefs", Context.MODE_PRIVATE)
         auth = Firebase.auth
         progressBar = headerView.findViewById(R.id.progressBar6)
         auth.addAuthStateListener { firebaseAuth ->
             val user = firebaseAuth.currentUser
-            if (user != null ) {
-                // User is signed in
-                emailTextView.text = user.email
-                loadUserData(nameTextView, profileImageView)
+            if (user == null ) {
 
-            } else {
-                // User is signed out
-                startActivity(Intent(this@SellerLandingPage, LoginPage::class.java))
+                startActivity(Intent(this@SellerLandingPage, WelcomePage::class.java))
                 finish()
+            } else{
+                loadUserData(profileImageView)
             }
         }
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
@@ -145,13 +143,32 @@ class SellerLandingPage : AppCompatActivity() {
         binding.bottomNavigationView1.setOnItemSelectedListener {
             when (it.itemId) {
                 R.id.home -> FragmentHandler(SellerHomePage())
-                R.id.connect -> FragmentHandler(connectFragment())
+                R.id.connect -> FragmentHandler(ConnectFragment())
                 R.id.profile -> FragmentHandler(sellerProfileFragment())
-                R.id.message -> FragmentHandler(AIFragment())
+                R.id.message -> FragmentHandler(UploadNewCrops())
                 else -> showFragment(SellerHomePage())
             }
             true
         }
+        drawerLayout.addDrawerListener(object : DrawerLayout.DrawerListener {
+            override fun onDrawerSlide(drawerView: View, slideOffset: Float) {
+                // This will be called when the drawer is sliding
+            }
+
+            override fun onDrawerOpened(drawerView: View) {
+                // Hide BottomNavigationView when the drawer is opened
+                binding.bottomNavigationView1.visibility = View.GONE
+            }
+
+            override fun onDrawerClosed(drawerView: View) {
+                // Show BottomNavigationView when the drawer is closed
+                binding.bottomNavigationView1.visibility = View.VISIBLE
+            }
+
+            override fun onDrawerStateChanged(newState: Int) {
+                // This will be called when the drawer motion state changes
+            }
+        })
 
         if (savedInstanceState == null) {
             binding.bottomNavigationView1.selectedItemId = R.id.home
@@ -173,7 +190,7 @@ class SellerLandingPage : AppCompatActivity() {
 
     private fun loadUserData(
 
-        nameTextView: TextView,
+
         profileImageView: CircleImageView
     ) {
         val user = auth.currentUser ?: return
@@ -198,7 +215,7 @@ class SellerLandingPage : AppCompatActivity() {
                     }
 
                     withContext(Dispatchers.Main) {
-                        nameTextView.text = name ?: "No name found"
+
 
                         if (!profileImageUrl.isNullOrEmpty()) {
                             Glide.with(this@SellerLandingPage)

@@ -4,30 +4,19 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="450dp"
-    android:background="@drawable/dialogfragment_bg"
+    android:background="@drawable/signupbg"
+
     >
 
-
-    <ImageView
-        android:id="@+id/imageView4"
-        android:layout_width="157dp"
-        android:layout_height="181dp"
-        android:src="@mipmap/farmer22_foreground"
-        app:layout_constraintBottom_toTopOf="@+id/editTextPhone"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.535"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.992" />
 
     <EditText
         android:id="@+id/editTextPhone"
         android:layout_width="276dp"
         android:layout_height="48dp"
-
         android:autofillHints=""
         android:background="@drawable/boxbg"
         android:drawablePadding="10dp"
+        android:elevation="15dp"
         android:ems="10"
         android:hint="फ़ोन नंबर दर्ज करें"
         android:inputType="phone"
@@ -37,11 +26,12 @@
         app:layout_constraintStart_toEndOf="@+id/textView8"
         app:layout_constraintTop_toTopOf="@+id/textView8" />
 
+
     <Button
         android:id="@+id/button3"
         android:layout_width="350dp"
         android:layout_height="wrap_content"
-        android:backgroundTint="@color/green"
+        android:backgroundTint="#386641"
         android:elevation="10dp"
         android:text="ओटीपी भेजें
 "
@@ -54,22 +44,21 @@
         app:layout_constraintHorizontal_bias="0.491"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.935" />
-
+        app:layout_constraintVertical_bias="0.912" />
 
     <TextView
         android:id="@+id/textView6"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="जारी रखने के लिए अपना फ़ोन नंबर दर्ज करें.."
-        android:textSize="15sp"
+        android:layout_marginTop="24dp"
+        android:text="जारी रखने के लिए अपना फ़ोन नंबर दर्ज करें"
+        android:textColor="@color/translucent1"
+        android:textSize="20sp"
         android:textStyle="bold"
-        app:layout_constraintBottom_toTopOf="@+id/textView8"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.496"
+        app:layout_constraintHorizontal_bias="0.581"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.365" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <ProgressBar
         android:id="@+id/progressBar2"
@@ -77,17 +66,20 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:indeterminate="false"
-        android:indeterminateTint="@color/green"
+        android:indeterminateTint="#A7C957"
         android:max="100"
         android:progress="0"
         android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.082"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.91" />
 
     <TextView
         android:id="@+id/textView8"
+        android:elevation="15dp"
         android:layout_width="35dp"
         android:layout_height="48dp"
         android:background="@drawable/boxbg"
@@ -102,5 +94,18 @@
         app:layout_constraintHorizontal_bias="0.111"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.766" />
+        app:layout_constraintVertical_bias="0.741" />
+
+    <ImageView
+        android:id="@+id/imageView6"
+        android:layout_width="400dp"
+        android:layout_height="316dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.454"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.052"
+        app:srcCompat="@drawable/asian_middle_aged_farmer_man_wearing_straw_hat_write_clipboard_rice_field_with_smile_keep_data" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

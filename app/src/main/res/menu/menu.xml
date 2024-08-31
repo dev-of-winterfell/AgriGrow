@@ -6,11 +6,11 @@
 
         android:id="@+id/home"
         android:icon="@drawable/baseline_home_24"/>
-    <item android:title="दूसरों से जुड़ें"
+    <item android:title="कीमत सौदा"
         android:id="@+id/connect"
-        android:icon="@drawable/baseline_person_add_alt_24"/>
-    <item android:title="एआई से पूछो"
-        android:icon="@drawable/baseline_chat_24"
+        android:icon="@drawable/baseline_currency_rupee_24"/>
+    <item android:title="फसलें जोड़ें"
+        android:icon="@drawable/baseline_add_box_24"
         android:id="@+id/message"/>
     <item android:title="प्रोफ़ाइल"
         android:id="@+id/profile"

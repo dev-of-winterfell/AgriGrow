@@ -22,6 +22,7 @@
             android:id="@+id/frameLayout1"
             android:layout_width="match_parent"
             android:layout_height="0dp"
+
             app:layout_constraintBottom_toTopOf="@id/bottom_navigationView1"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -36,37 +37,42 @@
 
 
 
-
         </FrameLayout>
 
         <com.google.android.material.navigation.NavigationView
             android:id="@+id/navigationView1"
             android:layout_width="250dp"
+app:itemIconSize="28dp"
+
             android:layout_height="match_parent"
             android:layout_gravity="start"
-            android:backgroundTint="@color/white"
+            android:backgroundTint="#386641"
             app:headerLayout="@layout/header"
+            app:itemIconTint="@color/ocher"
+            app:itemTextColor="@color/ocher"
             app:menu="@menu/drawer" />
 
-
     </androidx.drawerlayout.widget.DrawerLayout>
+
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottom_navigationView1"
         style="@style/CustomBottomNavigationView"
-        android:layout_width="match_parent"
+android:layout_marginBottom="10dp"
+
+        android:layout_width="349dp"
         android:layout_height="wrap_content"
-app:layout_constraintBaseline_toTopOf="parent"
-
-
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toEndOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:background="@drawable/bottomnav"
+        android:background="@drawable/box_bg2"
         android:foregroundGravity="bottom"
+
         app:itemIconSize="30dp"
         app:itemIconTint="@drawable/bottom_nav_icon_color"
         app:labelVisibilityMode="labeled"
-        app:menu="@menu/menu" />
+        app:layout_constraintBaseline_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="@+id/drawer"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:menu="@menu/byermenu" />
+
     <!--    <Button-->
 <!--        android:id="@+id/buyerlogoutbtn"-->
 <!--        android:layout_width="wrap_content"-->

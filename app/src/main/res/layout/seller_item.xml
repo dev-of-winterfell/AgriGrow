@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:gravity="center"
+    android:orientation="vertical"
+    android:padding="4dp">
+
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/profileImage"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:src="@drawable/baseline_person_add_alt_24"
+       app:civ_border_color="#A7C957"
+        app:civ_border_overlay="@null"
+        app:civ_border_width="3dp"
+        />
+
+    <TextView
+        android:id="@+id/sellerName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:text="Seller Name"
+        android:textColor="#386641"
+        android:textSize="14sp"
+        android:textStyle="bold" />
+</LinearLayout>

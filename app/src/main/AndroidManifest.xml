@@ -35,9 +35,7 @@
         <activity
             android:name=".phoneAuthUserDetailsPage"
             android:exported="false" />
-        <activity
-            android:name=".phoneAuthBuyerDetails"
-            android:exported="false" />
+
 
         <activity
             android:name=".UpdatePassword"

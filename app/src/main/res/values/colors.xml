@@ -3,10 +3,14 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
     <color name="offwhite">#FDF6FE</color>
-    <color name="green">#34A753</color>
+    <color name="green">#004E36</color>
     <color name="green11">#FFF200</color>
     <color name="green22">#90F6AC</color>
     <color name="red">#FF0000</color>
+    <color name="ocher">#FEFCF5</color>
+    <color name="Darkocher">#F3F0E9</color>
+    <color name="Brown">#3D1C27</color>
+    <color name="taupe">#E6CFB2</color>
 
     <color name="yellow">#FF2600</color>
     <color name="yellow1">#95FF00</color>
@@ -14,4 +18,9 @@
     <color name="green2">#24EC5B</color>
     <color name="transparent">#00000000</color>
     <color name="translucent">#56000000</color>
+    <color name="translucent1">#BF000000</color>
+    <color name="slate">#50514F</color>
+    <color name="lightslate">#CBD4C2</color>
+    <color name="white1">#FFFCFF</color>
+    <color name="teal">#247BA0</color>
 </resources>

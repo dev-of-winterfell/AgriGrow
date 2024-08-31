@@ -1,14 +1,92 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/ocher"
+    android:padding="16dp"
     tools:context=".homeFragment">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
+    <LinearLayout
+        android:id="@+id/linearLayoutbuyer"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="Buyer home page" />
+        android:layout_height="wrap_content"
 
-</FrameLayout>
+        android:orientation="vertical"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.0">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+
+            android:text="आपका स्वागत है"
+            android:textColor="@color/black"
+            android:textSize="14dp"
+            />
+
+        <TextView
+            android:id="@+id/tvbuyer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:capitalize="characters"
+            android:hint="NAME"
+            android:inputType="textCapSentences"
+            android:textColor="#386641"
+            android:textSize="28dp"
+            android:textStyle="bold" />
+    </LinearLayout>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerView"
+        android:layout_width="380dp"
+        android:layout_height="490dp"
+        android:foregroundGravity="center"
+        android:padding="2dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/linearLayoutbuyer"
+        app:layout_constraintVertical_bias="0.664" />
+
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/horizontalScrollView"
+        android:layout_width="380dp"
+        android:layout_height="112dp"
+        android:orientation="horizontal"
+
+        android:padding="2dp"
+
+        app:layout_constraintBottom_toTopOf="@+id/recyclerView"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/linearLayoutbuyer"
+        app:layout_constraintVertical_bias="0.0" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:foregroundGravity="center"
+        android:gravity="center"
+        android:text="नई फसल का अन्वेषण करें"
+
+        android:textColor="@color/black"
+        android:textSize="12dp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toTopOf="@+id/recyclerView"
+        app:layout_constraintEnd_toEndOf="@+id/horizontalScrollView"
+        app:layout_constraintHorizontal_bias="0.497"
+        app:layout_constraintStart_toStartOf="@+id/horizontalScrollView"
+        app:layout_constraintTop_toBottomOf="@+id/horizontalScrollView"
+        app:layout_constraintVertical_bias="0.941" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -33,7 +33,7 @@ class UpdatePassword : AppCompatActivity() {
             if (email.isNotEmpty()) {
                 startPasswordReset(email)
             } else {
-                Toast.makeText(this@UpdatePassword, "Please enter your email address.", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this@UpdatePassword, "कृपया अपना ईमेल एड्रेस इंटर करें!.", Toast.LENGTH_SHORT).show()
             }
         }
     }
@@ -49,8 +49,8 @@ class UpdatePassword : AppCompatActivity() {
                 // Switch to the main thread to update the UI
                 withContext(Dispatchers.Main) {
                     binding.progressBar4.visibility = View.GONE
-                    Toast.makeText(this@UpdatePassword, "Password reset email sent.", Toast.LENGTH_SHORT).show()
-                    startActivity(Intent(this@UpdatePassword, LoginPage::class.java))
+                    Toast.makeText(this@UpdatePassword, "पासवर्ड रीसेट ईमेल भेज दिया गया है|", Toast.LENGTH_SHORT).show()
+                    startActivity(Intent(this@UpdatePassword, WelcomePage::class.java))
                 }
             } catch (e: Exception) {
                 withContext(Dispatchers.Main) {

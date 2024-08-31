@@ -22,6 +22,8 @@ lifecycleViewmodelKtx = "2.8.4"
 firebaseMessagingKtx = "24.0.1"
 firebaseStorage = "21.0.0"
 playServicesLocation = "21.3.0"
+media3Common = "1.4.1"
+roomKtx = "2.6.1"
 
 
 [libraries]
@@ -46,6 +48,8 @@ androidx-lifecycle-viewmodel-ktx = { group = "androidx.lifecycle", name = "lifec
 firebase-messaging-ktx = { group = "com.google.firebase", name = "firebase-messaging-ktx", version.ref = "firebaseMessagingKtx" }
 firebase-storage = { group = "com.google.firebase", name = "firebase-storage", version.ref = "firebaseStorage" }
 play-services-location = { group = "com.google.android.gms", name = "play-services-location", version.ref = "playServicesLocation" }
+androidx-media3-common = { group = "androidx.media3", name = "media3-common", version.ref = "media3Common" }
+androidx-room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "roomKtx" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }

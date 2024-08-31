@@ -11,7 +11,7 @@
     </style>
     <!-- res/values/styles.xml -->
     <style name="CustomMenuItemTextAppearance" parent="TextAppearance.AppCompat">
-        <item name="android:textColor">@color/yellow2</item>
+        <item name="android:textColor">@color/ocher</item>
     </style>
     <!-- res/values/styles.xml -->
     <style name="CustomPopupMenu" parent="ThemeOverlay.AppCompat.Light">
@@ -20,5 +20,9 @@
 
     <style name="CustomBottomNavigationView.TextAppearance" parent="TextAppearance.MaterialComponents.Caption">
         <item name="android:textSize">15sp</item> <!-- Adjust text size -->
+    </style>
+    <style name="RoundedCornersImageView">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">16dp</item>
     </style>
 </resources>

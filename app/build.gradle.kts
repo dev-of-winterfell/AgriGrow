@@ -55,6 +55,8 @@ dependencies {
     implementation("de.hdodenhof:circleimageview:3.1.0")
     implementation ("com.github.bumptech.glide:glide:4.16.0")
     implementation(libs.play.services.location)
+    implementation(libs.androidx.media3.common)
+    implementation(libs.androidx.room.ktx)
     annotationProcessor ("com.github.bumptech.glide:compiler:4.15.1")
     implementation (libs.play.services.auth)
     implementation(platform(libs.firebase.bom))

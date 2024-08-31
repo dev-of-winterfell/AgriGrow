@@ -6,12 +6,30 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/white"
-
     tools:context=".SellerLandingPage">
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/bottom_navigationView1"
+        style="@style/CustomBottomNavigationView"
+        android:layout_marginBottom="10dp"
+        android:layout_width="349dp"
+        android:elevation="15dp"
+        android:layout_height="wrap_content"
+        android:background="@drawable/box_bg2"
+        android:foregroundGravity="bottom"
+
+        app:itemIconSize="30dp"
+        app:itemIconTint="@drawable/bottom_nav_icon_color"
+        app:labelVisibilityMode="labeled"
+        app:layout_constraintBaseline_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="@+id/drawer"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:menu="@menu/menu" />
 
     <androidx.drawerlayout.widget.DrawerLayout
         android:id="@+id/drawer"
         android:layout_width="407dp"
+
         android:layout_height="0dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -23,6 +41,7 @@
             android:id="@+id/frameLayout1"
             android:layout_width="match_parent"
             android:layout_height="0dp"
+
             app:layout_constraintBottom_toTopOf="@id/bottom_navigationView1"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -32,9 +51,9 @@
             <include
                 layout="@layout/drawernav"
 
+
                 android:layout_width="405dp"
                 android:layout_height="180dp" />
-
 
 
 
@@ -42,32 +61,18 @@
 
         <com.google.android.material.navigation.NavigationView
             android:id="@+id/navigationView1"
-            android:layout_width="280dp"
+            android:layout_width="250dp"
             android:layout_height="match_parent"
             android:layout_gravity="start"
-            android:backgroundTint="@color/white"
+            android:backgroundTint="#386641"
             app:headerLayout="@layout/header"
-            app:menu="@menu/drawer" />
-
+            app:menu="@menu/drawer"
+app:itemIconTint="@color/ocher"
+            app:itemTextColor="@color/ocher"/>
 
     </androidx.drawerlayout.widget.DrawerLayout>
-    <com.google.android.material.bottomnavigation.BottomNavigationView
-        android:id="@+id/bottom_navigationView1"
-        style="@style/CustomBottomNavigationView"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:layout_constraintBaseline_toTopOf="parent"
 
 
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toEndOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:background="@drawable/bottomnav"
-        android:foregroundGravity="bottom"
-        app:itemIconSize="30dp"
-        app:itemIconTint="@drawable/bottom_nav_icon_color"
-        app:labelVisibilityMode="labeled"
-        app:menu="@menu/menu" />
     <!--    <Button-->
     <!--        android:id="@+id/buyerlogoutbtn"-->
     <!--        android:layout_width="wrap_content"-->
@@ -79,15 +84,4 @@
     <!--        app:layout_constraintEnd_toEndOf="parent"-->
     <!--        app:layout_constraintStart_toStartOf="parent"-->
     <!--        app:layout_constraintTop_toTopOf="parent" />-->
-<!--    <Button-->
-<!--        android:id="@+id/sellerlogoutbtn"-->
-<!--        android:layout_width="wrap_content"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        android:text="Seller Log Out"-->
-<!--        android:textStyle="bold"-->
-<!--        android:backgroundTint="@color/green"-->
-<!--        app:layout_constraintBottom_toBottomOf="parent"-->
-<!--        app:layout_constraintEnd_toEndOf="parent"-->
-<!--        app:layout_constraintStart_toStartOf="parent"-->
-<!--        app:layout_constraintTop_toTopOf="parent" />-->
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -44,6 +44,7 @@ class BuyerLandingPage : AppCompatActivity() {
         private const val PROFILE_IMAGE_URI_KEY = "ProfileImageUri"
         private const val SHARED_PREFS_KEY = "GradxPrefs"
     }
+
     private lateinit var binding: ActivityLandingPageBinding
 
     private lateinit var firestore: FirebaseFirestore
@@ -51,8 +52,9 @@ class BuyerLandingPage : AppCompatActivity() {
     private lateinit var drawerLayout: DrawerLayout
     private lateinit var progressBar: ProgressBar
     private val REQUEST_IMAGE_PICK = 1002
-  //private val PROFILE_IMAGE_URI_KEY = "ProfileImageUri"
- //private val SHARED_PREFS_KEY = "GradxPrefs"
+
+    //private val PROFILE_IMAGE_URI_KEY = "ProfileImageUri"
+    //private val SHARED_PREFS_KEY = "GradxPrefs"
     private lateinit var auth: FirebaseAuth
     private lateinit var sharedPreferences: SharedPreferences
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -66,23 +68,24 @@ class BuyerLandingPage : AppCompatActivity() {
         val navigationView = findViewById<NavigationView>(R.id.navigationView1)
         val headerView = navigationView.getHeaderView(0)
         val profileImageView = headerView.findViewById<CircleImageView>(R.id.profilepic)
-        val nameTextView = headerView.findViewById<TextView>(R.id.name)
-        val emailTextView = headerView.findViewById<TextView>(R.id.email)
+//        val nameTextView = headerView.findViewById<TextView>(R.id.name)
+//        val emailTextView = headerView.findViewById<TextView>(R.id.email)
 
         sharedPreferences = getSharedPreferences("GradxPrefs", Context.MODE_PRIVATE)
         auth = Firebase.auth
         progressBar = headerView.findViewById(R.id.progressBar6)
         auth.addAuthStateListener { firebaseAuth ->
             val user = firebaseAuth.currentUser
-            if (user != null ) {
-                // User is signed in
-                emailTextView.text = user.email
-                loadUserData(nameTextView, profileImageView)
+            if (user == null) {
+
+                // User is signed out
+                startActivity(Intent(this@BuyerLandingPage, WelcomePage::class.java))
+                finish()
+
 
             } else {
                 // User is signed out
-                startActivity(Intent(this@BuyerLandingPage, LoginPage::class.java))
-                finish()
+               loadUserData(profileImageView)
             }
         }
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
@@ -96,9 +99,8 @@ class BuyerLandingPage : AppCompatActivity() {
         drawerLayout = binding.drawer
 
 
-
 //        val isLoggedIn = sharedPreferences.getBoolean("IS_LOGGED_IN", false)
-       profileImageView.setOnClickListener {
+        profileImageView.setOnClickListener {
             openImagePicker()
         }
 
@@ -129,16 +131,19 @@ class BuyerLandingPage : AppCompatActivity() {
             }
         }
 
+
         navigationView.setNavigationItemSelectedListener { menuItem ->
             when (menuItem.itemId) {
                 R.id.logout -> {
                     logoutUser()
                     true
                 }
+
                 R.id.colormode -> {
                     toggleDarkMode()
                     true
                 }
+
                 else -> false
             }
         }
@@ -146,13 +151,32 @@ class BuyerLandingPage : AppCompatActivity() {
         binding.bottomNavigationView1.setOnItemSelectedListener {
             when (it.itemId) {
                 R.id.home -> FragmentHandler(homeFragment())
-                R.id.connect -> FragmentHandler(connectFragment())
+                R.id.connect -> FragmentHandler(ConnectFragment())
                 R.id.profile -> FragmentHandler(profileFragment())
-                R.id.message -> FragmentHandler(AIFragment())
+                R.id.message -> FragmentHandler(CartFragment())
                 else -> showFragment(homeFragment())
             }
             true
         }
+        drawerLayout.addDrawerListener(object : DrawerLayout.DrawerListener {
+            override fun onDrawerSlide(drawerView: View, slideOffset: Float) {
+                // This will be called when the drawer is sliding
+            }
+
+            override fun onDrawerOpened(drawerView: View) {
+                // Hide BottomNavigationView when the drawer is opened
+                binding.bottomNavigationView1.visibility = View.GONE
+            }
+
+            override fun onDrawerClosed(drawerView: View) {
+                // Show BottomNavigationView when the drawer is closed
+                binding.bottomNavigationView1.visibility = View.VISIBLE
+            }
+
+            override fun onDrawerStateChanged(newState: Int) {
+                // This will be called when the drawer motion state changes
+            }
+        })
 
         if (savedInstanceState == null) {
             binding.bottomNavigationView1.selectedItemId = R.id.home
@@ -174,7 +198,7 @@ class BuyerLandingPage : AppCompatActivity() {
 
     private fun loadUserData(
 
-        nameTextView: TextView,
+
         profileImageView: CircleImageView
     ) {
         val user = auth.currentUser ?: return
@@ -199,7 +223,7 @@ class BuyerLandingPage : AppCompatActivity() {
                     }
 
                     withContext(Dispatchers.Main) {
-                        nameTextView.text = name ?: "No name found"
+
 
                         if (!profileImageUrl.isNullOrEmpty()) {
                             Glide.with(this@BuyerLandingPage)

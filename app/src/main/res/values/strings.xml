@@ -1,8 +1,8 @@
 <resources>
     <string name="app_name">AgriGrow</string>
     <string name="farming_made_easy_with_faster_delivery_at_your_doorstep">Farming made easy with faster\ndelivery at your doorstep...</string>
-    <string name="sign_in_with">\t\t\t OR\n\n<u>sign in with</u>  </string>
-    <string name="signin"><u>Signin</u></string>
+    <string name="sign_in_with">या\nगूगल की मदद से साइन इन करें  </string>
+    <string name="signin"><u>प्रवेश करे</u></string>
     <string name="default_web_client_id">default_web_client_id</string>
     <string name="_0">0</string>
     <!-- Strings related to login -->
@@ -12,7 +12,7 @@
     <string name="action_sign_in_short">Sign in</string>
     <string name="welcome">"Welcome!"</string>
     <string name="invalid_username">Not a valid username</string>
-    <string name="invalid_password">Password must be >5 characters</string>
+    <string name="invalid_password">पासवर्ड 5 अक्षरों से अधिक का होना चाहिए</string>
     <string name="login_failed">"Login failed"</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
@@ -24,7 +24,7 @@
     </string-array>
 
     <string name="title_activity_chat_page">ChatPage</string>
-    <string name="msp">MSP फसलों के नाम और मूल्य नीति\n\n "इस एप्लिकेशन में, निम्नलिखित MSP फसलों के नाम इंग्लिश में दिए गए हैं:\n"
+    <string name="msp">MSP फसलों के नाम और मूल्य नीति\n\n
                 "इस एप्लिकेशन में, निम्नलिखित MSP फसलों के नाम इंग्लिश में दिए गए हैं:\n"
                 "- गेहूं (Wheat)\n"
                 "- चावल (RiceA)\n"
@@ -33,4 +33,10 @@
                 "- ज्वार (Jawar)\n"
                 "- बाजरा (Bajra)\n"
         "- जौ" (Barley)\n""- उड़द (Black Gram)\n""- मसूर (Lentil)\n""- अरहर (Arhar)\n""- सोयाबीन (Soybean)\n""- तिल (Sesame)\n""- सरसों (Mustard)\n""- गन्ना (Sugarcane)\n""- चने (Chickpea)\n""- मटर (Pea)\n""MSP फसलों के लिए न्यूनतम मूल्य स्वचालित रूप से सरकार की नीतियों के अनुसार लाया जाएगा।\n""यदि आप एक गैर-MSP फसल जोड़ते हैं, तो आप न्यूनतम मूल्य को मैन्युअली सेट कर सकते हैं।\n""इस जानकारी के माध्यम से, हम यह सुनिश्चित करना चाहते हैं कि आप फसल के मूल्य निर्धारण को समझें और सही तरीके से जानकारी प्रदान करें।"  </string>
+    <string name="name">नाम दर्ज करें</string>
+    <string name="email">ईमेल दर्ज करें</string>
+    <string name="password">पासवर्ड बनाइये</string>
+    <string name="confirm_password">पासवर्ड पुनः लिखें</string>
+    <string name="google">गूगल</string>
+    <string name="register"><u>रजिस्टर करें</u></string>
 </resources>

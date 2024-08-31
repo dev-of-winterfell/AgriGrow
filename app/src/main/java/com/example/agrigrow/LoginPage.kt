@@ -90,7 +90,7 @@ class LoginPage : AppCompatActivity() {
         }
 
         binding.signup.setOnClickListener {
-            startActivity(Intent(this, phoneAuthUserDetailsPage::class.java))
+            startActivity(Intent(this, WelcomePage::class.java))
             overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out)
         }
         binding.button5.setOnClickListener {
@@ -224,5 +224,7 @@ class LoginPage : AppCompatActivity() {
             .putBoolean("IS_LOGGED_IN", false)
             .apply()
     }
+
+    fun forgotPasswordClicked(view: View) {}
 
 }

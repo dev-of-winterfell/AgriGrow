@@ -1,6 +1,6 @@
 package com.example.agrigrow
 
-import android.R
+
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
@@ -18,6 +18,7 @@ import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.EditText
+import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
@@ -50,7 +51,7 @@ class phoneAuthUserDetailsPage : AppCompatActivity() {
     private lateinit var binding:ActivityPhoneAuthSellerDetailsBinding
     private lateinit var db: FirebaseFirestore
     private lateinit var auth: FirebaseAuth
-
+    private lateinit var progressBar: ProgressBar  // Add this line
     private lateinit var googleSignInClient: GoogleSignInClient
     private lateinit var sharedPreferences: SharedPreferences
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -58,6 +59,7 @@ class phoneAuthUserDetailsPage : AppCompatActivity() {
         enableEdgeToEdge()
         binding= ActivityPhoneAuthSellerDetailsBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        progressBar = findViewById<ProgressBar>(R.id.progressBar80)  // Initialize ProgressBar
         val items = arrayOf("विकल्प के रूप में किसान या खरीदार का चयन करें", "खरीददार", "किसान")
         val adapter: ArrayAdapter<String> = object : ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, items) {
             override fun isEnabled(position: Int): Boolean {
@@ -87,11 +89,13 @@ class phoneAuthUserDetailsPage : AppCompatActivity() {
         googleSignInClient = GoogleSignIn.getClient(this, gso)
 
         binding.googleSignInButton.setOnClickListener {
+
             if (binding.spinner.selectedItemPosition == 0) {
-                Toast.makeText(this, "Please select a user type", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "कृपया उपयोगकर्ता प्रकार चुनें", Toast.LENGTH_SHORT).show()
             }
-            else{
+            else{  showProgressBar()
                 signInWithGoogle()
+                hideProgressBar()
             }
         }
 //        binding.spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
@@ -181,6 +185,7 @@ class phoneAuthUserDetailsPage : AppCompatActivity() {
                 )
 
                 lifecycleScope.launch {
+                    showProgressBar()
                     try {
                         val documents = db.collection("SELLERS").whereEqualTo("Email", email).get().await()
                         if (documents.isEmpty) {
@@ -191,6 +196,9 @@ class phoneAuthUserDetailsPage : AppCompatActivity() {
                         }
                     } catch (exception: Exception) {
                         Log.e("error", "Server error: ${exception.message}")
+                    }
+                    finally {
+                        hideProgressBar()  // Hide progress bar once the operation is complete
                     }
                 }
             }
@@ -380,6 +388,13 @@ class phoneAuthUserDetailsPage : AppCompatActivity() {
             }
             .create()
             .show()
+    }
+    private fun showProgressBar() {
+        progressBar.visibility = View.VISIBLE
+    }
+
+    private fun hideProgressBar() {
+        progressBar.visibility = View.GONE
     }
 //    private fun sendTokenToServer(token: String?) {
 //        val url = "http://127.0.0.1:8000/send-signup-notification/"
