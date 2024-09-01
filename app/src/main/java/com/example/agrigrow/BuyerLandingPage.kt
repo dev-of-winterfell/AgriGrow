@@ -39,7 +39,7 @@ import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 import java.util.jar.Attributes.Name
 
-class BuyerLandingPage : AppCompatActivity() {
+class BuyerLandingPage : AppCompatActivity(),CropDataTransferFromBuyer.OnNegotiateClickListener {
     companion object {
         private const val PROFILE_IMAGE_URI_KEY = "ProfileImageUri"
         private const val SHARED_PREFS_KEY = "GradxPrefs"
@@ -151,7 +151,7 @@ class BuyerLandingPage : AppCompatActivity() {
         binding.bottomNavigationView1.setOnItemSelectedListener {
             when (it.itemId) {
                 R.id.home -> FragmentHandler(homeFragment())
-                R.id.connect -> FragmentHandler(ConnectFragment())
+                R.id.connect -> FragmentHandler(BuyerBargain())
                 R.id.profile -> FragmentHandler(profileFragment())
                 R.id.message -> FragmentHandler(CartFragment())
                 else -> showFragment(homeFragment())
@@ -188,7 +188,10 @@ class BuyerLandingPage : AppCompatActivity() {
             .replace(R.id.frameLayout1, fragment)
             .commit()
     }
-
+    override fun onNegotiateClick(cropDetail: homeFragment.CropDetail?) {
+        // Navigate to BuyerBargain fragment
+        binding.bottomNavigationView1.selectedItemId = R.id.connect
+    }
     private fun showFragment(fragment: Fragment): Boolean {
         supportFragmentManager.beginTransaction()
             .replace(R.id.frameLayout1, fragment)
@@ -211,7 +214,7 @@ class BuyerLandingPage : AppCompatActivity() {
                 }
                 if (!documents.isEmpty) {
                     val document = documents.documents[0]
-                    val name =document.getString("Name")
+                  //  val name =document.getString("Name")
                   //  val firestoreProfileImageUrl = document.getString("profileImageUrl")
                     var profileImageUrl = sharedPreferences.getString(PROFILE_IMAGE_URI_KEY, null)?: document.getString("profileImageUrl")
 
@@ -348,4 +351,5 @@ class BuyerLandingPage : AppCompatActivity() {
     private fun isUserLoggedIn(): Boolean {
         return auth.currentUser != null
     }
+
 }

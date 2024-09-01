@@ -1,6 +1,8 @@
 plugins {
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.jetbrainsKotlinAndroid)
+    id ("kotlin-parcelize")
+
     id("com.google.gms.google-services")
 
 }
@@ -44,20 +46,25 @@ android {
 }
 
 dependencies {
+    // Check for the latest version
+
+    // Navigation Components
+    implementation (libs.androidx.navigation.fragment.ktx)
+    implementation (libs.androidx.navigation.ui.ktx)
     //noinspection UseTomlInstead
     implementation ("com.squareup.okhttp3:okhttp:4.11.0")
-    implementation("com.google.firebase:firebase-analytics")
+    implementation(libs.firebase.analytics)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
     implementation (libs.firebase.auth.v2101)
     implementation (libs.gson)
-    implementation("de.hdodenhof:circleimageview:3.1.0")
-    implementation ("com.github.bumptech.glide:glide:4.16.0")
+    implementation(libs.circleimageview)
+    implementation (libs.glide)
     implementation(libs.play.services.location)
     implementation(libs.androidx.media3.common)
     implementation(libs.androidx.room.ktx)
-    annotationProcessor ("com.github.bumptech.glide:compiler:4.15.1")
+    annotationProcessor (libs.compiler)
     implementation (libs.play.services.auth)
     implementation(platform(libs.firebase.bom))
     implementation(libs.androidx.activity)

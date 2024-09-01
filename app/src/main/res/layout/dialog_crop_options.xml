@@ -1,0 +1,308 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+android:background="@color/ocher"
+
+    android:orientation="vertical"
+    android:padding="16dp"
+    tools:context=".CropDataTransferFromBuyer"
+    >
+
+    <LinearLayout
+        android:id="@+id/linearLayout3"
+        android:layout_width="397dp"
+        android:layout_height="175dp"
+        android:layout_gravity="center"
+        android:orientation="horizontal"
+        android:padding="8dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.0">
+
+        <ImageView
+            android:id="@+id/cropImage"
+            android:layout_width="140dp"
+
+            android:layout_height="145dp"
+            android:layout_gravity="bottom"
+            android:scaleType="centerCrop"
+            app:shapeAppearanceOverlay="@style/RoundedCornersImageView" />
+
+        <RelativeLayout
+            android:layout_width="268dp"
+            android:layout_height="140dp"
+            android:layout_gravity="bottom"
+
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/cropName"
+                android:layout_width="139dp"
+                android:layout_height="wrap_content"
+                android:layout_alignTop="@+id/textView11"
+                android:layout_alignBottom="@+id/textView11"
+
+                android:layout_alignParentEnd="true"
+                android:layout_marginStart="4dp"
+                android:layout_marginTop="0dp"
+                android:layout_marginEnd="0dp"
+                android:layout_marginBottom="0dp"
+                android:layout_toEndOf="@+id/textView11"
+                android:ellipsize="end"
+                android:inputType="textCapSentences"
+                android:maxLines="1"
+                android:text="dhbfshjbf"
+                android:textAlignment="viewStart"
+                android:textColor="@color/translucent1" />
+
+            <TextView
+                android:id="@+id/cropType"
+                android:layout_width="91dp"
+                android:layout_height="wrap_content"
+                android:layout_alignStart="@+id/cropName"
+                android:layout_alignTop="@+id/textView112"
+                android:layout_alignEnd="@+id/cropName"
+                android:layout_alignBottom="@+id/textView112"
+                android:layout_marginStart="0dp"
+                android:layout_marginLeft="120dp"
+                android:layout_marginTop="0dp"
+                android:layout_marginEnd="0dp"
+                android:layout_marginBottom="0dp"
+                android:ellipsize="end"
+                android:inputType="textCapSentences"
+                android:maxLines="1"
+                android:text="dhbfshjbf"
+                android:textAlignment="viewStart"
+                android:textColor="@color/translucent1" />
+
+            <TextView
+                android:id="@+id/growingMethod"
+                android:layout_width="60dp"
+                android:layout_height="wrap_content"
+                android:layout_alignStart="@+id/cropType"
+                android:layout_alignTop="@+id/textView116"
+                android:layout_alignEnd="@+id/cropName"
+                android:layout_alignBottom="@+id/textView116"
+                android:layout_marginStart="0dp"
+                android:layout_marginLeft="120dp"
+                android:layout_marginTop="0dp"
+                android:layout_marginEnd="0dp"
+                android:layout_marginBottom="0dp"
+                android:ellipsize="end"
+                android:inputType="textCapSentences"
+                android:maxLines="1"
+                android:text="dhbfshjbf"
+                android:textAlignment="viewStart"
+                android:textColor="@color/translucent1" />
+
+            <TextView
+                android:id="@+id/price"
+                android:layout_width="60dp"
+                android:layout_height="wrap_content"
+                android:layout_alignStart="@+id/amount"
+                android:layout_alignTop="@+id/textView114"
+                android:layout_alignEnd="@+id/cropName"
+                android:layout_alignBottom="@+id/textView114"
+                android:layout_marginStart="0dp"
+                android:layout_marginLeft="120dp"
+                android:layout_marginTop="0dp"
+                android:layout_marginEnd="0dp"
+                android:layout_marginBottom="-1dp"
+                android:ellipsize="end"
+                android:inputType="textCapSentences"
+                android:maxLines="1"
+                android:text="dhbfshjbf"
+                android:textAlignment="viewStart"
+                android:textColor="@color/translucent1" />
+
+            <TextView
+                android:id="@+id/state"
+                android:layout_width="60dp"
+                android:layout_height="19dp"
+                android:layout_alignStart="@+id/price"
+                android:layout_alignTop="@+id/textView113"
+                android:layout_alignEnd="@+id/cropName"
+                android:layout_alignParentBottom="true"
+                android:layout_marginStart="0dp"
+                android:layout_marginLeft="120dp"
+                android:layout_marginTop="0dp"
+                android:layout_marginEnd="0dp"
+                android:layout_marginBottom="1dp"
+                android:ellipsize="end"
+                android:inputType="textCapSentences"
+                android:maxLines="1"
+                android:text="dhbfshjbf"
+                android:textAlignment="viewStart"
+                android:textColor="@color/translucent1" />
+
+            <TextView
+                android:id="@+id/amount"
+                android:layout_width="60dp"
+                android:layout_height="wrap_content"
+                android:layout_alignStart="@+id/growingMethod"
+                android:layout_alignTop="@+id/textView115"
+                android:layout_alignEnd="@+id/cropName"
+                android:layout_alignBottom="@+id/textView115"
+                android:layout_marginStart="0dp"
+                android:layout_marginLeft="120dp"
+                android:layout_marginTop="-1dp"
+                android:layout_marginEnd="0dp"
+                android:layout_marginBottom="0dp"
+                android:ellipsize="end"
+                android:inputType="textCapSentences"
+                android:maxLines="1"
+                android:text="dhbfshjbf"
+                android:textAlignment="viewStart"
+                android:textColor="@color/translucent1" />
+
+            <TextView
+                android:id="@+id/textView11"
+                android:layout_width="123dp"
+                android:layout_height="wrap_content"
+
+                android:layout_alignParentStart="true"
+                android:layout_alignParentTop="true"
+                android:layout_marginStart="2dp"
+                android:layout_marginTop="1dp"
+                android:ellipsize="end"
+                android:inputType="textCapSentences"
+                android:maxLines="1"
+                android:text="फसल का नाम: "
+                android:textAlignment="viewEnd"
+                android:textColor="@color/black" />
+
+            <TextView
+                android:id="@+id/textView112"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+
+                android:layout_alignStart="@+id/textView11"
+                android:layout_alignEnd="@+id/textView11"
+                android:layout_alignParentTop="true"
+                android:layout_marginStart="0dp"
+                android:layout_marginTop="25dp"
+                android:layout_marginEnd="0dp"
+                android:ellipsize="end"
+                android:inputType="textCapSentences"
+                android:maxLines="1"
+                android:text="फसल की किस्म: "
+                android:textAlignment="viewEnd"
+                android:textColor="@color/black" />
+
+            <TextView
+                android:id="@+id/textView113"
+                android:layout_width="126dp"
+                android:layout_height="wrap_content"
+
+                android:layout_alignStart="@+id/textView114"
+                android:layout_alignEnd="@+id/textView114"
+                android:layout_alignParentTop="true"
+                android:layout_marginStart="-2dp"
+                android:layout_marginTop="119dp"
+                android:layout_marginEnd="0dp"
+                android:ellipsize="end"
+                android:inputType="textCapSentences"
+                android:maxLines="1"
+                android:text="उत्पाड का राज्य: "
+                android:textAlignment="viewEnd"
+                android:textColor="@color/black" />
+
+            <TextView
+                android:id="@+id/textView114"
+
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignStart="@+id/textView115"
+                android:layout_alignEnd="@+id/textView115"
+                android:layout_alignParentTop="true"
+                android:layout_marginStart="0dp"
+                android:layout_marginTop="97dp"
+                android:layout_marginEnd="0dp"
+                android:ellipsize="end"
+                android:inputType="textCapSentences"
+                android:maxLines="1"
+                android:text="प्रति क्विंटल दर: "
+                android:textAlignment="viewEnd"
+                android:textColor="@color/black" />
+
+            <TextView
+                android:id="@+id/textView115"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+
+                android:layout_alignStart="@+id/textView116"
+                android:layout_alignEnd="@+id/textView116"
+                android:layout_alignParentTop="true"
+                android:layout_marginStart="0dp"
+                android:layout_marginTop="73dp"
+                android:layout_marginEnd="0dp"
+                android:ellipsize="end"
+                android:inputType="textCapSentences"
+                android:maxLines="1"
+                android:text="मात्रा क्विंटल में: "
+                android:textAlignment="viewEnd"
+                android:textColor="@color/black" />
+
+            <TextView
+                android:id="@+id/textView116"
+
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignStart="@+id/textView112"
+                android:layout_alignEnd="@+id/textView112"
+                android:layout_alignParentTop="true"
+                android:layout_marginStart="0dp"
+                android:layout_marginTop="48dp"
+                android:layout_marginEnd="0dp"
+                android:ellipsize="end"
+                android:inputType="textCapSentences"
+                android:maxLines="1"
+                android:text="उगाने की विधि: "
+                android:textAlignment="viewEnd"
+                android:textColor="@color/black" />
+
+
+        </RelativeLayout>
+
+
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/negotiate"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:textStyle="bold"
+
+        android:textAlignment="center"
+        android:text="मोल-भाव करें"
+        android:backgroundTint="@color/olive"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout3" />
+
+    <Button
+        android:id="@+id/addtocart"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12sp"
+        android:backgroundTint="@color/olive"
+        android:textAlignment="center"
+        android:textStyle="bold"
+
+        android:text="कार्ट में जोड़ें"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/negotiate"
+        app:layout_constraintVertical_bias="0.0" />
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

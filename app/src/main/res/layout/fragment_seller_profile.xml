@@ -3,8 +3,89 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/ocher"
     tools:context="com.example.sellerProfileFragment">
 
+    <androidx.cardview.widget.CardView
+        android:layout_width="360dp"
+        android:layout_height="207dp"
+
+        app:cardBackgroundColor="@color/Darkocher"
+        app:cardCornerRadius="20dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.147">
+
+
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/profileImage"
+            android:layout_width="120dp"
+            android:layout_height="120dp"
+            android:layout_margin="12dp"
+            android:src="@drawable/baseline_person_add_alt_24"
+            app:civ_border_color="#A7C957"
+            app:civ_border_overlay="@null"
+            app:civ_border_width="3dp" />
+
+
+        <TextView
+            android:id="@+id/textView18"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="150dp"
+            android:layout_marginTop="23dp"
+            android:text="Navdeep Singh"
+            android:textColor="@color/black"
+            android:textSize="24dp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/textView19"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="150dp"
+            android:layout_marginTop="52dp"
+            android:text="nsb95696@gmail.com"
+            android:textColor="#386641"
+            android:textSize="16dp"
+            android:textStyle="normal" />
+
+        <TextView
+            android:id="@+id/textView20"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="150dp"
+            android:layout_marginTop="73dp"
+            android:gravity="center"
+            android:text="seller"
+
+            android:textAlignment="center"
+            android:textColor="#386641"
+            android:textSize="16dp"
+            android:textStyle="normal" />
+
+        <TextView
+            android:id="@+id/textView21"
+            android:layout_width="331dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="138dp"
+            android:layout_marginEnd="12dp"
+
+            android:layout_marginBottom="12dp"
+            android:background="@drawable/box_bg2"
+            android:drawableStart="@drawable/baseline_location_on_24"
+            android:drawablePadding="10dp"
+            android:padding="2dp"
+
+            android:text="by pass road near icici bank Robertaganj Sonebhadra Uttar Pradesh 231216"
+            android:textAlignment="viewStart"
+            android:textColor="#386641"
+            android:textSize="12dp"
+            android:textStyle="normal" />
+    </androidx.cardview.widget.CardView>
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

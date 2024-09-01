@@ -7,8 +7,10 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
 import android.widget.TextView
+import com.bumptech.glide.Glide
 import com.example.agrigrow.R
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
 
 // TODO: Rename parameter arguments, choose names that match
@@ -33,37 +35,90 @@ class sellerProfileFragment : Fragment() {
             param2 = it.getString(ARG_PARAM2)
         }
     }
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        val view= inflater.inflate(R.layout.fragment_seller_profile, container, false)
+        val view = inflater.inflate(R.layout.fragment_seller_profile, container, false)
 
-        // Retrieve the current logged-in user
+        // Initialize Firebase Auth and Firestore
+        val auth = FirebaseAuth.getInstance()
+        val db = FirebaseFirestore.getInstance()
 
+        // Retrieve UI elements
+        val profileImageView = view.findViewById<de.hdodenhof.circleimageview.CircleImageView>(R.id.profileImage)
+        val nameTextView = view.findViewById<TextView>(R.id.textView18)
+        val emailTextView = view.findViewById<TextView>(R.id.textView19)
+        val roleTextView = view.findViewById<TextView>(R.id.textView20)
+        val locationTextView = view.findViewById<TextView>(R.id.textView21)
+
+        // Get the current user
+        val currentUser = auth.currentUser
+
+        currentUser?.let {
+            val userEmail = it.email
+            emailTextView.text = userEmail
+
+            // Check if the user is in the SELLERS collection
+            db.collection("SELLERS").document(userEmail!!).get()
+                .addOnSuccessListener { document ->
+                    if (document.exists()) {
+                        // User is a seller
+                        displayUserData(document, "Seller", userEmail, profileImageView, nameTextView, emailTextView, roleTextView, locationTextView)
+                    } else {
+                        // If not found in SELLERS, check in BUYERS collection
+                        db.collection("BUYERS").document(userEmail).get()
+                            .addOnSuccessListener { buyerDocument ->
+                                if (buyerDocument.exists()) {
+                                    // User is a buyer
+                                    displayUserData(buyerDocument, "Buyer", userEmail, profileImageView, nameTextView, emailTextView, roleTextView, locationTextView)
+                                } else {
+                                    // Handle case where user is not found in either collection
+                                    nameTextView.text = "User data not found"
+                                    roleTextView.text = "Unknown Role"
+                                }
+                            }
+                            .addOnFailureListener { exception ->
+                                // Handle errors for BUYERS collection
+                                nameTextView.text = "Error: ${exception.message}"
+                                roleTextView.text = "Error fetching role"
+                            }
+                    }
+                }
+                .addOnFailureListener { exception ->
+                    // Handle errors for SELLERS collection
+                    nameTextView.text = "Error: ${exception.message}"
+                    roleTextView.text = "Error fetching role"
+                }
+        }
 
         return view
     }
 
-    companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment sellerProfileFragment.
-         */
-        // TODO: Rename and change types and number of parameters
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            sellerProfileFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
-                }
-            }
+    // Helper function to display user data
+    private fun displayUserData(
+        document: DocumentSnapshot,
+        role: String,
+        userEmail: String?,
+        profileImageView: de.hdodenhof.circleimageview.CircleImageView,
+        nameTextView: TextView,
+        emailTextView: TextView,
+        roleTextView: TextView,
+        locationTextView: TextView
+    ) {
+        val name = document.getString("Name") ?: "No Name"
+        val location = document.getString("Location") ?: "No Location"
+        val profileImageUrl = document.getString("profileImageUrl")
+
+        nameTextView.text = name
+        emailTextView.text = userEmail
+        roleTextView.text = role
+        locationTextView.text = location
+
+        // Load the profile image using Glide
+        if (!profileImageUrl.isNullOrEmpty()) {
+            Glide.with(this).load(profileImageUrl).into(profileImageView)
+        }
     }
 }

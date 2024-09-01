@@ -1,7 +1,10 @@
 [versions]
 agp = "8.5.2"
+circleimageview = "3.1.0"
+compiler = "4.15.1"
 firebaseAuthVersion = "23.0.0"
 firebaseBom = "33.2.0"
+glide = "4.16.0"
 gson = "2.10.1"
 kotlin = "1.9.0"
 coreKtx = "1.13.1"
@@ -15,6 +18,7 @@ constraintlayout = "2.1.4"
 googleServices = "4.4.2"
 firebaseFirestore = "25.1.0"
 firebaseAuth = "23.0.0"
+navigationUiKtx = "2.7.7"
 playServicesAuth = "21.2.0"
 annotation = "1.8.2"
 lifecycleLivedataKtx = "2.8.4"
@@ -28,8 +32,14 @@ roomKtx = "2.6.1"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
+androidx-navigation-fragment-ktx = { module = "androidx.navigation:navigation-fragment-ktx", version.ref = "navigationUiKtx" }
+androidx-navigation-ui-ktx = { module = "androidx.navigation:navigation-ui-ktx", version.ref = "navigationUiKtx" }
+circleimageview = { module = "de.hdodenhof:circleimageview", version.ref = "circleimageview" }
+compiler = { module = "com.github.bumptech.glide:compiler", version.ref = "compiler" }
+firebase-analytics = { module = "com.google.firebase:firebase-analytics" }
 firebase-auth-v2101 = { module = "com.google.firebase:firebase-auth", version.ref = "firebaseAuthVersion" }
 firebase-bom = { module = "com.google.firebase:firebase-bom", version.ref = "firebaseBom" }
+glide = { module = "com.github.bumptech.glide:glide", version.ref = "glide" }
 gson = { module = "com.google.code.gson:gson", version.ref = "gson" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }

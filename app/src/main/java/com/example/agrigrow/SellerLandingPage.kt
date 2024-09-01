@@ -143,7 +143,7 @@ class SellerLandingPage : AppCompatActivity() {
         binding.bottomNavigationView1.setOnItemSelectedListener {
             when (it.itemId) {
                 R.id.home -> FragmentHandler(SellerHomePage())
-                R.id.connect -> FragmentHandler(ConnectFragment())
+                R.id.connect -> FragmentHandler(SellerBargain())
                 R.id.profile -> FragmentHandler(sellerProfileFragment())
                 R.id.message -> FragmentHandler(UploadNewCrops())
                 else -> showFragment(SellerHomePage())

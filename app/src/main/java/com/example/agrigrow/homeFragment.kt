@@ -1,15 +1,18 @@
 package com.example.agrigrow
 
+import android.app.AlertDialog
+import android.content.Context
 import android.os.Bundle
-import android.util.Log
-import androidx.fragment.app.Fragment
+import android.os.Parcelable
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
+import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
@@ -17,6 +20,8 @@ import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.bumptech.glide.request.RequestOptions
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+
+import kotlinx.android.parcel.Parcelize
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -48,7 +53,10 @@ class homeFragment : Fragment() {
 
         recyclerView = view.findViewById(R.id.recyclerView)
         recyclerView.layoutManager = LinearLayoutManager(context)
-        cropAdapter = CropAdapter(cropList)
+        cropAdapter = CropAdapter(cropList, requireContext()){ cropDetail ->
+            navigateToCropDetail(cropDetail)
+
+        }
         recyclerView.adapter = cropAdapter
         sellerRecyclerView = view.findViewById(R.id.horizontalScrollView)
         sellerRecyclerView.layoutManager =
@@ -67,7 +75,14 @@ class homeFragment : Fragment() {
 
         return view
     }
+    private fun navigateToCropDetail(cropDetail: CropDetail) {
+        val cropOptionsDialog = CropDataTransferFromBuyer.newInstance(cropDetail)
+        cropOptionsDialog.show(parentFragmentManager, "crop_options_dialog")
 
+
+
+
+    }
     private fun fetchSellerDetails() {
         firestore.collection("SELLERS")
             .get()
@@ -142,6 +157,7 @@ class homeFragment : Fragment() {
             }
     }
 
+
     data class Seller(
         val Name: String = "",
         val profileImageUrl: String = ""
@@ -175,6 +191,7 @@ class homeFragment : Fragment() {
         override fun getItemCount() = sellers.size
     }
 
+    @Parcelize
     data class CropDetail(
         val name: String,
         val type: String,
@@ -185,10 +202,11 @@ class homeFragment : Fragment() {
         val amount: Int,
         val imageUrl: String,
         val ownerName: String
-    )
+    ) : Parcelable
 
-    class CropAdapter(private val crops: List<CropDetail>) :
+    class CropAdapter(private val crops: List<CropDetail>, private val context: Context,  private val onItemClick: (CropDetail) -> Unit) :
         RecyclerView.Adapter<CropAdapter.ViewHolder>() {
+
         class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
             val ownerName: TextView = view.findViewById(R.id.ownername)
             val cropImage: ImageView = view.findViewById(R.id.cropImage)
@@ -207,44 +225,74 @@ class homeFragment : Fragment() {
         }
 
         override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+
             val crop = crops[position]
             holder.ownerName.text = crop.ownerName
             holder.cropName.text = crop.name
             holder.cropType.text = crop.type
             holder.growingMethod.text = crop.growingMethod
-            holder.price.text = "₹${crop.minPrice} - ₹${crop.maxPrice}"
+            holder.price.text = "₹${crop.maxPrice}"
             holder.state.text = crop.state
-            holder.amount.text = "${crop.amount} kg"
+            holder.amount.text = "${crop.amount} क्विंटल"
 
             Glide.with(holder.itemView.context)
                 .load(crop.imageUrl)
+                .placeholder(R.drawable.baseline_image_24) // Set a placeholder image while loading
+                .error(R.drawable.pikaso_embed_a_middleaged_indian_farmer_wearing_a_turban_and_tr_removebg_preview) // Set an error image if loading fails
                 .apply(RequestOptions().transform(RoundedCorners(12)))
                 .apply(RequestOptions().centerCrop())
-                .into(holder.cropImage)
-        }
+                .into(holder.cropImage);
 
+
+            holder.itemView.setOnClickListener { onItemClick(crop) }
+//            holder.cropImage.setOnClickListener { showDialog(crop) }
+//            holder.cropName.setOnClickListener { showDialog(crop) }
+//            holder.cropType.setOnClickListener { showDialog(crop) }
+//            holder.price.setOnClickListener { showDialog(crop) }
+//            holder.amount.setOnClickListener { showDialog(crop) }
+
+        }
 
         override fun getItemCount() = crops.size
 
+        private fun showDialog(crop: CropDetail) {
+            val dialogView = LayoutInflater.from(context).inflate(R.layout.dialog_crop_options, null)
+            val builder = AlertDialog.Builder(context)
+            builder.setView(dialogView)
+            val dialog = builder.create()
+
+            val negotiate = dialogView.findViewById<Button>(R.id.negotiate)
+            val addToCart = dialogView.findViewById<Button>(R.id.addtocart)
+
+            negotiate.setOnClickListener {
+                // Navigate to BuyerBargainFragment and pass crop details
+
+                dialog.dismiss()
+            }
+
+            addToCart.setOnClickListener {
+                // Implement functionality to add to cart here
+                Toast.makeText(context, "Added ${crop.name} to the cart", Toast.LENGTH_SHORT).show()
+                dialog.dismiss()
+            }
+
+            dialog.show()
+        }
+
+
+
+
         companion object {
-            /**
-             * Use this factory method to create a new instance of
-             * this fragment using the provided parameters.
-             *
-             * @param param1 Parameter 1.
-             * @param param2 Parameter 2.
-             * @return A new instance of fragment homeFragment.
-             */
-            // TODO: Rename and change types and number of parameters
-            @JvmStatic
-            fun newInstance(param1: String, param2: String) =
-                homeFragment().apply {
-                    arguments = Bundle().apply {
-                        putString(ARG_PARAM1, param1)
-                        putString(ARG_PARAM2, param2)
-                    }
-                }
+            private const val ARG_CROP_DETAIL = "arg_crop_detail"
+
+//            fun newInstance(cropDetail: CropDetail) = cropDataTransferFrombuyer().apply {
+//                arguments = Bundle().apply {
+//                    putParcelable(ARG_CROP_DETAIL, cropDetail)
+//                }
+//            }
         }
     }
 }
+
+
 

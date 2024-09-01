@@ -50,11 +50,12 @@
         <activity
             android:name=".OTPVerification"
             android:exported="false" />
-        <activity
-            android:name=".PhoneAuth"
-            android:exported="false" />
+
         <activity
             android:name=".WelcomePage"
+            android:exported="false" />
+        <activity
+            android:name=".cropDataTransferFrombuyer"
             android:exported="false" />
         <activity
             android:name=".MainActivity"

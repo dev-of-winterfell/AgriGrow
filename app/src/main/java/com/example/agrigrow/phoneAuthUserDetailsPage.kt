@@ -184,20 +184,26 @@ class phoneAuthUserDetailsPage : AppCompatActivity() {
                     "Email" to email
                 )
 
+                // Collecting the selected role from the spinner
+                val selectedRole = binding.spinner.selectedItem.toString()
+
+                // Determine the collection based on the selected role
+                val collectionName = if (selectedRole == "खरीददार") "BUYERS" else "SELLERS"
+
                 lifecycleScope.launch {
                     showProgressBar()
                     try {
-                        val documents = db.collection("SELLERS").whereEqualTo("Email", email).get().await()
+                        val documents = db.collection(collectionName).whereEqualTo("Email", email).get().await()
                         if (documents.isEmpty) {
-                            val isUserCreated = createUserWithEmailAndPassword(email, password, user)
-                            handleUserCreationResult(isUserCreated, email, name)
+                            // Passing the selected role to the createUserWithEmailAndPassword function
+                            val isUserCreated = createUserWithEmailAndPassword(email, password, user, selectedRole)
+                            handleUserCreationResult(isUserCreated, email, name, selectedRole)
                         } else {
                             showAlertDialog("Alert", "User already exists")
                         }
                     } catch (exception: Exception) {
                         Log.e("error", "Server error: ${exception.message}")
-                    }
-                    finally {
+                    } finally {
                         hideProgressBar()  // Hide progress bar once the operation is complete
                     }
                 }
@@ -316,7 +322,7 @@ class phoneAuthUserDetailsPage : AppCompatActivity() {
                 }
 
                 Toast.makeText(this@phoneAuthUserDetailsPage, "User registered successfully", Toast.LENGTH_SHORT).show()
-                saveUserLoginState(email)
+                saveUserLoginState(email, selectedRole)  // Fixed: Passing selectedRole as the second argument
 
                 val intent = when (selectedRole) {
                     "खरीददार" -> Intent(this@phoneAuthUserDetailsPage, BuyerLandingPage::class.java)
@@ -333,15 +339,20 @@ class phoneAuthUserDetailsPage : AppCompatActivity() {
         }
     }
 
-
-
-    private suspend fun createUserWithEmailAndPassword(email: String, password: String, user: Map<String, String>): Boolean {
+    private suspend fun createUserWithEmailAndPassword(
+        email: String,
+        password: String,
+        user: Map<String, String>,
+        selectedRole: String
+    ): Boolean {
         return try {
             val task = auth.createUserWithEmailAndPassword(email, password).await()
             if (task.user != null) {
                 val userWithPhoto = user.toMutableMap()
                 userWithPhoto["profileImageUrl"] = ""
-                db.collection("SELLERS").document(email).set(userWithPhoto).await()
+
+                val collectionName = if (selectedRole == "खरीददार") "BUYERS" else "SELLERS"
+                db.collection(collectionName).document(email).set(userWithPhoto).await()
                 true
             } else {
                 false
@@ -352,10 +363,11 @@ class phoneAuthUserDetailsPage : AppCompatActivity() {
         }
     }
 
-    private fun handleUserCreationResult(isSuccessful: Boolean, email: String, name: String) {
+
+
+    private fun handleUserCreationResult(isSuccessful: Boolean, email: String, name: String, selectedRole: String) {
         if (isSuccessful) {
-            saveUserLoginState(email)
-            val selectedRole = binding.spinner.selectedItem.toString()
+            saveUserLoginState(email, selectedRole)
             val intent = when (selectedRole) {
                 "खरीददार" -> Intent(this@phoneAuthUserDetailsPage, BuyerLandingPage::class.java)
                 "किसान" -> Intent(this@phoneAuthUserDetailsPage, SellerLandingPage::class.java)
@@ -363,19 +375,18 @@ class phoneAuthUserDetailsPage : AppCompatActivity() {
             }
             intent.putExtra("USER_NAME", name)
             startActivity(intent)
-            // ... (FCM token logic)
             overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out)
             finish()
         } else {
             showAlertDialog("Alert", "User registration failed. Please try again.")
         }
     }
-    private fun saveUserLoginState(email: String?) {
-        val selectedRole = binding.spinner.selectedItem.toString()
+
+    private fun saveUserLoginState(email: String?, selectedRole: String) {
         val editor = sharedPreferences.edit()
         editor.putBoolean("IS_LOGGED_IN", true)
         editor.putString("USER_EMAIL", email)
-        editor.putString("USER_ROLE", selectedRole)  // Store the user role
+        editor.putString("USER_ROLE", selectedRole)
         editor.apply()
     }
 
