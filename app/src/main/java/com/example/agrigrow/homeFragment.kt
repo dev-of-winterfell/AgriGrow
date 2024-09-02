@@ -13,6 +13,7 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
@@ -34,6 +35,8 @@ private const val ARG_PARAM2 = "param2"
  * create an instance of this fragment.
  */
 class homeFragment : Fragment() {
+
+    private lateinit var sharedViewModel: SharedViewModel
     private lateinit var recyclerView: RecyclerView
     private lateinit var cropAdapter: CropAdapter
     private val cropList = mutableListOf<CropDetail>()
@@ -48,7 +51,7 @@ class homeFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         val view = inflater.inflate(R.layout.fragment_home, container, false)
-
+        sharedViewModel = ViewModelProvider(requireActivity()).get(SharedViewModel::class.java)
         firestore = FirebaseFirestore.getInstance()
 
         recyclerView = view.findViewById(R.id.recyclerView)
@@ -78,11 +81,16 @@ class homeFragment : Fragment() {
     private fun navigateToCropDetail(cropDetail: CropDetail) {
         val cropOptionsDialog = CropDataTransferFromBuyer.newInstance(cropDetail)
         cropOptionsDialog.show(parentFragmentManager, "crop_options_dialog")
+        sharedViewModel.setMaxPrice(cropDetail.maxPrice)
+        val cropList = listOf(cropDetail) // Wrap the single CropDetail in a list
+        val buyerBargainFragment = BuyerBargain.newInstance(cropList, cropDetail.maxPrice)
 
-
-
-
+        requireActivity().supportFragmentManager.beginTransaction()
+            .replace(R.id.frameLayout1, buyerBargainFragment)
+            .addToBackStack(null)
+            .commit()
     }
+
     private fun fetchSellerDetails() {
         firestore.collection("SELLERS")
             .get()
@@ -103,6 +111,9 @@ class homeFragment : Fragment() {
             }
     }
 
+    private fun onCropSelected(cropDetail: homeFragment.CropDetail) {
+        sharedViewModel.addCrop(cropDetail)
+    }
     private fun setupBuyerName(tvBuyer: TextView) {
         val userId = FirebaseAuth.getInstance().currentUser?.email
         if (userId != null) {
@@ -131,6 +142,7 @@ class homeFragment : Fragment() {
                 for (sellerDocument in sellerDocuments) {
                     val sellerName = sellerDocument.getString("Name") ?: "Unknown Seller"
                     val crops = sellerDocument.get("crops") as? List<Map<String, Any>> ?: continue
+                    val uuid = sellerDocument.getString("uuid") ?: ""
                     for (crop in crops) {
                         val cropDetail = CropDetail(
                             name = crop["cropName"] as? String ?: "",
@@ -141,8 +153,9 @@ class homeFragment : Fragment() {
                             state = crop["state"] as? String ?: "",
                             amount = (crop["amount"] as? Number)?.toInt() ?: 0,
                             imageUrl = crop["imageUrl"] as? String ?: "",
-                            ownerName = sellerName // Set the seller's name as the owner
-                        )
+                            ownerName = sellerName, // Set the seller's name as the owner
+                            cropId = crop["cropId"] as? String ?: ""
+                            )
                         cropList.add(cropDetail)
                     }
                 }
@@ -193,6 +206,7 @@ class homeFragment : Fragment() {
 
     @Parcelize
     data class CropDetail(
+        val cropId: String,
         val name: String,
         val type: String,
         val growingMethod: String,
@@ -201,7 +215,8 @@ class homeFragment : Fragment() {
         val state: String,
         val amount: Int,
         val imageUrl: String,
-        val ownerName: String
+        val ownerName: String,
+
     ) : Parcelable
 
     class CropAdapter(private val crops: List<CropDetail>, private val context: Context,  private val onItemClick: (CropDetail) -> Unit) :

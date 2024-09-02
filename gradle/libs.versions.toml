@@ -28,6 +28,8 @@ firebaseStorage = "21.0.0"
 playServicesLocation = "21.3.0"
 media3Common = "1.4.1"
 roomKtx = "2.6.1"
+googleGmsGoogleServices = "4.4.2"
+firebaseDatabase = "21.0.0"
 
 
 [libraries]
@@ -60,8 +62,10 @@ firebase-storage = { group = "com.google.firebase", name = "firebase-storage", v
 play-services-location = { group = "com.google.android.gms", name = "play-services-location", version.ref = "playServicesLocation" }
 androidx-media3-common = { group = "androidx.media3", name = "media3-common", version.ref = "media3Common" }
 androidx-room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "roomKtx" }
+firebase-database = { group = "com.google.firebase", name = "firebase-database", version.ref = "firebaseDatabase" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }
 jetbrainsKotlinAndroid = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
+googleGmsGoogleServices = { id = "com.google.gms.google-services", version.ref = "googleGmsGoogleServices" }
 

@@ -7,6 +7,7 @@
     android:padding="16dp"
     android:background="@color/ocher"
     tools:context=".BuyerBargain">
+
     <LinearLayout
         android:id="@+id/linearLayout2"
         android:layout_width="match_parent"
@@ -35,19 +36,26 @@
             android:inputType="textCapSentences"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:hint="NAME"
+            android:hint="BuyerBargainPage"
             android:textColor="#386641"
             android:textSize="28dp"
             android:textStyle="bold" />
     </LinearLayout>
 
-    <androidx.recyclerview.widget.RecyclerView
+    <FrameLayout
+        android:id="@+id/fragment_container"
         android:layout_width="380dp"
         android:layout_height="658dp"
+        android:layout_alignParentBottom="true"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/linearLayout2"
-        app:layout_constraintVertical_bias="0.0" />
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout2">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rv"
+            android:layout_width="380dp"
+            android:layout_height="658dp" />
+    </FrameLayout>
+
 </androidx.constraintlayout.widget.ConstraintLayout>

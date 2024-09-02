@@ -5,16 +5,22 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import com.example.agrigrow.SharedViewModel
+
 import android.widget.TextView
 import androidx.fragment.app.DialogFragment
-import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.bumptech.glide.request.RequestOptions
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
 
 class CropDataTransferFromBuyer : DialogFragment() {
-
+    private var maxPrice: Float = 0f
     private var cropDetail: homeFragment.CropDetail? = null
+    private val firestore = FirebaseFirestore.getInstance()
+    private val auth = FirebaseAuth.getInstance()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -31,7 +37,7 @@ class CropDataTransferFromBuyer : DialogFragment() {
             view.findViewById<TextView>(R.id.cropName).text = crop.name
             view.findViewById<TextView>(R.id.cropType).text = crop.type
             view.findViewById<TextView>(R.id.growingMethod).text = crop.growingMethod
-            view.findViewById<TextView>(R.id.price).text = "₹${crop.maxPrice}"
+            view.findViewById<TextView>(R.id.price).text=("₹${crop.maxPrice}")
             view.findViewById<TextView>(R.id.state).text = crop.state
             view.findViewById<TextView>(R.id.amount).text = "${crop.amount} क्विंटल"
 
@@ -43,11 +49,27 @@ class CropDataTransferFromBuyer : DialogFragment() {
                 .into(view.findViewById(R.id.cropImage))
         }
 
-        view.findViewById<Button>(R.id.negotiate).setOnClickListener {
-            // Trigger the callback to navigate to BuyerBargain fragment
-            (activity as? OnNegotiateClickListener)?.onNegotiateClick(cropDetail)
-            dismiss()
 
+        view.findViewById<Button>(R.id.negotiate).setOnClickListener {
+            cropDetail?.let { crop ->
+
+                val sharedViewModel = ViewModelProvider(requireActivity()).get(SharedViewModel::class.java)
+
+                sharedViewModel.setMaxPrice(crop.maxPrice)
+                val cropDetailList = listOf(crop) // Create a list with the single non-null crop detail
+                val buyerBargainFragment = BuyerBargain.newInstance(cropDetailList,crop.maxPrice)
+
+                (activity as? MainActivity)?.supportFragmentManager?.beginTransaction()
+                    ?.replace(R.id.fragment_container, buyerBargainFragment)
+                    ?.addToBackStack(null)
+                    ?.commit()
+
+                dismiss()
+                (activity as? OnNegotiateClickListener)?.onNegotiateClick(crop)
+                dismiss()
+            } ?: run {
+                // Handle the case where cropDetail is null, e.g., show an error message or do nothing
+            }
         }
 
         view.findViewById<Button>(R.id.addtocart).setOnClickListener {
@@ -56,6 +78,8 @@ class CropDataTransferFromBuyer : DialogFragment() {
 
         return view
     }
+
+
 
     companion object {
         fun newInstance(cropDetail: homeFragment.CropDetail): CropDataTransferFromBuyer {
@@ -69,6 +93,5 @@ class CropDataTransferFromBuyer : DialogFragment() {
 
     interface OnNegotiateClickListener {
         fun onNegotiateClick(cropDetail: homeFragment.CropDetail?)
-
     }
 }

@@ -64,6 +64,7 @@ dependencies {
     implementation(libs.play.services.location)
     implementation(libs.androidx.media3.common)
     implementation(libs.androidx.room.ktx)
+    implementation(libs.firebase.database)
     annotationProcessor (libs.compiler)
     implementation (libs.play.services.auth)
     implementation(platform(libs.firebase.bom))

@@ -91,7 +91,7 @@ class UploadNewCrops : Fragment() {
         amountEditText = view.findViewById(R.id.amountEditText)
         saveButton = view.findViewById(R.id.saveButton)
 //        progressBar = view.findViewById(R.id.progressBar)
-fetchMspCrops()
+        fetchMspCrops()
         setupSpinner()
         setupImagePicker()
         setupSaveButton()
@@ -171,7 +171,7 @@ fetchMspCrops()
     }
 
 
-        companion object {
+    companion object {
         /**
          * Use this factory method to create a new instance of
          * this fragment using the provided parameters.
@@ -340,7 +340,9 @@ fetchMspCrops()
     }
 
     private fun createCropData(imageUrl: String): Map<String, Any> {
+        val uniqueCropId = UUID.randomUUID().toString()
         return mapOf(
+            "cropId" to uniqueCropId,
             "cropName" to cropNameEditText.text.toString(),
             "cropType" to cropTypeEditText.text.toString(),
             "growingMethod" to growingMethodSpinner.selectedItem.toString(),
@@ -356,9 +358,11 @@ fetchMspCrops()
     private suspend fun saveCropToFirestore(cropData: Map<String, Any>) =
         withContext(Dispatchers.IO) {
             val email = auth.currentUser?.email ?: throw Exception("User email not found")
+            val cropId = cropData["cropId"] as String
             firestore.collection("SELLERS").document(email)
                 .update("crops", FieldValue.arrayUnion(cropData))
                 .await()
+
         }
     private fun showInfoDialog() {
         val dialogView = LayoutInflater.from(context).inflate(R.layout.info_dialog_box, null)

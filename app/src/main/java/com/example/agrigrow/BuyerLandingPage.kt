@@ -12,7 +12,6 @@ import android.view.View
 import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.ProgressBar
-import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
@@ -21,14 +20,15 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import com.bumptech.glide.Glide
 import com.example.agrigrow.databinding.ActivityLandingPageBinding
+import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.navigation.NavigationView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.getField
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.ktx.storage
@@ -37,7 +37,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
-import java.util.jar.Attributes.Name
 
 class BuyerLandingPage : AppCompatActivity(),CropDataTransferFromBuyer.OnNegotiateClickListener {
     companion object {
@@ -46,7 +45,7 @@ class BuyerLandingPage : AppCompatActivity(),CropDataTransferFromBuyer.OnNegotia
     }
 
     private lateinit var binding: ActivityLandingPageBinding
-
+    lateinit var sharedViewModel: SharedViewModel
     private lateinit var firestore: FirebaseFirestore
     private lateinit var storage: FirebaseStorage
     private lateinit var drawerLayout: DrawerLayout
@@ -62,6 +61,7 @@ class BuyerLandingPage : AppCompatActivity(),CropDataTransferFromBuyer.OnNegotia
         enableEdgeToEdge()
         binding = ActivityLandingPageBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        sharedViewModel = ViewModelProvider(this).get(SharedViewModel::class.java)
         firestore = FirebaseFirestore.getInstance()
         storage = Firebase.storage
         sharedPreferences = getSharedPreferences(SHARED_PREFS_KEY, Context.MODE_PRIVATE)
@@ -188,10 +188,23 @@ class BuyerLandingPage : AppCompatActivity(),CropDataTransferFromBuyer.OnNegotia
             .replace(R.id.frameLayout1, fragment)
             .commit()
     }
+
+
     override fun onNegotiateClick(cropDetail: homeFragment.CropDetail?) {
+        findViewById<BottomNavigationView>(R.id.bottom_navigationView1).selectedItemId = R.id.connect
+
+        cropDetail?.let {
+            sharedViewModel.addCrop(it)
+        }
+
         // Navigate to BuyerBargain fragment
-        binding.bottomNavigationView1.selectedItemId = R.id.connect
+        val buyerBargainFragment = BuyerBargain()
+        supportFragmentManager.beginTransaction()
+            .replace(R.id.frameLayout1, buyerBargainFragment)
+            .addToBackStack(null)
+            .commit()
     }
+
     private fun showFragment(fragment: Fragment): Boolean {
         supportFragmentManager.beginTransaction()
             .replace(R.id.frameLayout1, fragment)
@@ -200,6 +213,7 @@ class BuyerLandingPage : AppCompatActivity(),CropDataTransferFromBuyer.OnNegotia
     }
 
     private fun loadUserData(
+
 
 
         profileImageView: CircleImageView
@@ -351,5 +365,8 @@ class BuyerLandingPage : AppCompatActivity(),CropDataTransferFromBuyer.OnNegotia
     private fun isUserLoggedIn(): Boolean {
         return auth.currentUser != null
     }
+
+
+
 
 }
