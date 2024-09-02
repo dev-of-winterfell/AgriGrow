@@ -47,7 +47,7 @@
         android:shadowDy="2"
         android:shadowRadius="3"
 
-        android:text="Continue"
+        android:text="जारी रखें"
         android:textColor="@color/white"
         android:textStyle="bold"
 

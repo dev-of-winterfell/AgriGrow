@@ -14,7 +14,10 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.bumptech.glide.request.RequestOptions
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -22,17 +25,15 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 
-class CropListAdapter(private val cropList: MutableList<homeFragment.CropDetail>,  private var maxPrice: Float ) :
+class CropListAdapter(private val cropList: MutableList<homeFragment.CropDetail>, private var maxPrice: Float) :
     RecyclerView.Adapter<CropListAdapter.CropViewHolder>() {
 
     private val firestore = FirebaseFirestore.getInstance()
     private val auth = FirebaseAuth.getInstance()
 
-
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CropViewHolder {
         val view = LayoutInflater.from(parent.context)
             .inflate(R.layout.item_crop, parent, false) // Use the correct layout
-
         return CropViewHolder(view)
     }
 
@@ -53,8 +54,8 @@ class CropListAdapter(private val cropList: MutableList<homeFragment.CropDetail>
         private val cropType: TextView = itemView.findViewById(R.id.ropType)
         private val cropPrice: EditText = itemView.findViewById(R.id.ropPrice)
         private val cropImage: ImageView = itemView.findViewById(R.id.ropImage)
-        private val cropAmount:TextView=itemView.findViewById(R.id.ropquantity)
-private val sendNewPrice: Button =itemView.findViewById(R.id.sendnewPRICEtosellerfROMbUYER)
+        private val cropAmount: TextView = itemView.findViewById(R.id.ropquantity)
+        private val sendNewPrice: Button = itemView.findViewById(R.id.sendnewPRICEtosellerfROMbUYER)
         private val addToCart: Button = itemView.findViewById(R.id.addtocart)
 
         fun bind(crop: homeFragment.CropDetail) {
@@ -68,6 +69,12 @@ private val sendNewPrice: Button =itemView.findViewById(R.id.sendnewPRICEtoselle
                 .error(R.drawable.baseline_error_24)
                 .apply(RequestOptions().transform(RoundedCorners(12)))
                 .into(cropImage)
+
+            // Save the crop details to Firestore
+            CoroutineScope(Dispatchers.Main).launch {
+                saveCropDetailsToFirestore(crop)
+            }
+            fetchPriceFromRealtimeDB(crop.cropId)
             sendNewPrice.setOnClickListener {
                 val newPriceString = cropPrice.text.toString().removePrefix("₹")
                 val newPrice = newPriceString.toFloatOrNull() ?: run {
@@ -81,41 +88,53 @@ private val sendNewPrice: Button =itemView.findViewById(R.id.sendnewPRICEtoselle
                     Log.d("CropListAdapter", "New price is valid and less than max price.")
                     CoroutineScope(Dispatchers.Main).launch {
                         updatePriceInRealtimeDB(crop.cropId, newPrice)
+                        cropPrice.setText("₹$newPrice") // Update the price in the EditText
                     }
                 } else {
-                    Log.e(
-                        "CropListAdapter",
-                        "Invalid cropId or newPrice: cropId=${crop.cropId}, newPrice=$newPrice"
-
-                    )
-                    Log.e("CropListAdapter", "New price $newPrice is not valid: it is greater than or equal to max price $maxPrice.")
-                }
+                    Toast.makeText(itemView.context, "Price should be less than the max price", Toast.LENGTH_SHORT).show()
+                    Log.e("CropListAdapter", "New price $newPrice is greater than or equal to max price $maxPrice.")
                 }
             }
+        }
+        private fun fetchPriceFromRealtimeDB(cropId: String) {
+            val databaseReference = FirebaseDatabase.getInstance().getReference("Crops").child(cropId).child("updatedPrice")
+            databaseReference.addListenerForSingleValueEvent(object : ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    val price = snapshot.getValue(Float::class.java) ?: cropList[adapterPosition].maxPrice
+                    cropPrice.setText("₹$price")
+                }
 
+                override fun onCancelled(error: DatabaseError) {
+                    Log.e("CropListAdapter", "Error fetching price from Realtime Database: ${error.message}")
+                    cropPrice.setText("₹${cropList[adapterPosition].maxPrice}")
+                }
+            })
         }
 
-
+        private suspend fun saveCropDetailsToFirestore(crop: homeFragment.CropDetail) = withContext(Dispatchers.IO) {
+            try {
+                val userEmail = auth.currentUser?.email ?: throw Exception("User not authenticated")
+                val userRef = firestore.collection("BUYERS").document(userEmail)
+                val cropRef = userRef.collection("NEGOTIATED_CROPS").document(crop.cropId)
+                cropRef.set(crop).await()
+                Log.d("CropListAdapter", "Crop details saved successfully to Firestore for cropId: ${crop.cropId}")
+            } catch (e: Exception) {
+                Log.e("CropListAdapter", "Error saving crop details to Firestore: ${e.message}")
+            }
+        }
 
         private suspend fun updatePriceInRealtimeDB(cropId: String, newPrice: Float) = withContext(Dispatchers.IO) {
             try {
-                // Compare the new price with the maxPrice passed from DialogFragment
                 if (newPrice <= maxPrice) {
-                    // Update the price in Firebase Realtime Database
                     val realtimeDbRef = FirebaseDatabase.getInstance().getReference("Crops").child(cropId)
                     realtimeDbRef.child("updatedPrice").setValue(newPrice).await()
                     Log.d("Firebase", "Price updated successfully")
                 } else {
                     Log.e("CropListAdapter", "New price $newPrice is greater than the allowed max price $maxPrice for cropId: $cropId")
-                    // Handle case where new price is greater than max price
-                    // Show a message or error to the buyer
                 }
             } catch (e: Exception) {
                 Log.e("CropListAdapter", "Error updating price: ${e.message}")
-                // Handle exceptions
             }
         }
     }
-
-
-
+}

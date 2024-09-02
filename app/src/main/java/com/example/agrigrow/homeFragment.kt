@@ -206,18 +206,18 @@ class homeFragment : Fragment() {
 
     @Parcelize
     data class CropDetail(
-        val cropId: String,
-        val name: String,
-        val type: String,
-        val growingMethod: String,
-        val minPrice: Float,
-        val maxPrice: Float,
-        val state: String,
-        val amount: Int,
-        val imageUrl: String,
-        val ownerName: String,
-
+        val cropId: String = "",
+        val name: String = "",
+        val type: String = "",
+        val growingMethod: String = "",
+        val minPrice: Float = 0f,
+        val maxPrice: Float = 0f,
+        val state: String = "",
+        val amount: Int = 0,
+        val imageUrl: String = "",
+        val ownerName: String = ""
     ) : Parcelable
+
 
     class CropAdapter(private val crops: List<CropDetail>, private val context: Context,  private val onItemClick: (CropDetail) -> Unit) :
         RecyclerView.Adapter<CropAdapter.ViewHolder>() {

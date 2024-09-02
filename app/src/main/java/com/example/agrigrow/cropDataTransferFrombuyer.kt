@@ -5,9 +5,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
-import com.example.agrigrow.SharedViewModel
-
 import android.widget.TextView
+import android.widget.Toast
 import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.ViewModelProvider
 import com.bumptech.glide.Glide
@@ -37,7 +36,7 @@ class CropDataTransferFromBuyer : DialogFragment() {
             view.findViewById<TextView>(R.id.cropName).text = crop.name
             view.findViewById<TextView>(R.id.cropType).text = crop.type
             view.findViewById<TextView>(R.id.growingMethod).text = crop.growingMethod
-            view.findViewById<TextView>(R.id.price).text=("₹${crop.maxPrice}")
+            view.findViewById<TextView>(R.id.price).text = "₹${crop.maxPrice}"
             view.findViewById<TextView>(R.id.state).text = crop.state
             view.findViewById<TextView>(R.id.amount).text = "${crop.amount} क्विंटल"
 
@@ -49,15 +48,15 @@ class CropDataTransferFromBuyer : DialogFragment() {
                 .into(view.findViewById(R.id.cropImage))
         }
 
-
         view.findViewById<Button>(R.id.negotiate).setOnClickListener {
             cropDetail?.let { crop ->
+                storeNegotiationDataInFirestore(crop) // Store the data in Firestore
 
                 val sharedViewModel = ViewModelProvider(requireActivity()).get(SharedViewModel::class.java)
-
                 sharedViewModel.setMaxPrice(crop.maxPrice)
-                val cropDetailList = listOf(crop) // Create a list with the single non-null crop detail
-                val buyerBargainFragment = BuyerBargain.newInstance(cropDetailList,crop.maxPrice)
+
+                val cropDetailList = listOf(crop)
+                val buyerBargainFragment = BuyerBargain.newInstance(cropDetailList, crop.maxPrice)
 
                 (activity as? MainActivity)?.supportFragmentManager?.beginTransaction()
                     ?.replace(R.id.fragment_container, buyerBargainFragment)
@@ -68,7 +67,7 @@ class CropDataTransferFromBuyer : DialogFragment() {
                 (activity as? OnNegotiateClickListener)?.onNegotiateClick(crop)
                 dismiss()
             } ?: run {
-                // Handle the case where cropDetail is null, e.g., show an error message or do nothing
+                // Handle the case where cropDetail is null
             }
         }
 
@@ -77,6 +76,35 @@ class CropDataTransferFromBuyer : DialogFragment() {
         }
 
         return view
+    }
+
+    private fun storeNegotiationDataInFirestore(crop: homeFragment.CropDetail) {
+        val currentUser = auth.currentUser
+        currentUser?.let { user ->
+            val buyerDocRef = firestore.collection("BUYERS").document(user.uid)
+            val cropData = hashMapOf(
+                "cropId" to crop.cropId,
+                "name" to crop.name,
+                "type" to crop.type,
+                "growingMethod" to crop.growingMethod,
+                "state" to crop.state,
+                "amount" to crop.amount,
+                "imageUrl" to crop.imageUrl,
+                "negotiatedPrice" to crop.maxPrice // or some other price field if different
+            )
+
+            buyerDocRef.collection("Negotiations").add(cropData)
+                .addOnSuccessListener {
+                    if (isAdded) {
+                        Toast.makeText(context, "Negotiation data saved", Toast.LENGTH_SHORT).show()
+                    }
+                }
+                .addOnFailureListener { e ->
+                    if (isAdded) {
+                        Toast.makeText(context, "Failed to save negotiation data: ${e.message}", Toast.LENGTH_SHORT).show()
+                    }
+                }
+        }
     }
 
 

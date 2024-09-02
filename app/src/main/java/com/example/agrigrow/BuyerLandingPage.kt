@@ -197,7 +197,7 @@ class BuyerLandingPage : AppCompatActivity(),CropDataTransferFromBuyer.OnNegotia
             sharedViewModel.addCrop(it)
         }
 
-        // Navigate to BuyerBargain fragment
+        // Navigate to com.example.agrigrow.BuyerBargain fragment
         val buyerBargainFragment = BuyerBargain()
         supportFragmentManager.beginTransaction()
             .replace(R.id.frameLayout1, buyerBargainFragment)

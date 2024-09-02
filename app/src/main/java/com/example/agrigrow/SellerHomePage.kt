@@ -171,7 +171,7 @@ val layout=view.findViewById<LinearLayout>(R.id.linearLayout2)
             holder.growingMethod.text = crop.growingMethod
             holder.price.text = "₹${crop.minPrice} - ₹${crop.maxPrice}"
             holder.state.text = crop.state
-            holder.amount.text = "${crop.amount} Quintal"
+            holder.amount.text = "${crop.amount} क्विंटल"
 
             // Use Glide to load and display the crop image
             Glide.with(holder.itemView.context)
