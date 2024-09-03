@@ -43,7 +43,7 @@
     </LinearLayout>
 
     <FrameLayout
-        android:id="@+id/fragment_container"
+        android:id="@+id/fragment_container1"
         android:layout_width="380dp"
         android:layout_height="658dp"
         android:layout_alignParentBottom="true"

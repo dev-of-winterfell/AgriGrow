@@ -79,17 +79,19 @@ class homeFragment : Fragment() {
         return view
     }
     private fun navigateToCropDetail(cropDetail: CropDetail) {
-        val cropOptionsDialog = CropDataTransferFromBuyer.newInstance(cropDetail)
+        val cropOptionsDialog = CropDataTransferFromBuyer.newInstance(cropDetail, cropDetail.maxPrice)
         cropOptionsDialog.show(parentFragmentManager, "crop_options_dialog")
         sharedViewModel.setMaxPrice(cropDetail.maxPrice)
-        val cropList = listOf(cropDetail) // Wrap the single CropDetail in a list
-        val buyerBargainFragment = BuyerBargain.newInstance(cropList, cropDetail.maxPrice)
+
+        // Creating an instance of BuyerBargain with the selected crop and its maxPrice
+        val buyerBargainFragment = BuyerBargain.newInstance(cropDetail.cropId, cropDetail.maxPrice)
 
         requireActivity().supportFragmentManager.beginTransaction()
             .replace(R.id.frameLayout1, buyerBargainFragment)
             .addToBackStack(null)
             .commit()
     }
+
 
     private fun fetchSellerDetails() {
         firestore.collection("SELLERS")
@@ -215,7 +217,8 @@ class homeFragment : Fragment() {
         val state: String = "",
         val amount: Int = 0,
         val imageUrl: String = "",
-        val ownerName: String = ""
+        val ownerName: String = "",
+        val sellerUUId:String=""
     ) : Parcelable
 
 
@@ -249,6 +252,7 @@ class homeFragment : Fragment() {
             holder.price.text = "₹${crop.maxPrice}"
             holder.state.text = crop.state
             holder.amount.text = "${crop.amount} क्विंटल"
+
 
             Glide.with(holder.itemView.context)
                 .load(crop.imageUrl)

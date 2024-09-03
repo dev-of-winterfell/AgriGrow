@@ -93,12 +93,13 @@ class BuyerBargain : Fragment() {
     }
     private suspend fun fetchCropDetailsFromFirestore(): List<homeFragment.CropDetail> = withContext(Dispatchers.IO) {
         try {
-            val userEmail = auth.currentUser?.email ?: throw Exception("User not authenticated")
+            val userId = auth.currentUser?.email ?: throw Exception("User not authenticated")
             val cropsList = mutableListOf<homeFragment.CropDetail>()
 
             // Reference to the NegotiatedCrops subcollection for the current user
-            val cropsRef =
-                firestore.collection("BUYERS").document(userEmail).collection("NEGOTIATED_CROPS")
+            val cropsRef = firestore.collection("BUYERS")
+                .document(userId)
+                .collection("NEGOTIATED_CROPS")
 
             // Fetch all crop documents
             val snapshot = cropsRef.get().await()
@@ -106,20 +107,26 @@ class BuyerBargain : Fragment() {
                 val crop = document.toObject(homeFragment.CropDetail::class.java)
                 crop?.let { cropsList.add(it) }
             }
-            cropsList
+            cropsList // Return the list of crops fetched from Firestore
         } catch (e: Exception) {
             Log.e("com.example.agrigrow.BuyerBargain", "Error fetching negotiated crops from Firestore: ${e.message}")
             emptyList() // Return an empty list in case of error
         }
     }
 
+
     companion object {
-        fun newInstance(cropList: List<homeFragment.CropDetail>, maxPrice: Float): BuyerBargain {
-            return BuyerBargain().apply {
-                arguments = Bundle().apply {
-                    putParcelableArrayList("CROP_LIST", ArrayList(cropList))
-                }
-            }
+        private const val ARG_CROP_ID = "crop_id"
+        private const val ARG_MAX_PRICE = "max_price"
+
+        fun newInstance(cropId: String, maxPrice: Float): BuyerBargain {
+            val fragment = BuyerBargain()
+            val args = Bundle()
+            args.putString(ARG_CROP_ID, cropId)
+            args.putFloat(ARG_MAX_PRICE, maxPrice)
+            fragment.arguments = args
+            return fragment
         }
     }
+
 }

@@ -28,12 +28,11 @@ import kotlinx.coroutines.withContext
 class CropListAdapter(private val cropList: MutableList<homeFragment.CropDetail>, private var maxPrice: Float) :
     RecyclerView.Adapter<CropListAdapter.CropViewHolder>() {
 
-    private val firestore = FirebaseFirestore.getInstance()
     private val auth = FirebaseAuth.getInstance()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CropViewHolder {
         val view = LayoutInflater.from(parent.context)
-            .inflate(R.layout.item_crop, parent, false) // Use the correct layout
+            .inflate(R.layout.item_crop, parent, false)
         return CropViewHolder(view)
     }
 
@@ -46,7 +45,7 @@ class CropListAdapter(private val cropList: MutableList<homeFragment.CropDetail>
 
     fun setMaxPrice(price: Float) {
         maxPrice = price
-        notifyDataSetChanged() // Refresh the RecyclerView
+        notifyDataSetChanged()
     }
 
     inner class CropViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -70,11 +69,8 @@ class CropListAdapter(private val cropList: MutableList<homeFragment.CropDetail>
                 .apply(RequestOptions().transform(RoundedCorners(12)))
                 .into(cropImage)
 
-            // Save the crop details to Firestore
-            CoroutineScope(Dispatchers.Main).launch {
-                saveCropDetailsToFirestore(crop)
-            }
             fetchPriceFromRealtimeDB(crop.cropId)
+
             sendNewPrice.setOnClickListener {
                 val newPriceString = cropPrice.text.toString().removePrefix("₹")
                 val newPrice = newPriceString.toFloatOrNull() ?: run {
@@ -84,18 +80,26 @@ class CropListAdapter(private val cropList: MutableList<homeFragment.CropDetail>
                     return@setOnClickListener
                 }
 
-                if (newPrice < maxPrice) {
-                    Log.d("CropListAdapter", "New price is valid and less than max price.")
-                    CoroutineScope(Dispatchers.Main).launch {
+                CoroutineScope(Dispatchers.Main).launch {
+                    val mspPrice = fetchMSPPrice(crop.name)
+                    if (newPrice < mspPrice) {
+                        Toast.makeText(itemView.context, "Price cannot be lower than MSP ₹$mspPrice", Toast.LENGTH_SHORT).show()
+                        sendNewPrice.isEnabled = false
+                        sendNewPrice.setBackgroundColor(itemView.context.getColor(R.color.translucent))
+                    } else if (newPrice < maxPrice) {
+                        Log.d("CropListAdapter", "New price is valid and less than max price.")
                         updatePriceInRealtimeDB(crop.cropId, newPrice)
                         cropPrice.setText("₹$newPrice") // Update the price in the EditText
+                        sendNewPrice.isEnabled = true
+                        sendNewPrice.setBackgroundColor(itemView.context.getColor(R.color.olive))
+                    } else {
+                        Toast.makeText(itemView.context, "Price should be less than the max price", Toast.LENGTH_SHORT).show()
+                        Log.e("CropListAdapter", "New price $newPrice is greater than or equal to max price $maxPrice.")
                     }
-                } else {
-                    Toast.makeText(itemView.context, "Price should be less than the max price", Toast.LENGTH_SHORT).show()
-                    Log.e("CropListAdapter", "New price $newPrice is greater than or equal to max price $maxPrice.")
                 }
             }
         }
+
         private fun fetchPriceFromRealtimeDB(cropId: String) {
             val databaseReference = FirebaseDatabase.getInstance().getReference("Crops").child(cropId).child("updatedPrice")
             databaseReference.addListenerForSingleValueEvent(object : ValueEventListener {
@@ -111,17 +115,6 @@ class CropListAdapter(private val cropList: MutableList<homeFragment.CropDetail>
             })
         }
 
-        private suspend fun saveCropDetailsToFirestore(crop: homeFragment.CropDetail) = withContext(Dispatchers.IO) {
-            try {
-                val userEmail = auth.currentUser?.email ?: throw Exception("User not authenticated")
-                val userRef = firestore.collection("BUYERS").document(userEmail)
-                val cropRef = userRef.collection("NEGOTIATED_CROPS").document(crop.cropId)
-                cropRef.set(crop).await()
-                Log.d("CropListAdapter", "Crop details saved successfully to Firestore for cropId: ${crop.cropId}")
-            } catch (e: Exception) {
-                Log.e("CropListAdapter", "Error saving crop details to Firestore: ${e.message}")
-            }
-        }
 
         private suspend fun updatePriceInRealtimeDB(cropId: String, newPrice: Float) = withContext(Dispatchers.IO) {
             try {
@@ -134,6 +127,17 @@ class CropListAdapter(private val cropList: MutableList<homeFragment.CropDetail>
                 }
             } catch (e: Exception) {
                 Log.e("CropListAdapter", "Error updating price: ${e.message}")
+            }
+        }
+
+        private suspend fun fetchMSPPrice(cropName: String): Float = withContext(Dispatchers.IO) {
+            try {
+                val mspRef = FirebaseFirestore.getInstance().collection("MSP_CROPS").document(cropName)
+                val snapshot = mspRef.get().await()
+                snapshot.getDouble("CROP_PRICE")?.toFloat() ?: 0f
+            } catch (e: Exception) {
+                Log.e("CropListAdapter", "Error fetching MSP price: ${e.message}")
+                0f
             }
         }
     }

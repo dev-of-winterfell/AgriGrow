@@ -38,6 +38,8 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 
+
+
 class BuyerLandingPage : AppCompatActivity(),CropDataTransferFromBuyer.OnNegotiateClickListener {
     companion object {
         private const val PROFILE_IMAGE_URI_KEY = "ProfileImageUri"
@@ -189,15 +191,13 @@ class BuyerLandingPage : AppCompatActivity(),CropDataTransferFromBuyer.OnNegotia
             .commit()
     }
 
-
-    override fun onNegotiateClick(cropDetail: homeFragment.CropDetail?) {
+    override fun onNegotiateClick(crop: homeFragment.CropDetail) {
         findViewById<BottomNavigationView>(R.id.bottom_navigationView1).selectedItemId = R.id.connect
 
-        cropDetail?.let {
+        crop.let {
             sharedViewModel.addCrop(it)
         }
 
-        // Navigate to com.example.agrigrow.BuyerBargain fragment
         val buyerBargainFragment = BuyerBargain()
         supportFragmentManager.beginTransaction()
             .replace(R.id.frameLayout1, buyerBargainFragment)
@@ -365,8 +365,6 @@ class BuyerLandingPage : AppCompatActivity(),CropDataTransferFromBuyer.OnNegotia
     private fun isUserLoggedIn(): Boolean {
         return auth.currentUser != null
     }
-
-
 
 
 }
