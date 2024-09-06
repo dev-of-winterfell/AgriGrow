@@ -2,6 +2,8 @@ package com.example.agrigrow
 
 import android.content.ContentValues.TAG
 import android.provider.ContactsContract.CommonDataKinds.Email
+import android.text.Editable
+import android.text.TextWatcher
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -61,9 +63,9 @@ class CropListAdapterForSeller(private var cropList: MutableList<homeFragment.Cr
         private val sendNewPrice: Button = itemView.findViewById(R.id.sendnewPRICEtoseller)
         private val acceptbtn: Button = itemView.findViewById(R.id.acceptbtn)
         private val buyerName: TextView = itemView.findViewById(R.id.BuyerName)
+        private var mspPrice: Float = 0f
 
         fun bind(crop: homeFragment.CropDetail) {
-
             cropName.text = crop.cropName
             cropType.text = crop.cropType
             cropAmount.text = "${crop.amount} क्विंटल"
@@ -76,30 +78,70 @@ class CropListAdapterForSeller(private var cropList: MutableList<homeFragment.Cr
                 .into(cropImage)
 
             CoroutineScope(Dispatchers.Main).launch {
+                mspPrice = getCropPriceFromFirestore(crop.cropName)
+              // Set the initial MSP value
+            }
+
+            CoroutineScope(Dispatchers.Main).launch {
                 fetchNegotiationData(crop)
             }
+
+            cropPrice.addTextChangedListener(object : TextWatcher {
+                override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+                override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                    val newPriceString = s.toString().removePrefix("₹")
+                    val newPrice = newPriceString.toFloatOrNull()
+                    if (newPrice != null && newPrice < mspPrice) {
+                        sendNewPrice.isEnabled = false
+                        acceptbtn.isEnabled = false
+                        cropPrice.error = "कीमत ₹$mspPrice से कम नहीं हो सकती"
+                    } else {
+                        sendNewPrice.isEnabled = true
+                        acceptbtn.isEnabled = true
+                        cropPrice.error = null
+                    }
+                }
+                override fun afterTextChanged(s: Editable?) {}
+            })
 
             sendNewPrice.setOnClickListener {
                 val newPriceString = cropPrice.text.toString().removePrefix("₹")
                 val newPrice = newPriceString.toFloatOrNull()
                 if (newPrice == null) {
-                    Toast.makeText(itemView.context, "Invalid price entered", Toast.LENGTH_SHORT)
-                        .show()
+                    Toast.makeText(itemView.context, "Invalid price entered", Toast.LENGTH_SHORT).show()
+                    return@setOnClickListener
+                }
+
+                if (newPrice < mspPrice) {
+                    //Toast.makeText(itemView.context, "Price cannot be less than MSP", Toast.LENGTH_SHORT).show()
                     return@setOnClickListener
                 }
 
                 CoroutineScope(Dispatchers.Main).launch {
                     updatePriceInDatabase(crop, newPrice)
+                   // Toast.makeText(itemView.context, "Price sent to buyer", Toast.LENGTH_SHORT).show()
                 }
             }
+        }
 
+        private suspend fun getCropPriceFromFirestore(cropName: String): Float = withContext(Dispatchers.IO) {
+            return@withContext try {
+                val querySnapshot = firestore.collection("MSP_CROPS")
+                    .whereEqualTo("CROP_NAME", cropName)
+                    .get()
+                    .await()
 
-//            acceptbtn.setOnClickListener {
-//                CoroutineScope(Dispatchers.Main).launch {
-//                    sendNotificationToBuyer(crop,crop.maxPrice)
-//                }
-//            }
-
+                if (querySnapshot.documents.isNotEmpty()) {
+                    val document = querySnapshot.documents[0]
+                    document.getDouble("CROP_PRICE")?.toFloat() ?: 0f
+                } else {
+                    Log.d("CropListAdapter", "No document found for cropName: $cropName")
+                    0f
+                }
+            } catch (e: Exception) {
+                Log.e("CropListAdapter", "Error fetching MSP price: ${e.message}")
+                0f
+            }
         }
 
         private suspend fun sendNotificationToBuyer(crop: homeFragment.CropDetail, newPrice: Float) {
@@ -107,7 +149,6 @@ class CropListAdapterForSeller(private var cropList: MutableList<homeFragment.Cr
             val notificationsRef = database.getReference("Notifications")
             val newNotificationRef = notificationsRef.push()
 
-            // Create a notification object
             val notification = mapOf(
                 "type" to "price_update",
                 "cropId" to crop.cropId,
@@ -127,10 +168,11 @@ class CropListAdapterForSeller(private var cropList: MutableList<homeFragment.Cr
         private suspend fun fetchNegotiationData(crop: homeFragment.CropDetail) {
             try {
                 val sellerUUID = fetchSellerUUID() ?: return
-                val negotiationsRef =
-                    database.getReference("Negotiations").child(sellerUUID).child(crop.cropId)
+                val negotiationsRef = database.getReference("Negotiations")
+                    .child(sellerUUID).child(crop.cropId)
 
-                negotiationsRef.addListenerForSingleValueEvent(object : ValueEventListener {
+                // Attach a ValueEventListener to listen for real-time changes
+                negotiationsRef.addValueEventListener(object : ValueEventListener {
                     override fun onDataChange(snapshot: DataSnapshot) {
                         try {
                             for (buyerSnapshot in snapshot.children) {
@@ -141,22 +183,16 @@ class CropListAdapterForSeller(private var cropList: MutableList<homeFragment.Cr
                                 if (buyerUUID != null && negotiatedPrice != null) {
                                     cropPrice.setText("₹$negotiatedPrice")
                                     fetchBuyerNameFromFirestore(buyerUUID)
-                                    break  // Assuming we're dealing with one buyer at a time
+                                    break
                                 }
                             }
                         } catch (e: Exception) {
-                            Log.e(
-                                "fetchNegotiationData",
-                                "Error processing negotiation data: ${e.message}"
-                            )
+                            Log.e("fetchNegotiationData", "Error processing negotiation data: ${e.message}")
                         }
                     }
 
                     override fun onCancelled(error: DatabaseError) {
-                        Log.e(
-                            "fetchNegotiationData",
-                            "Error fetching negotiation data: ${error.message}"
-                        )
+                        Log.e("fetchNegotiationData", "Error fetching negotiation data: ${error.message}")
                     }
                 })
             } catch (e: Exception) {
@@ -175,23 +211,17 @@ class CropListAdapterForSeller(private var cropList: MutableList<homeFragment.Cr
                     if (!querySnapshot.isEmpty) {
                         val document = querySnapshot.documents[0]
                         val name = document.getString("Name")
-                        val email = document.id  // The document ID is the email
-                        Log.d(
-                            TAG,
-                            "fetchBuyerNameFromFirestore: Retrieved name for buyer $buyerUUID: $name, Email: $email"
-                        )
+                        val email = document.id
+                        Log.d(TAG, "fetchBuyerNameFromFirestore: Retrieved name for buyer $buyerUUID: $name, Email: $email")
                         buyerName.text = name ?: "Unknown Buyer"
                     } else {
-                        Log.w(
-                            TAG,
-                            "fetchBuyerNameFromFirestore: No document found for buyer UUID: $buyerUUID"
-                        )
+                        Log.w(TAG, "fetchBuyerNameFromFirestore: No document found for buyer UUID: $buyerUUID")
                         buyerName.text = "Unknown Buyer"
                     }
                 }
                 .addOnFailureListener { e ->
                     Log.e(TAG, "Error fetching buyer name for UUID $buyerUUID: ${e.message}", e)
-                    buyerName.text = "Error Fetching Name"
+                    buyerName.text = "नाम प्राप्त करने में त्रुटि"
                 }
         }
 
@@ -206,14 +236,11 @@ class CropListAdapterForSeller(private var cropList: MutableList<homeFragment.Cr
                 if (!sellerDoc.isEmpty) {
                     return@withContext sellerDoc.documents[0].getString("uuid")
                 } else {
-                    Log.e(
-                        "CropListAdapterForSeller",
-                        "Seller document not found for email: $currentUserEmail"
-                    )
+                    Log.e("CropListAdapterForSeller", "Seller document not found for email: $currentUserEmail")
                     return@withContext null
                 }
             } catch (e: Exception) {
-                Log.e("CropListAdapterForSeller", "Error fetching seller UUID: ", e)
+                Log.e("CropListAdapterForSeller", "Error fetching seller UUID: ${e.message}")
                 return@withContext null
             }
         }
@@ -269,7 +296,7 @@ class CropListAdapterForSeller(private var cropList: MutableList<homeFragment.Cr
                     withContext(Dispatchers.Main) {
                         Toast.makeText(
                             itemView.context,
-                            "Price updated successfully",
+                            "खरीदार को नई कीमत भेज दी गई है",
                             Toast.LENGTH_SHORT
                         ).show()
                     }

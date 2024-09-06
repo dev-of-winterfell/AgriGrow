@@ -92,18 +92,18 @@ val sellerName=view.findViewById<TextView>(R.id.tv)
                                 }
                             }
                         }
-                        val uniqueCropList = newCropList.distinctBy { it.cropId }
-                        withContext(Dispatchers.Main) {
-                            cropAdapter.updateCrops(uniqueCropList)
-                            Log.d("SellerBargain", "Updated crop list and notified adapter")
-                        }
 
 //                        withContext(Dispatchers.Main) {
-//                            cropList.clear()
-//                            cropList.addAll(newCropList)
-//                            cropAdapter.notifyDataSetChanged()
+//                            cropAdapter.updateCrops(newCropList)
 //                            Log.d("SellerBargain", "Updated crop list and notified adapter")
 //                        }
+
+                        withContext(Dispatchers.Main) {
+                            cropList.clear()
+                            cropList.addAll(newCropList)
+                            cropAdapter.notifyDataSetChanged()
+                            Log.d("SellerBargain", "Updated crop list and notified adapter")
+                        }
                     }
                 }
 

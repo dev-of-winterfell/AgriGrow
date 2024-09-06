@@ -1,5 +1,8 @@
 package com.example.agrigrow
 
+import android.content.ContentValues.TAG
+import android.text.Editable
+import android.text.TextWatcher
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -54,6 +57,8 @@ class CropListAdapter(private val cropList: MutableList<homeFragment.CropDetail>
         private val sendNewPrice: Button = itemView.findViewById(R.id.sendnewPRICEtosellerfROMbUYER)
         private val addToCart: Button = itemView.findViewById(R.id.addtocart)
 
+        private var mspPrice: Float = 0f
+
         fun bind(crop: homeFragment.CropDetail) {
             cropName.text = crop.cropName
             cropType.text = crop.cropType
@@ -66,27 +71,74 @@ class CropListAdapter(private val cropList: MutableList<homeFragment.CropDetail>
                 .apply(RequestOptions().transform(RoundedCorners(12)))
                 .into(cropImage)
 
-            // Fetch buyer UID from Firestore and update the price
+            // Fetch the CROP_PRICE from Firestore
+            CoroutineScope(Dispatchers.Main).launch {
+                mspPrice = getCropPriceFromFirestore(crop.cropName)
+            }
+
+            // Fetch buyer UID and set up listeners
             fetchBuyerUid { buyerUid ->
                 if (buyerUid != null) {
                     fetchNegotiatedPrice(crop.sellerUUId, buyerUid, crop.cropId)
+                    // Fetch seller's name
+
+
+                    // Set up TextWatcher to handle price changes
+                    cropPrice.addTextChangedListener(object : TextWatcher {
+                        override fun beforeTextChanged(
+                            s: CharSequence?,
+                            start: Int,
+                            count: Int,
+                            after: Int
+                        ) {
+                        }
+
+                        override fun onTextChanged(
+                            s: CharSequence?,
+                            start: Int,
+                            before: Int,
+                            count: Int
+                        ) {
+                            val newPriceString = s.toString().removePrefix("₹")
+                            val newPrice = newPriceString.toFloatOrNull() ?: return
+
+                            if (newPrice < mspPrice) {
+                                sendNewPrice.isEnabled = false
+                                addToCart.isEnabled = false
+                                cropPrice.error = "कीमत एम.एस.पी. से कम नहीं हो सकती"
+                            } else {
+                                sendNewPrice.isEnabled = true
+                                addToCart.isEnabled = true
+                                cropPrice.error = null
+                            }
+                        }
+
+                        override fun afterTextChanged(s: Editable?) {}
+                    })
 
                     // Set listener to update the price
                     sendNewPrice.setOnClickListener {
+
                         val newPriceString = cropPrice.text.toString().removePrefix("₹")
                         val newPrice = newPriceString.toFloatOrNull() ?: run {
-                            Toast.makeText(itemView.context, "Invalid price entered", Toast.LENGTH_SHORT)
+                            Toast.makeText(itemView.context, "अमान्य मूल्य दर्ज किया गया", Toast.LENGTH_SHORT)
                                 .show()
                             return@setOnClickListener
                         }
 
                         CoroutineScope(Dispatchers.Main).launch {
                             updateMutualPriceInRealtimeDB(crop.sellerUUId, buyerUid, crop.cropId, newPrice)
+                            Toast.makeText(
+                                itemView.context,
+                                "विक्रेता को नई कीमत भेज दी गई है",
+                                Toast.LENGTH_SHORT
+                            ).show()
                         }
                     }
                 }
             }
         }
+
 
         private fun fetchBuyerUid(callback: (String?) -> Unit) {
             val email = auth.currentUser?.email
@@ -118,21 +170,50 @@ class CropListAdapter(private val cropList: MutableList<homeFragment.CropDetail>
             val negotiationRef = database.getReference("Negotiations")
                 .child(sellerUUID).child(cropId).child(buyerUUID)
 
-            negotiationRef.child("negotiatedPrice").addListenerForSingleValueEvent(object : ValueEventListener {
+            // Attach a ValueEventListener to listen for real-time changes
+            negotiationRef.child("negotiatedPrice").addValueEventListener(object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
-                    val price = snapshot.getValue(Float::class.java)
-                    if (price != null) {
-                        cropPrice.setText("₹$price")
-                    } else {
-                        cropPrice.setText("₹${cropList[adapterPosition].maxPrice}") // Fallback to max price
+                    try {
+                        val price = snapshot.getValue(Float::class.java)
+                        if (price != null) {
+                            cropPrice.setText("₹$price")
+                        } else {
+                            cropPrice.setText("₹${cropList[adapterPosition].maxPrice}") // Fallback to max price
+                        }
+                    } catch (e: Exception) {
+                        Log.e("fetchNegotiatedPrice", "Error processing negotiation data: ${e.message}")
                     }
                 }
 
                 override fun onCancelled(error: DatabaseError) {
-                    Log.e("CropListAdapter", "Error fetching negotiated price: ${error.message}")
+                    Log.e("fetchNegotiatedPrice", "Error fetching negotiated price: ${error.message}")
                 }
             })
         }
+
+
+        private suspend fun getCropPriceFromFirestore(cropName: String): Float = withContext(Dispatchers.IO) {
+            return@withContext try {
+                // Query the Firestore collection for a document where the crop name matches
+                val querySnapshot = db.collection("MSP_CROPS")
+                    .whereEqualTo("CROP_NAME", cropName)
+                    .get()
+                    .await()
+
+                if (querySnapshot.documents.isNotEmpty()) {
+                    // Assuming only one document will match the cropName
+                    val document = querySnapshot.documents[0]
+                    document.getDouble("CROP_PRICE")?.toFloat() ?: 0f
+                } else {
+                    Log.d("CropListAdapter", "No document found for cropName: $cropName")
+                    0f
+                }
+            } catch (e: Exception) {
+                Log.e("CropListAdapter", "Error fetching MSP price: ${e.message}")
+                0f
+            }
+        }
+
 
         private suspend fun updateMutualPriceInRealtimeDB(
             sellerUUID: String,
@@ -159,4 +240,5 @@ class CropListAdapter(private val cropList: MutableList<homeFragment.CropDetail>
             }
         }
     }
+
 }
