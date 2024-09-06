@@ -51,11 +51,12 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.289" />
 
+
     <TextView
         android:id="@+id/textView3"
         android:layout_width="298dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="20sp"
         android:fontFamily="sans-serif"
         android:text="फसलों को बेचना और खरीदना आसान और सुविधाजनक"
         android:textAlignment="center"
@@ -64,18 +65,17 @@
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.422"
-        app:layout_constraintStart_toStartOf="@+id/textView2"
+        app:layout_constraintHorizontal_bias="0.495"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/imageView8"
-        app:layout_constraintVertical_bias="0.006" />
-
+        app:layout_constraintVertical_bias="0.0" />
 
     <TextView
         android:id="@+id/textView4"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="100dp"
-        android:text="@string/sign_in_with"
+        android:text="या\nगूगल की मदद से साइन अप करें "
         android:textAlignment="center"
         android:textColor="@color/translucent1"
         android:textSize="14dp"
@@ -90,13 +90,13 @@
         android:id="@+id/button3"
         :layout_constraintVertical_bias="0.0"
         android:layout_width="300dp"
+        android:layout_height="54dp"
+        android:layout_marginTop="20dp"
+        android:backgroundTint="#386641"
         android:shadowColor="#80000000"
         android:shadowDx="2"
         android:shadowDy="2"
         android:shadowRadius="3"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:backgroundTint="#386641"
         android:text="फ़ोन के साथ जारी रखें"
         android:textAlignment="center"
 
@@ -104,23 +104,24 @@
         android:textStyle="bold"
         app:layout_constraintBottom_toTopOf="@+id/textView4"
         app:layout_constraintEnd_toEndOf="@+id/googlebutton2"
+        app:layout_constraintHorizontal_bias="0.503"
         app:layout_constraintStart_toStartOf="@+id/googlebutton2"
         app:layout_constraintTop_toBottomOf="@+id/textView"
         app:layout_constraintVertical_bias="0.0" />
 
-        <Button
+    <Button
         android:id="@+id/googlebutton2"
         android:layout_width="153dp"
-        android:layout_height="46dp"
+        android:layout_height="54dp"
         android:layout_marginTop="20dp"
         android:backgroundTint="@color/lightslate"
+        android:shadowColor="#80000000"
+        android:shadowDx="2"
+        android:shadowDy="2"
+        android:shadowRadius="3"
         android:text="      Google"
         android:textAlignment="center"
         android:textColor="@color/white1"
-            android:shadowColor="#80000000"
-            android:shadowDx="2"
-            android:shadowDy="2"
-            android:shadowRadius="3"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="@+id/textView3"
@@ -132,13 +133,13 @@
     <ImageView
         android:id="@+id/imageView12"
         android:layout_width="44dp"
-        android:layout_height="47dp"
+        android:layout_height="54dp"
         app:layout_constraintBottom_toBottomOf="@+id/googlebutton2"
         app:layout_constraintEnd_toEndOf="@+id/googlebutton2"
-        app:layout_constraintHorizontal_bias="0.13"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="@+id/googlebutton2"
         app:layout_constraintTop_toTopOf="@+id/googlebutton2"
-        app:layout_constraintVertical_bias="1.0"
+        app:layout_constraintVertical_bias="0.0"
         app:srcCompat="@drawable/google_foreground" />
 
     <TextView
@@ -194,6 +195,40 @@ android:textSize="14dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView3"
+        app:layout_constraintVertical_bias="0.0" />
+
+    <ProgressBar
+        android:id="@+id/progressBar8"
+        style="?android:attr/progressBarStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="54dp"
+        android:indeterminate="false"
+        android:indeterminateTint="#A7C957"
+        android:max="100"
+        android:progress="0"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@+id/button3"
+        app:layout_constraintEnd_toEndOf="@+id/button3"
+        app:layout_constraintHorizontal_bias="0.007"
+        app:layout_constraintStart_toStartOf="@+id/button3"
+        app:layout_constraintTop_toTopOf="@+id/button3"
+        app:layout_constraintVertical_bias="0.0" />
+
+    <ProgressBar
+        android:id="@+id/progressBar9"
+        style="?android:attr/progressBarStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="54dp"
+        android:indeterminate="false"
+        android:indeterminateTint="#A7C957"
+        android:max="100"
+        android:progress="0"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@+id/googlebutton2"
+        app:layout_constraintEnd_toEndOf="@+id/googlebutton2"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="@+id/googlebutton2"
+        app:layout_constraintTop_toTopOf="@+id/googlebutton2"
         app:layout_constraintVertical_bias="0.0" />
 
 

@@ -48,7 +48,10 @@ class ItemsSharedDialogFragment : BottomSheetDialogFragment() {
         super.onViewCreated(view, savedInstanceState)
         dialog?.setOnShowListener { dialogInterface ->
             val bottomSheetDialog = dialogInterface as BottomSheetDialog
-            val bottomSheet = bottomSheetDialog.findViewById<View>(com.google.android.material.R.id.design_bottom_sheet)
+            val bottomSheet = bottomSheetDialog.findViewById<View>(requireView().context.resources.getIdentifier(
+
+                "design_bottom_sheet", "id", requireView().context.packageName
+            ))
             bottomSheet?.let {
                 val behavior = BottomSheetBehavior.from(it)
                 it.layoutParams.height = convertDpToPx(450)
@@ -65,10 +68,12 @@ class ItemsSharedDialogFragment : BottomSheetDialogFragment() {
         val phoneNumberEditText = view.findViewById<EditText>(R.id.editTextPhone)
 
         sendOTPbtn.setOnClickListener {
+            progressBar.visibility = View.VISIBLE
             val phoneNumber = phoneNumberEditText.text.toString().trim()
             if (phoneNumber.isNotEmpty()) {
                 val attemptCount = getAttemptCount(phoneNumber)
                 if (attemptCount < MAX_OTP_ATTEMPTS) {
+
                     startPhoneNumberVerification("+91$phoneNumber")
                 } else {
                     showToast("You have exceeded the maximum number of attempts for this number. Try again later.")

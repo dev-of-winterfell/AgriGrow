@@ -24,6 +24,9 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import com.bumptech.glide.Glide
 import com.example.agrigrow.databinding.ActivityLandingPageBinding
+import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.android.gms.auth.api.signin.GoogleSignInClient
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.navigation.NavigationView
 import com.google.firebase.auth.FirebaseAuth
@@ -40,12 +43,12 @@ import kotlinx.coroutines.withContext
 
 
 
-class BuyerLandingPage : AppCompatActivity(),CropDataTransferFromBuyer.OnNegotiateClickListener {
+class BuyerLandingPage : AppCompatActivity() {
     companion object {
         private const val PROFILE_IMAGE_URI_KEY = "ProfileImageUri"
         private const val SHARED_PREFS_KEY = "GradxPrefs"
     }
-
+    private lateinit var googleSignInClient: GoogleSignInClient
     private lateinit var binding: ActivityLandingPageBinding
     lateinit var sharedViewModel: SharedViewModel
     private lateinit var firestore: FirebaseFirestore
@@ -72,7 +75,11 @@ class BuyerLandingPage : AppCompatActivity(),CropDataTransferFromBuyer.OnNegotia
         val profileImageView = headerView.findViewById<CircleImageView>(R.id.profilepic)
 //        val nameTextView = headerView.findViewById<TextView>(R.id.name)
 //        val emailTextView = headerView.findViewById<TextView>(R.id.email)
+        val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+            .requestEmail()
+            .build()
 
+        googleSignInClient = GoogleSignIn.getClient(this, gso)
         sharedPreferences = getSharedPreferences("GradxPrefs", Context.MODE_PRIVATE)
         auth = Firebase.auth
         progressBar = headerView.findViewById(R.id.progressBar6)
@@ -138,6 +145,7 @@ class BuyerLandingPage : AppCompatActivity(),CropDataTransferFromBuyer.OnNegotia
             when (menuItem.itemId) {
                 R.id.logout -> {
                     logoutUser()
+
                     true
                 }
 
@@ -191,19 +199,19 @@ class BuyerLandingPage : AppCompatActivity(),CropDataTransferFromBuyer.OnNegotia
             .commit()
     }
 
-    override fun onNegotiateClick(crop: homeFragment.CropDetail) {
-        findViewById<BottomNavigationView>(R.id.bottom_navigationView1).selectedItemId = R.id.connect
-
-        crop.let {
-            sharedViewModel.addCrop(it)
-        }
-
-        val buyerBargainFragment = BuyerBargain()
-        supportFragmentManager.beginTransaction()
-            .replace(R.id.frameLayout1, buyerBargainFragment)
-            .addToBackStack(null)
-            .commit()
-    }
+//    override fun onNegotiateClick(crop: homeFragment.CropDetail) {
+//        findViewById<BottomNavigationView>(R.id.bottom_navigationView1).selectedItemId = R.id.connect
+//
+//        crop.let {
+//            sharedViewModel.addCrop(it)
+//        }
+//
+//        val buyerBargainFragment = BuyerBargain()
+//        supportFragmentManager.beginTransaction()
+//            .replace(R.id.frameLayout1, buyerBargainFragment)
+//            .addToBackStack(null)
+//            .commit()
+//    }
 
     private fun showFragment(fragment: Fragment): Boolean {
         supportFragmentManager.beginTransaction()
@@ -265,6 +273,7 @@ class BuyerLandingPage : AppCompatActivity(),CropDataTransferFromBuyer.OnNegotia
     private fun logoutUser() {
         progressBar.visibility = View.VISIBLE
         auth.signOut()
+        googleSignInClient.signOut()
         sharedPreferences.edit()
             .putBoolean("IS_LOGGED_IN", false)
             .remove(PROFILE_IMAGE_URI_KEY)
@@ -361,9 +370,6 @@ class BuyerLandingPage : AppCompatActivity(),CropDataTransferFromBuyer.OnNegotia
             .load(imageUri)
             .into(profileImageView)
         progressBar.visibility = View.GONE
-    }
-    private fun isUserLoggedIn(): Boolean {
-        return auth.currentUser != null
     }
 
 

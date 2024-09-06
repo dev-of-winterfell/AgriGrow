@@ -32,9 +32,8 @@
         android:layout_width="350dp"
         android:layout_height="54dp"
         android:backgroundTint="#386641"
-        android:elevation="10dp"
-        android:text="ओटीपी भेजें
-"
+
+        android:text="ओटीपी भेजें"
         android:textAlignment="center"
         android:textColor="@color/white"
 

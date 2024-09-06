@@ -1,8 +1,6 @@
 package com.example.agrigrow
 
-
 import android.annotation.SuppressLint
-import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
@@ -15,205 +13,190 @@ import android.util.Log
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
-import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.EditText
 import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import com.example.agrigrow.databinding.ActivityPhoneAuthSellerDetailsBinding
 import com.google.android.gms.auth.api.signin.GoogleSignIn
-import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
-import com.google.android.gms.auth.api.signin.GoogleSignInOptions
-import com.google.android.gms.common.api.ApiException
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.SetOptions
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
-import com.google.firebase.messaging.FirebaseMessaging
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import java.util.UUID
 
-
 class phoneAuthUserDetailsPage : AppCompatActivity() {
-    private lateinit var binding:ActivityPhoneAuthSellerDetailsBinding
+    private lateinit var binding: ActivityPhoneAuthSellerDetailsBinding
     private lateinit var db: FirebaseFirestore
     private lateinit var auth: FirebaseAuth
     private lateinit var progressBar: ProgressBar  // Add this line
     private lateinit var googleSignInClient: GoogleSignInClient
     private lateinit var sharedPreferences: SharedPreferences
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        binding= ActivityPhoneAuthSellerDetailsBinding.inflate(layoutInflater)
+        binding = ActivityPhoneAuthSellerDetailsBinding.inflate(layoutInflater)
         setContentView(binding.root)
         progressBar = findViewById<ProgressBar>(R.id.progressBar80)  // Initialize ProgressBar
-        val items = arrayOf("विकल्प के रूप में किसान या खरीदार का चयन करें", "खरीददार", "किसान")
-        val adapter: ArrayAdapter<String> = object : ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, items) {
-            override fun isEnabled(position: Int): Boolean {
-                return position != 0 // Disable the hint item (first item)
-            }
 
-            override fun getDropDownView(position: Int, convertView: View?, parent: ViewGroup): View {
-                val view = super.getDropDownView(position, convertView, parent)
-                val textView = view as TextView
-                if (position == 0) {
-                    // Set the hint text color for the first item
-                    textView.setTextColor(Color.GRAY)
-                } else {
-                    // Set the regular text color for other items
-                    textView.setTextColor(Color.BLACK)
+        val items = arrayOf("विकल्प के रूप में किसान या खरीदार का चयन करें", "खरीददार", "किसान")
+        val adapter: ArrayAdapter<String> =
+            object : ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, items) {
+                override fun isEnabled(position: Int): Boolean {
+                    return position != 0 // Disable the hint item (first item)
                 }
-                return view
+
+                override fun getDropDownView(
+                    position: Int,
+                    convertView: View?,
+                    parent: ViewGroup
+                ): View {
+                    val view = super.getDropDownView(position, convertView, parent)
+                    val textView = view as TextView
+                    if (position == 0) {
+                        // Set the hint text color for the first item
+                        textView.setTextColor(Color.GRAY)
+                    } else {
+                        // Set the regular text color for other items
+                        textView.setTextColor(Color.BLACK)
+                    }
+                    return view
+                }
             }
-        }
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         binding.spinner.adapter = adapter
 
-        val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-            .requestIdToken("1054481860590-h8nr9qbh2uc1qlvg6a17eiajt4uurbgc.apps.googleusercontent.com")
-            .requestEmail()
-            .build()
-        googleSignInClient = GoogleSignIn.getClient(this, gso)
-
-        binding.googleSignInButton.setOnClickListener {
-
-            if (binding.spinner.selectedItemPosition == 0) {
-                Toast.makeText(this, "कृपया उपयोगकर्ता प्रकार चुनें", Toast.LENGTH_SHORT).show()
-            }
-            else{  showProgressBar()
-                signInWithGoogle()
-                hideProgressBar()
-            }
-        }
-//        binding.spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-//            override fun onItemSelected(parent: AdapterView<*>, view: View, position: Int, id: Long) {
-//                when (position) {
-//                    0 -> {
-//                        // Redirect to BuyerSignupPage
-//                        startActivity(Intent(this@phoneAuthUserDetailsPage, BuyerLandingPage::class.java))
-//                    }
-//                    1 -> {
-//                        // Redirect to FarmerSignupPage
-//                        startActivity(Intent(this@phoneAuthUserDetailsPage, SellerLandingPage::class.java))
-//                    }
-//                }
-//            }
-//
-//            override fun onNothingSelected(parent: AdapterView<*>) {
-//                // Do nothing
-//            }
-//        }
         binding.passa.setupPasswordVisibilityToggle()
         binding.cnfpasss.setupPasswordVisibilityToggle()
         auth = Firebase.auth
         db = Firebase.firestore
         sharedPreferences = getSharedPreferences("GradxPrefs", Context.MODE_PRIVATE)
-//        try{
-//            if (isUserLoggedIn()) {
-//                val userEmail = sharedPreferences.getString("USER_EMAIL", null)
-//                if (userEmail != null) {
-//                    CoroutineScope(Dispatchers.Main).launch {
-//                        redirectToAppropriateLandingPage(userEmail)
-//                    }
-//                }
-//                finish()
-//            }}
-//        catch (e:Exception){
-//            Toast.makeText(this,"Error while redirecting",Toast.LENGTH_LONG).show()
-//        }
-//        val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-//            .requestIdToken(getString(R.string.default_web_client_id))
-//            .requestEmail()
-//          .build()
-
-
-        //  googleSignInClient = GoogleSignIn.getClient(this, gso)
-
-//        binding.googlesignup.setOnClickListener {
-//            signInWithGoogle()
-//            FirebaseMessaging.getInstance().token.addOnCompleteListener { task ->
-//                if (!task.isSuccessful) {
-//                    Log.w("Signup", "Fetching FCM registration token failed", task.exception)
-//                    return@addOnCompleteListener
-//                }
-//                // Get the FCM token
-//                val token = task.result
-//                Log.d("Signup", "FCM Token: $token")
-//
-//                // Assuming you have already obtained the current user ID after signup
-//                val userId = FirebaseAuth.getInstance().currentUser?.uid ?: return@addOnCompleteListener
-//
-//                // Save the token to Firestore (Step 3)
-//                val db = FirebaseFirestore.getInstance()
-//                val userRef = db.collection("SELLERS").document(userId)
-//
-//                userRef.set(mapOf("fcmToken" to token), SetOptions.merge())
-//                    .addOnSuccessListener {
-//                        Log.d("Signup", "FCM token saved successfully!")
-//                    }
-//                    .addOnFailureListener { e ->
-//                        Log.w("Signup", "Error saving FCM token", e)
-//                    }
-//            }
-//        }
-
+        handleIncomingData()
         binding.signupbtn.setOnClickListener {
-            if (binding.spinner.selectedItemPosition == 0) {
-                Toast.makeText(this, "Please select a user type", Toast.LENGTH_SHORT).show()
-            } else if (check()) {
+            showProgressBar()
+            signUpUser()
+            hideProgressBar()
+        }
+    }
+
+    private fun signUpUser() {
+        if (binding.spinner.selectedItemPosition == 0) {
+            Toast.makeText(this, "कृपया एक उपयोगकर्ता प्रकार चुनें", Toast.LENGTH_SHORT).show()
+        } else if (check()) {
+            val email = binding.emaillll.text.toString().trim()
+            val password = binding.passa.text.toString().trim()
+
+            showProgressBar() // Show the progress bar at the start
+
+            auth.createUserWithEmailAndPassword(email, password)
+                .addOnCompleteListener(this) { task ->
+                    hideProgressBar() // Hide the progress bar after completion
+                    if (task.isSuccessful) {
+                        val account = GoogleSignIn.getLastSignedInAccount(this)
+                        val profilePicUrl = account?.photoUrl?.toString() // Extract profile picture URL if available
+                        val name = binding.name.text.toString().trim()
+                        val uuid = UUID.randomUUID().toString()
+
+                        // Create the user HashMap with Any? values
+                        val user = hashMapOf(
+                            "uuid" to uuid,
+                            "Name" to name,
+                            "Email" to email,
+                            "profileImageUrl" to profilePicUrl // This will be null if no URL is available
+                        ) as HashMap<String, Any?>
+
+                        // Collect the selected role from the spinner
+                        val selectedRole = binding.spinner.selectedItem.toString()
+
+                        // Determine the Firestore collection based on the selected role
+                        val collectionName = if (selectedRole == "खरीददार") "BUYERS" else "SELLERS"
+
+                        lifecycleScope.launch {
+                            showProgressBar() // Show progress bar during Firestore operation
+                            try {
+                                // Check if the user already exists in the selected collection
+                                val documents = db.collection(collectionName).whereEqualTo("Email", email).get().await()
+                                if (documents.isEmpty) {
+                                    // Create the user in Firestore
+                                    createUserDocumentInFirestore(email, user)
+                                } else {
+                                    showAlertDialog("सतर्कता", "उपयोगकर्ता पहले से मौजूद है")
+                                }
+                            } catch (exception: Exception) {
+                                Log.e("error", "सर्वर त्रुटि: ${exception.message}")
+                            } finally {
+                                hideProgressBar() // Hide progress bar after operation
+                            }
+                        }
+                    } else {
+                        Toast.makeText(this, "साइन-अप विफल: ${task.exception?.message}", Toast.LENGTH_SHORT).show()
+                    }
+                }
+        }
+    }
+
+
+
+    private fun handleIncomingData() {
+        val account = GoogleSignIn.getLastSignedInAccount(this)
+        if (account != null) {
+            binding.name.setText(account.displayName)
+            binding.emaillll.setText(account.email)
+            // Reset password field
+            // binding.passa.setText("")
+            // Reset confirm password field
+            // binding.cnfpasss.setText("")
+
+            // Automatically trigger user creation if data is pre-filled from Google
+            if (check()) {
+                val profilePicUrl = account.photoUrl?.toString() // Get profile image URL from Google
                 val email = binding.emaillll.text.toString().trim()
-                val password = binding.passa.text.toString().trim()
                 val name = binding.name.text.toString().trim()
-                val uuid = FirebaseAuth.getInstance().currentUser?.uid ?: UUID.randomUUID().toString()
+                val uuid = UUID.randomUUID().toString()
+
+                // Construct the user object with Any? values
                 val user = hashMapOf(
                     "uuid" to uuid,
                     "Name" to name,
-                    "Email" to email
+                    "Email" to email,
+                    "profileImageUrl" to profilePicUrl // Include profile image URL
                 )
 
-                // Collecting the selected role from the spinner
+                // Collect the selected role from the spinner
                 val selectedRole = binding.spinner.selectedItem.toString()
 
-                // Determine the collection based on the selected role
+                // Determine the Firestore collection based on the selected role
                 val collectionName = if (selectedRole == "खरीददार") "BUYERS" else "SELLERS"
 
                 lifecycleScope.launch {
                     showProgressBar()
                     try {
+                        // Check if the user already exists in the selected collection
                         val documents = db.collection(collectionName).whereEqualTo("Email", email).get().await()
                         if (documents.isEmpty) {
-                            // Passing the selected role to the createUserWithEmailAndPassword function
-                            val isUserCreated = createUserWithEmailAndPassword(email, password, user, selectedRole)
-                            handleUserCreationResult(isUserCreated, email, name, selectedRole)
+                            // Create the user in Firestore
+                            createUserDocumentInFirestore(email, user as HashMap<String, Any?>)
                         } else {
-                            showAlertDialog("Alert", "User already exists")
+                            showAlertDialog("सतर्कता", "उपयोगकर्ता पहले से मौजूद है")
                         }
                     } catch (exception: Exception) {
-                        Log.e("error", "Server error: ${exception.message}")
+                        Log.e("error", "सर्वर त्रुटि: ${exception.message}")
                     } finally {
-                        hideProgressBar()  // Hide progress bar once the operation is complete
+                        hideProgressBar() // Hide the progress bar after the operation is complete
                     }
                 }
             }
         }
-
-//        binding.backtologin.setOnClickListener {
-//            startActivity(Intent(this, LoginPage::class.java))
-//            overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out)
-//        }
     }
 
     @SuppressLint("ClickableViewAccessibility")
@@ -235,78 +218,44 @@ class phoneAuthUserDetailsPage : AppCompatActivity() {
             }
         }
     }
-
     private fun check(): Boolean {
         val name = binding.name.text.toString().trim()
-        //  val pnumber = binding.phonenumber.text.toString().trim()
         val email = binding.emaillll.text.toString().trim()
         val password = binding.passa.text.toString().trim()
         val confirmPassword = binding.cnfpasss.text.toString().trim()
 
-        return when {
-            name.isEmpty() ||  email.isEmpty() || password.isEmpty() || confirmPassword.isEmpty() -> {
-                Toast.makeText(this, "All fields must be filled", Toast.LENGTH_SHORT).show()
-                false
-            }
-            password != confirmPassword -> {
-                Toast.makeText(this, "Password mismatch", Toast.LENGTH_SHORT).show()
-                false
-            }
-            else -> true
+        var isValid = true
+
+        // Reset error messages
+        binding.name.error = null
+        binding.emaillll.error = null
+        binding.passa.error = null
+        binding.cnfpasss.error = null
+
+        if (name.isEmpty()) {
+            binding.name.error = "नाम आवश्यक है"
+            isValid = false
         }
+        if (email.isEmpty()) {
+            binding.emaillll.error = "ईमेल आवश्यक है"
+            isValid = false
+        }
+        if (password.isEmpty()) {
+            binding.passa.error = "पासवर्ड आवश्यक है"
+            isValid = false
+        }
+        if (confirmPassword.isEmpty()) {
+            binding.cnfpasss.error = "पासवर्ड की पुष्टि आवश्यक है"
+            isValid = false
+        } else if (password != confirmPassword) {
+            binding.cnfpasss.error = "पासवर्ड मेल नहीं खाते"
+            isValid = false
+        }
+
+        return isValid
     }
 
-    private fun signInWithGoogle() {
-        val signInIntent = googleSignInClient.signInIntent
-        launcher.launch(signInIntent)
-    }
-
-    private val launcher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-        if (result.resultCode == Activity.RESULT_OK) {
-            val task = GoogleSignIn.getSignedInAccountFromIntent(result.data)
-            try {
-                val account = task.getResult(ApiException::class.java)
-                if (account != null) {
-                    firebaseAuthWithGoogle(account)
-                }
-            } catch (e: ApiException) {
-                Toast.makeText(this, "Google sign-in failed.", Toast.LENGTH_SHORT).show()
-            }
-        } else {
-            Toast.makeText(this, "Google sign-in failed.", Toast.LENGTH_SHORT).show()
-        }
-    }
-
-    private fun firebaseAuthWithGoogle(account: GoogleSignInAccount) {
-        val idToken = account.idToken
-        if (idToken != null) {
-            val credentials = GoogleAuthProvider.getCredential(idToken, null)
-            auth.signInWithCredential(credentials)
-                .addOnCompleteListener(this) { task ->
-                    if (task.isSuccessful) {
-                        val user = auth.currentUser
-                        user?.let {
-                            if (binding.spinner.selectedItemPosition == AdapterView.INVALID_POSITION) {
-                                Toast.makeText(this, "Please select whether you're a buyer or seller", Toast.LENGTH_SHORT).show()
-                                return@addOnCompleteListener
-                            }
-                            val userData = hashMapOf(
-                                "Name" to it.displayName,
-                                "Email" to it.email,
-                                "profileImageUrl" to (it.photoUrl?.toString() ?: ""),
-                                //"Phone" to (it.phoneNumber ?: "")
-                            )
-                            createUserDocumentInFirestore(it.email ?: "", userData)
-                        }
-                    } else {
-                        Toast.makeText(this, "Authentication failed: ${task.exception?.message}", Toast.LENGTH_SHORT).show()
-                    }
-                }
-        } else {
-            Toast.makeText(this, "Google sign-in failed: ID token is null", Toast.LENGTH_SHORT).show()
-        }
-    }
-    private fun createUserDocumentInFirestore(email: String, userData: HashMap<String, String?>) {
+    private fun createUserDocumentInFirestore(email: String, userData: HashMap<String, Any?>) {
         val selectedRole = binding.spinner.selectedItem.toString()
         val collectionName = if (selectedRole == "खरीददार") "BUYERS" else "SELLERS"
 
@@ -318,88 +267,24 @@ class phoneAuthUserDetailsPage : AppCompatActivity() {
                 if (!documentSnapshot.exists()) {
                     userDocument.set(userData).await()
                 } else {
-                    userDocument.update(userData as Map<String, Any>).await()
+                    userDocument.update(userData as Map<String, Any?>).await()
                 }
 
-                Toast.makeText(this@phoneAuthUserDetailsPage, "User registered successfully", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this@phoneAuthUserDetailsPage, "उपयोगकर्ता सफलतापूर्वक पंजीकृत", Toast.LENGTH_SHORT).show()
                 saveUserLoginState(email, selectedRole)  // Fixed: Passing selectedRole as the second argument
 
-                val intent = when (selectedRole) {
-                    "खरीददार" -> Intent(this@phoneAuthUserDetailsPage, BuyerLandingPage::class.java)
-                    "किसान" -> Intent(this@phoneAuthUserDetailsPage, SellerLandingPage::class.java)
-                    else -> Intent(this@phoneAuthUserDetailsPage, WelcomePage::class.java)
-                }
-                intent.putExtra("USER_NAME", userData["Name"])
+                // Redirect to the specific landing page based on user role
+                val intent = Intent(this@phoneAuthUserDetailsPage,
+                    if (selectedRole == "खरीददार") BuyerLandingPage::class.java else SellerLandingPage::class.java)
                 startActivity(intent)
-                overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out)
-                finish()
+                finish() // Finish current activity to prevent going back to it
             } catch (e: Exception) {
-                Toast.makeText(this@phoneAuthUserDetailsPage, "Failed to register user: ${e.message}", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this@phoneAuthUserDetailsPage, "त्रुटि: ${e.message}", Toast.LENGTH_SHORT).show()
             }
         }
     }
 
-    private suspend fun createUserWithEmailAndPassword(
-        email: String,
-        password: String,
-        user: Map<String, String>,
-        selectedRole: String
-    ): Boolean {
-        return try {
-            val task = auth.createUserWithEmailAndPassword(email, password).await()
-            if (task.user != null) {
-                val userWithPhoto = user.toMutableMap()
-                userWithPhoto["profileImageUrl"] = ""
 
-                val collectionName = if (selectedRole == "खरीददार") "BUYERS" else "SELLERS"
-                db.collection(collectionName).document(email).set(userWithPhoto).await()
-                true
-            } else {
-                false
-            }
-        } catch (exception: Exception) {
-            showAlertDialog("Alert", exception.message ?: "Unknown Error")
-            false
-        }
-    }
-
-
-
-    private fun handleUserCreationResult(isSuccessful: Boolean, email: String, name: String, selectedRole: String) {
-        if (isSuccessful) {
-            saveUserLoginState(email, selectedRole)
-            val intent = when (selectedRole) {
-                "खरीददार" -> Intent(this@phoneAuthUserDetailsPage, BuyerLandingPage::class.java)
-                "किसान" -> Intent(this@phoneAuthUserDetailsPage, SellerLandingPage::class.java)
-                else -> Intent(this@phoneAuthUserDetailsPage, WelcomePage::class.java)
-            }
-            intent.putExtra("USER_NAME", name)
-            startActivity(intent)
-            overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out)
-            finish()
-        } else {
-            showAlertDialog("Alert", "User registration failed. Please try again.")
-        }
-    }
-
-    private fun saveUserLoginState(email: String?, selectedRole: String) {
-        val editor = sharedPreferences.edit()
-        editor.putBoolean("IS_LOGGED_IN", true)
-        editor.putString("USER_EMAIL", email)
-        editor.putString("USER_ROLE", selectedRole)
-        editor.apply()
-    }
-
-    private fun showAlertDialog(title: String, message: String) {
-        AlertDialog.Builder(this)
-            .setTitle(title)
-            .setMessage(message)
-            .setPositiveButton("OK") { dialog, _ ->
-                dialog.dismiss()
-            }
-            .create()
-            .show()
-    }
     private fun showProgressBar() {
         progressBar.visibility = View.VISIBLE
     }
@@ -407,57 +292,47 @@ class phoneAuthUserDetailsPage : AppCompatActivity() {
     private fun hideProgressBar() {
         progressBar.visibility = View.GONE
     }
-//    private fun sendTokenToServer(token: String?) {
-//        val url = "http://127.0.0.1:8000/send-signup-notification/"
-//        val requestQueue = Volley.newRequestQueue(this)
-//
-//        val jsonBody = JSONObject().apply {
-//            put("fcm_token", token)
-//        }
-//
-//        val stringRequest = object : StringRequest(
-//            Method.POST, url,
-//            Response.Listener { response ->
-//                Log.d(ContentValues.TAG, "Server response: $response")
-//            },
-//            Response.ErrorListener { error ->
-//                Log.e(ContentValues.TAG, "Server error: ${error.message}")
-//            }) {
-//
-//            override fun getBodyContentType(): String {
-//                return "application/json; charset=utf-8"
-//            }
-//
-//            override fun getBody(): ByteArray {
-//                return jsonBody.toString().toByteArray(Charsets.UTF_8)
-//            }
-//        }
-//
-//        requestQueue.add(stringRequest)
-//    }
-//private suspend fun redirectToAppropriateLandingPage(email: String) {
-//    val buyerDoc = db.collection("BUYERS").document(email).get().await()
-//    val sellerDoc = db.collection("SELLERS").document(email).get().await()
-//
-//    if (buyerDoc.exists()) {
-//
-//        startActivity(Intent(this, BuyerLandingPage::class.java).apply {
-//            putExtra("USER_EMAIL", email)
-//        })
-//    } else if (sellerDoc.exists()) {
-//        startActivity(Intent(this, SellerLandingPage::class.java).apply {
-//            putExtra("USER_EMAIL", email)
-//        })
-//    } else {
-//        Toast.makeText(this, "User role not recognized.", Toast.LENGTH_SHORT).show()
-//    }
-//
-//    overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out)
-//    finish()
-//}
-//private fun isUserLoggedIn(): Boolean {
-//    return sharedPreferences.getBoolean("IS_LOGGED_IN", false)
-//}
-
+    private fun saveUserLoginState(email: String?, selectedRole: String) {
+        val editor = sharedPreferences.edit()
+        editor.putBoolean("IS_LOGGED_IN", true)
+        editor.putString("USER_EMAIL", email)
+        editor.putString("USER_ROLE", selectedRole)
+        editor.apply()
+    }
+    private fun showAlertDialog(title: String, message: String) {
+        AlertDialog.Builder(this)
+            .setTitle(title)
+            .setMessage(message)
+            .setPositiveButton("ठीक है") { dialog, _ -> dialog.dismiss() }
+            .show()
+    }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 

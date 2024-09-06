@@ -36,6 +36,7 @@ class BuyerBargain : Fragment() {
                 cropList.addAll(crops)
             }
         }
+
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -50,7 +51,7 @@ class BuyerBargain : Fragment() {
         val view = inflater.inflate(R.layout.fragment_connect, container, false) // Use correct layout
 
         recyclerView = view.findViewById(R.id.rv)
-        cropAdapter = CropListAdapter(cropList, 0f)
+        cropAdapter = CropListAdapter(cropList)
         userNameTextView = view.findViewById(R.id.tv) //
         recyclerView.adapter = cropAdapter
         recyclerView.layoutManager = LinearLayoutManager(context)
@@ -62,9 +63,10 @@ class BuyerBargain : Fragment() {
             cropList.addAll(crops)
             cropAdapter.notifyDataSetChanged()
         }
-        sharedViewModel.maxPrice.observe(viewLifecycleOwner) { price ->
-            cropAdapter.setMaxPrice(price)
-            cropAdapter.notifyDataSetChanged() // Notify adapter of the new maxPrice
+        sharedViewModel.crops.observe(viewLifecycleOwner) { crops ->
+            cropList.clear()
+            cropList.addAll(crops)
+            cropAdapter.notifyDataSetChanged()
         }
 
         // Fetch crop details from Firestore and update the RecyclerView
@@ -105,7 +107,13 @@ class BuyerBargain : Fragment() {
             val snapshot = cropsRef.get().await()
             for (document in snapshot.documents) {
                 val crop = document.toObject(homeFragment.CropDetail::class.java)
-                crop?.let { cropsList.add(it) }
+                val sellerUid = document.getString("uuid") // Fetch sellerUid from the document
+                crop?.let {
+                    if (sellerUid != null) {
+                        it.sellerUUId = sellerUid
+                    } // Add sellerUid to CropDetail
+                    cropsList.add(it)
+                }
             }
             cropsList // Return the list of crops fetched from Firestore
         } catch (e: Exception) {
@@ -115,11 +123,12 @@ class BuyerBargain : Fragment() {
     }
 
 
+
     companion object {
         private const val ARG_CROP_ID = "crop_id"
         private const val ARG_MAX_PRICE = "max_price"
 
-        fun newInstance(cropId: String, maxPrice: Float): BuyerBargain {
+        fun newInstance(cropId: String, maxPrice: Float, sellerUUId: String): BuyerBargain {
             val fragment = BuyerBargain()
             val args = Bundle()
             args.putString(ARG_CROP_ID, cropId)

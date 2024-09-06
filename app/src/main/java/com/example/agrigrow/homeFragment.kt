@@ -1,13 +1,11 @@
 package com.example.agrigrow
 
-import android.app.AlertDialog
-import android.content.Context
 import android.os.Bundle
 import android.os.Parcelable
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
@@ -56,7 +54,7 @@ class homeFragment : Fragment() {
 
         recyclerView = view.findViewById(R.id.recyclerView)
         recyclerView.layoutManager = LinearLayoutManager(context)
-        cropAdapter = CropAdapter(cropList, requireContext()){ cropDetail ->
+        cropAdapter = CropAdapter(cropList){ cropDetail ->
             navigateToCropDetail(cropDetail)
 
         }
@@ -79,17 +77,29 @@ class homeFragment : Fragment() {
         return view
     }
     private fun navigateToCropDetail(cropDetail: CropDetail) {
-        val cropOptionsDialog = CropDataTransferFromBuyer.newInstance(cropDetail, cropDetail.maxPrice)
-        cropOptionsDialog.show(parentFragmentManager, "crop_options_dialog")
+        Log.d("CropSelection", "Selected Crop ID: ${cropDetail.cropId}")
+        Log.d("CropSelection", "Seller UUID: ${cropDetail.sellerUUId}")
+
+        // Check if the dialog is already showing
+        val existingDialog = parentFragmentManager.findFragmentByTag("crop_options_dialog")
+        if (existingDialog == null) {
+            val cropOptionsDialog = CropDataTransferFromBuyer.newInstance(cropDetail)
+            cropOptionsDialog.show(parentFragmentManager, "crop_options_dialog")
+        } else {
+            Log.d("CropSelection", "Dialog is already showing")
+            // Optionally, you can update the existing dialog with new data
+            (existingDialog as? CropDataTransferFromBuyer)?.updateCropDetail(cropDetail)
+        }
+
+        // Pass maxPrice to shared ViewModel
         sharedViewModel.setMaxPrice(cropDetail.maxPrice)
 
-        // Creating an instance of BuyerBargain with the selected crop and its maxPrice
-        val buyerBargainFragment = BuyerBargain.newInstance(cropDetail.cropId, cropDetail.maxPrice)
-
-        requireActivity().supportFragmentManager.beginTransaction()
-            .replace(R.id.frameLayout1, buyerBargainFragment)
-            .addToBackStack(null)
-            .commit()
+        // Navigate to BuyerBargainFragment and pass cropId and maxPrice
+//        val buyerBargainFragment = BuyerBargain.newInstance(cropDetail.cropId, cropDetail.maxPrice,cropDetail.sellerUUId)
+//        requireActivity().supportFragmentManager.beginTransaction()
+//            .replace(R.id.frameLayout1, buyerBargainFragment)
+//            .addToBackStack(null)
+//            .commit()
     }
 
 
@@ -113,9 +123,9 @@ class homeFragment : Fragment() {
             }
     }
 
-    private fun onCropSelected(cropDetail: homeFragment.CropDetail) {
-        sharedViewModel.addCrop(cropDetail)
-    }
+//    private fun onCropSelected(cropDetail: homeFragment.CropDetail) {
+//        sharedViewModel.addCrop(cropDetail)
+//    }
     private fun setupBuyerName(tvBuyer: TextView) {
         val userId = FirebaseAuth.getInstance().currentUser?.email
         if (userId != null) {
@@ -143,21 +153,23 @@ class homeFragment : Fragment() {
                 cropList.clear()
                 for (sellerDocument in sellerDocuments) {
                     val sellerName = sellerDocument.getString("Name") ?: "Unknown Seller"
+                    val uuid = sellerDocument.getString("uuid") ?: "" // Fetch the uuid from the seller's document
                     val crops = sellerDocument.get("crops") as? List<Map<String, Any>> ?: continue
-                    val uuid = sellerDocument.getString("uuid") ?: ""
+
                     for (crop in crops) {
                         val cropDetail = CropDetail(
-                            name = crop["cropName"] as? String ?: "",
-                            type = crop["cropType"] as? String ?: "",
+                            cropName = crop["cropName"] as? String ?: "",
+                            cropType = crop["cropType"] as? String ?: "",
                             growingMethod = crop["growingMethod"] as? String ?: "",
                             minPrice = (crop["minPrice"] as? Number)?.toFloat() ?: 0f,
                             maxPrice = (crop["maxPrice"] as? Number)?.toFloat() ?: 0f,
                             state = crop["state"] as? String ?: "",
                             amount = (crop["amount"] as? Number)?.toInt() ?: 0,
                             imageUrl = crop["imageUrl"] as? String ?: "",
-                            ownerName = sellerName, // Set the seller's name as the owner
-                            cropId = crop["cropId"] as? String ?: ""
-                            )
+                            ownerName = sellerName,  // Set the seller's name as the owner
+                            cropId = crop["cropId"] as? String ?: "",
+                            sellerUUId = uuid // Assign the fetched uuid to the sellerUUId property
+                        )
                         cropList.add(cropDetail)
                     }
                 }
@@ -171,6 +183,7 @@ class homeFragment : Fragment() {
                 ).show()
             }
     }
+
 
 
     data class Seller(
@@ -198,7 +211,8 @@ class homeFragment : Fragment() {
 
             Glide.with(holder.itemView.context)
                 .load(seller.profileImageUrl)
-
+                .placeholder(R.drawable.baseline_image_24) // Set a placeholder image while loading
+                .error(R.drawable.pikaso_embed_a_middleaged_indian_farmer_wearing_a_turban_and_tr_removebg_preview) // Set an error image if loading fails
                 .apply(RequestOptions().circleCrop())
                 .into(holder.profileImage)
         }
@@ -209,8 +223,8 @@ class homeFragment : Fragment() {
     @Parcelize
     data class CropDetail(
         val cropId: String = "",
-        val name: String = "",
-        val type: String = "",
+        val cropName: String = "NAME",
+        val cropType: String = "",
         val growingMethod: String = "",
         val minPrice: Float = 0f,
         val maxPrice: Float = 0f,
@@ -218,11 +232,15 @@ class homeFragment : Fragment() {
         val amount: Int = 0,
         val imageUrl: String = "",
         val ownerName: String = "",
-        val sellerUUId:String=""
+        var sellerUUId:String="",
+
     ) : Parcelable
 
 
-    class CropAdapter(private val crops: List<CropDetail>, private val context: Context,  private val onItemClick: (CropDetail) -> Unit) :
+    class CropAdapter(
+        private val crops: List<CropDetail>,
+        private val onItemClick: (CropDetail) -> Unit
+    ) :
         RecyclerView.Adapter<CropAdapter.ViewHolder>() {
 
         class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
@@ -237,8 +255,7 @@ class homeFragment : Fragment() {
         }
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-            val view =
-                LayoutInflater.from(parent.context).inflate(R.layout.crop_item, parent, false)
+            val view =LayoutInflater.from(parent.context).inflate(R.layout.crop_item, parent, false)
             return ViewHolder(view)
         }
 
@@ -246,8 +263,8 @@ class homeFragment : Fragment() {
 
             val crop = crops[position]
             holder.ownerName.text = crop.ownerName
-            holder.cropName.text = crop.name
-            holder.cropType.text = crop.type
+            holder.cropName.text = crop.cropName
+            holder.cropType.text = crop.cropType
             holder.growingMethod.text = crop.growingMethod
             holder.price.text = "₹${crop.maxPrice}"
             holder.state.text = crop.state
@@ -274,42 +291,66 @@ class homeFragment : Fragment() {
 
         override fun getItemCount() = crops.size
 
-        private fun showDialog(crop: CropDetail) {
-            val dialogView = LayoutInflater.from(context).inflate(R.layout.dialog_crop_options, null)
-            val builder = AlertDialog.Builder(context)
-            builder.setView(dialogView)
-            val dialog = builder.create()
-
-            val negotiate = dialogView.findViewById<Button>(R.id.negotiate)
-            val addToCart = dialogView.findViewById<Button>(R.id.addtocart)
-
-            negotiate.setOnClickListener {
-                // Navigate to BuyerBargainFragment and pass crop details
-
-                dialog.dismiss()
-            }
-
-            addToCart.setOnClickListener {
-                // Implement functionality to add to cart here
-                Toast.makeText(context, "Added ${crop.name} to the cart", Toast.LENGTH_SHORT).show()
-                dialog.dismiss()
-            }
-
-            dialog.show()
-        }
+//        private fun showDialog(crop: CropDetail) {
+//            val dialogView = LayoutInflater.from(context).inflate(R.layout.dialog_crop_options, null)
+//            val builder = AlertDialog.Builder(context)
+//            builder.setView(dialogView)
+//            val dialog = builder.create()
+//
+//            val negotiate = dialogView.findViewById<Button>(R.id.negotiate)
+//            val addToCart = dialogView.findViewById<Button>(R.id.addtocart)
+//
+//            negotiate.setOnClickListener {
+//                // Navigate to BuyerBargainFragment and pass crop details
+//
+//                dialog.dismiss()
+//            }
+//
+//            addToCart.setOnClickListener {
+//                // Implement functionality to add to cart here
+//                Toast.makeText(context, "Added ${crop.name} to the cart", Toast.LENGTH_SHORT).show()
+//                dialog.dismiss()
+//            }
+//
+//            dialog.show()
+//        }
 
 
 
 
         companion object {
-            private const val ARG_CROP_DETAIL = "arg_crop_detail"
-
-//            fun newInstance(cropDetail: CropDetail) = cropDataTransferFrombuyer().apply {
-//                arguments = Bundle().apply {
-//                    putParcelable(ARG_CROP_DETAIL, cropDetail)
-//                }
-//            }
+            fun newInstance(
+                cropId: String,
+                sellerUUId: String,
+                name: String,
+                type: String,
+                growingMethod: String,
+                minPrice: Float,
+                maxPrice: Float,
+                state: String,
+                amount: Int,
+                imageUrl: String,
+                ownerName: String
+            ): CropDataTransferFromBuyer {
+                val fragment = CropDataTransferFromBuyer()
+                val args = Bundle()
+                args.putString("cropId", cropId)
+                args.putFloat("maxPrice", maxPrice)
+                args.putString("sellerUUId", sellerUUId)
+                args.putString("name", name)
+                args.putString("type", type)
+                args.putString("growingMethod", growingMethod)
+                args.putFloat("minPrice", minPrice)
+                args.putFloat("maxPrice", maxPrice)
+                args.putString("state", state)
+                args.putInt("amount", amount)
+                args.putString("imageUrl", imageUrl)
+                args.putString("ownerName", ownerName)
+                fragment.arguments = args
+                return fragment
+            }
         }
+
     }
 }
 

@@ -12,11 +12,13 @@
     <uses-permission android:name="android.permission.RECEIVE_SMS" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"
+    <uses-permission
+        android:name="android.permission.READ_EXTERNAL_STORAGE"
         android:maxSdkVersion="32" />
     <uses-permission android:name="android.permission.READ_MEDIA_VISUAL_USER_SELECTED" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+
     <application
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
@@ -27,30 +29,27 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.AgriGrow"
         tools:targetApi="31">
-
-
+        <activity
+            android:name=".authForGoogleUsers"
+            android:exported="false" />
         <activity
             android:name=".SellerLandingPage"
             android:exported="false" />
         <activity
             android:name=".phoneAuthUserDetailsPage"
             android:exported="false" />
-
-
         <activity
             android:name=".UpdatePassword"
             android:exported="false" />
         <activity
             android:name=".LoginPage"
             android:exported="false" />
-
         <activity
             android:name=".BuyerLandingPage"
             android:exported="false" />
         <activity
             android:name=".OTPVerification"
             android:exported="false" />
-
         <activity
             android:name=".WelcomePage"
             android:exported="false" />

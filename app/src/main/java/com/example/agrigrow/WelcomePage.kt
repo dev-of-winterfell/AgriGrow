@@ -5,7 +5,9 @@ import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
+import android.view.View
 import android.widget.Button
+import android.widget.ProgressBar
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
@@ -32,14 +34,16 @@ class WelcomePage : AppCompatActivity() {
     private lateinit var sharedPreferences: SharedPreferences
     private lateinit var googleSignInClient: GoogleSignInClient
     private lateinit var db: FirebaseFirestore
-
+private lateinit var progressBar8:ProgressBar
+private lateinit var progressBar9:ProgressBar
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         db = FirebaseFirestore.getInstance()
         auth = FirebaseAuth.getInstance()
         binding = ActivityWelcomePageBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
+progressBar8=binding.progressBar8
+        progressBar9=binding.progressBar9
         sharedPreferences = getSharedPreferences("GradxPrefs", Context.MODE_PRIVATE)
 
         val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
@@ -64,15 +68,19 @@ class WelcomePage : AppCompatActivity() {
 
         val phoneAuth = findViewById<Button>(R.id.button3)
         phoneAuth.setOnClickListener {
-            val existingDialog = supportFragmentManager.findFragmentByTag("PhoneVerificationDialog") as? ItemsSharedDialogFragment
-            if (existingDialog == null) {
-                val dialog = ItemsSharedDialogFragment()
-                dialog.show(supportFragmentManager, "PhoneVerificationDialog")
-            }
+            startActivity(Intent(this@WelcomePage,phoneAuthUserDetailsPage::class.java))
+//            showProgressBar()
+//            val existingDialog = supportFragmentManager.findFragmentByTag("PhoneVerificationDialog") as? ItemsSharedDialogFragment
+//            if (existingDialog == null) {
+//                val dialog = ItemsSharedDialogFragment()
+//                dialog.show(supportFragmentManager, "PhoneVerificationDialog")
+//                hideProgressBar()
+//            }
         }
     }
 
     private fun signInWithGoogle() {
+        showProgressBar9()
         val signInIntent = googleSignInClient.signInIntent
         launcher.launch(signInIntent)
     }
@@ -89,25 +97,34 @@ class WelcomePage : AppCompatActivity() {
         CoroutineScope(Dispatchers.Main).launch {
             try {
                 val account = task.await()
-                firebaseAuthWithGoogle(account)
+                fetchGoogleAccountDetails(account)
             } catch (e: Exception) {
                 Toast.makeText(this@WelcomePage, "Google sign-in failed.", Toast.LENGTH_SHORT).show()
             }
         }
     }
 
-    private suspend fun firebaseAuthWithGoogle(account: GoogleSignInAccount) {
-        val credentials = GoogleAuthProvider.getCredential(account.idToken, null)
-        try {
-            auth.signInWithCredential(credentials).await()
-            saveUserLoginState(account.email)
-            account.email?.let { email ->
-                determineUserRoleAndRedirect(email)
-            }
-        } catch (e: Exception) {
-            Toast.makeText(this, "Authentication failed.", Toast.LENGTH_SHORT).show()
+    private fun fetchGoogleAccountDetails(account: GoogleSignInAccount) {
+        showProgressBar9()
+
+        // Retrieve Google account details
+        val userName = account.displayName ?: "No Name"
+        val userEmail = account.email ?: "No Email"
+        val userProfilePic = account.photoUrl?.toString() ?: "No Profile Picture"
+
+        // Save user login state in shared preferences
+        saveUserLoginState(userEmail)
+
+        // Redirect to setup page, pass the fetched user details
+        val intent = Intent(this, phoneAuthUserDetailsPage::class.java).apply {
+            putExtra("USER_NAME", userName)
+            putExtra("USER_EMAIL", userEmail)
+            putExtra("USER_PROFILE_PIC", userProfilePic)
         }
+        startActivity(intent)
+        hideProgressBar9()
     }
+
 
     private suspend fun determineUserRoleAndRedirect(email: String) {
         val buyerDoc = db.collection("BUYERS").document(email).get().await()
@@ -144,5 +161,18 @@ class WelcomePage : AppCompatActivity() {
             .clear()
             .putBoolean("IS_LOGGED_IN", false)
             .apply()
+    }
+    private fun showProgressBar() {
+       progressBar8 .visibility = View.VISIBLE
+    }
+    private fun showProgressBar9() {
+        progressBar9.visibility = View.GONE
+    }
+
+    private fun hideProgressBar9() {
+        progressBar9.visibility = View.GONE
+    }
+    private fun hideProgressBar() {
+        progressBar8.visibility = View.GONE
     }
 }

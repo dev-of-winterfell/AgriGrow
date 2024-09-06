@@ -2,12 +2,12 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@color/olive"
+    android:background="@color/ocher"
     android:orientation="vertical"
     android:padding="16dp">
 
     <TextView
-        android:id="@+id/ropName"
+        android:id="@+id/CCropName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Crop Name"
@@ -15,27 +15,33 @@
         android:textStyle="bold" />
 
     <TextView
-        android:id="@+id/ropType"
+        android:id="@+id/CCropType"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Crop Type"
         android:textSize="16sp" />
     <TextView
-        android:id="@+id/ropquantity"
+        android:id="@+id/CCropquantity"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Crop quantity"
         android:textSize="16sp" />
+    <TextView
+        android:id="@+id/BuyerName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Buyer Name"
+        android:textSize="16sp" />
 
-    <com.google.android.material.textfield.TextInputEditText
-        android:id="@+id/ropPrice"
+    <EditText
+        android:id="@+id/CCropPrice"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Price"
         android:textSize="16sp" />
 
     <ImageView
-        android:id="@+id/ropImage"
+        android:id="@+id/CCropImage"
         android:layout_width="match_parent"
         android:layout_height="200dp"
         android:scaleType="centerCrop" />

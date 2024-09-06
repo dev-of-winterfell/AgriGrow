@@ -173,53 +173,53 @@
 
 
 
-    <Button
-        android:id="@+id/googleSignInButton"
-        android:layout_width="111dp"
-        android:layout_height="47dp"
-        android:layout_marginTop="68dp"
-        android:textSize="16dp"
-        android:backgroundTint="@color/lightslate"
-        android:shadowColor="#80000000"
-        android:shadowDx="2"
-        android:shadowDy="2"
-        android:shadowRadius="3"
-        android:text="   google"
-        android:textAlignment="textEnd"
-        android:textColor="@color/white1"
+<!--    <Button-->
+<!--        android:id="@+id/googleSignInButton"-->
+<!--        android:layout_width="111dp"-->
+<!--        android:layout_height="47dp"-->
+<!--        android:layout_marginTop="68dp"-->
+<!--        android:textSize="16dp"-->
+<!--        android:backgroundTint="@color/lightslate"-->
+<!--        android:shadowColor="#80000000"-->
+<!--        android:shadowDx="2"-->
+<!--        android:shadowDy="2"-->
+<!--        android:shadowRadius="3"-->
+<!--        android:text="   google"-->
+<!--        android:textAlignment="textEnd"-->
+<!--        android:textColor="@color/white1"-->
 
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/signupbtn"
-        app:layout_constraintVertical_bias="0.0" />
+<!--        app:layout_constraintBottom_toBottomOf="parent"-->
+<!--        app:layout_constraintEnd_toEndOf="parent"-->
+<!--        app:layout_constraintStart_toStartOf="parent"-->
+<!--        app:layout_constraintTop_toBottomOf="@+id/signupbtn"-->
+<!--        app:layout_constraintVertical_bias="0.0" />-->
 
-    <ImageView
-        android:id="@+id/imageView4"
-        android:layout_width="40dp"
-        android:layout_height="50dp"
-        app:layout_constraintBottom_toBottomOf="@+id/googleSignInButton"
-        app:layout_constraintEnd_toEndOf="@+id/googleSignInButton"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="@+id/googleSignInButton"
-        app:layout_constraintTop_toTopOf="@+id/googleSignInButton"
-        app:srcCompat="@drawable/google_foreground" />
+<!--    <ImageView-->
+<!--        android:id="@+id/imageView4"-->
+<!--        android:layout_width="40dp"-->
+<!--        android:layout_height="50dp"-->
+<!--        app:layout_constraintBottom_toBottomOf="@+id/googleSignInButton"-->
+<!--        app:layout_constraintEnd_toEndOf="@+id/googleSignInButton"-->
+<!--        app:layout_constraintHorizontal_bias="0.0"-->
+<!--        app:layout_constraintStart_toStartOf="@+id/googleSignInButton"-->
+<!--        app:layout_constraintTop_toTopOf="@+id/googleSignInButton"-->
+<!--        app:srcCompat="@drawable/google_foreground" />-->
 
-    <TextView
-        android:id="@+id/textView4"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="16dp"
-        android:text="@string/sign_in_with"
-        android:textAlignment="center"
-        android:textColor="@color/translucent1"
-        android:textSize="16sp"
-        android:textStyle="bold"
-        app:layout_constraintBottom_toTopOf="@+id/googleSignInButton"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/signupbtn"
-        app:layout_constraintVertical_bias="0.289" />
+<!--    <TextView-->
+<!--        android:id="@+id/textView4"-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:layout_margin="16dp"-->
+<!--        android:text="@string/sign_in_with"-->
+<!--        android:textAlignment="center"-->
+<!--        android:textColor="@color/translucent1"-->
+<!--        android:textSize="16sp"-->
+<!--        android:textStyle="bold"-->
+<!--        app:layout_constraintBottom_toTopOf="@+id/googleSignInButton"-->
+<!--        app:layout_constraintEnd_toEndOf="parent"-->
+<!--        app:layout_constraintStart_toStartOf="parent"-->
+<!--        app:layout_constraintTop_toBottomOf="@+id/signupbtn"-->
+<!--        app:layout_constraintVertical_bias="0.289" />-->
 
     <TextView
         android:id="@+id/textView12"
