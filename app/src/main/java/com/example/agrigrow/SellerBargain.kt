@@ -41,7 +41,8 @@ class SellerBargain : Fragment() {
         recyclerView.adapter = cropAdapter
         recyclerView.layoutManager = LinearLayoutManager(context)
 
-        // Fetch crops for negotiation
+        Log.d("SellerBargain", "Initializing RecyclerView and Adapter")
+
         CoroutineScope(Dispatchers.Main).launch {
             fetchCropsForNegotiation()
         }
@@ -50,26 +51,51 @@ class SellerBargain : Fragment() {
     }
 
     private suspend fun fetchCropsForNegotiation() = withContext(Dispatchers.IO) {
+        Log.d("SellerBargain", "Starting to fetch crops for negotiation")
+
         try {
-            val sellerUUID = fetchSellerUUID() ?: return@withContext
-            val negotiationsRef = database.getReference("Negotiations").child(sellerUUID)
+            val sellerEmail = auth.currentUser?.email ?: run {
+                Log.e("SellerBargain", "User email is null, exiting fetch")
+                return@withContext
+            }
+
+            Log.d("SellerBargain", "Current user email: $sellerEmail")
+
+            val negotiationsRef = database.getReference("Negotiations")
 
             negotiationsRef.addListenerForSingleValueEvent(object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
-                    val newCropList = mutableListOf<homeFragment.CropDetail>()
+                    Log.d("SellerBargain", "Received negotiations data snapshot: ${snapshot.childrenCount} children found")
 
-                    for (cropSnapshot in snapshot.children) {
-                        val cropId = cropSnapshot.key ?: continue
-                        CoroutineScope(Dispatchers.IO).launch {
-                            val crop = fetchCropDetails(cropId)
-                            if (crop != null) {
-                                withContext(Dispatchers.Main) {
+                    CoroutineScope(Dispatchers.IO).launch {
+                        val newCropList = mutableListOf<homeFragment.CropDetail>()
+
+                        for (sellerSnapshot in snapshot.children) {
+                            Log.d("SellerBargain", "Processing sellerSnapshot: ${sellerSnapshot.key}")
+
+                            for (cropSnapshot in sellerSnapshot.children) {
+                                val cropId = cropSnapshot.key ?: run {
+                                    Log.e("SellerBargain", "Crop ID is null, skipping this crop")
+
+                                }
+
+                                Log.d("SellerBargain", "Fetching crop details for crop ID: $cropId")
+                                val crop = fetchCropDetails(sellerEmail, cropId.toString())
+
+                                if (crop != null) {
+                                    Log.d("SellerBargain", "Successfully fetched crop: $crop")
                                     newCropList.add(crop)
-                                    cropList.clear()
-                                    cropList.addAll(newCropList)
-                                    cropAdapter.notifyDataSetChanged()
+                                } else {
+                                    Log.e("SellerBargain", "Crop details are null for crop ID: $cropId")
                                 }
                             }
+                        }
+
+                        withContext(Dispatchers.Main) {
+                            cropList.clear()
+                            cropList.addAll(newCropList)
+                            cropAdapter.notifyDataSetChanged()
+                            Log.d("SellerBargain", "Updated crop list and notified adapter")
                         }
                     }
                 }
@@ -83,42 +109,41 @@ class SellerBargain : Fragment() {
         }
     }
 
-    private suspend fun fetchSellerUUID(): String? = withContext(Dispatchers.IO) {
-        try {
-            val currentUserEmail = auth.currentUser?.email ?: return@withContext null
-            val sellerDoc = firestore.collection("SELLERS")
-                .whereEqualTo("Email", currentUserEmail)
-                .get()
-                .await()
+    private suspend fun fetchCropDetails(sellerEmail: String, cropId: String): homeFragment.CropDetail? = withContext(Dispatchers.IO) {
+        Log.d("SellerBargain", "Fetching crop details for seller: $sellerEmail and crop ID: $cropId")
 
-            if (!sellerDoc.isEmpty) {
-                return@withContext sellerDoc.documents[0].getString("uuid")
-            } else {
-                Log.e("SellerBargain", "Seller document not found for email: $currentUserEmail")
-                return@withContext null
-            }
-        } catch (e: Exception) {
-            Log.e("SellerBargain", "Error fetching seller UUID: ", e)
-            return@withContext null
-        }
-    }
-
-    private suspend fun fetchCropDetails(cropId: String): homeFragment.CropDetail? = withContext(Dispatchers.IO) {
         try {
-            val cropDoc = firestore.collection("Crops").document(cropId).get().await()
-            if (cropDoc.exists()) {
-                return@withContext homeFragment.CropDetail(
-                    cropId = cropId,
-                    cropName = cropDoc.getString("cropName") ?: "",
-                    cropType = cropDoc.getString("cropType") ?: "",
-                    amount = cropDoc.getLong("amount")?.toInt() ?: 0,
-                    maxPrice = cropDoc.getDouble("maxPrice")?.toFloat() ?: 0f,
-                    minPrice = cropDoc.getDouble("minPrice")?.toFloat() ?: 0f,
-                    imageUrl = cropDoc.getString("imageUrl") ?: "",
-                    sellerUUId = cropDoc.getString("sellerUUId") ?: ""
-                )
+            val userId = auth.currentUser?.email ?: throw Exception("User not authenticated")
+            val sellerDoc = firestore.collection("SELLERS").document(userId).get().await()
+            if (sellerDoc.exists()) {
+                Log.d("SellerBargain", "Seller document found for email: $sellerEmail")
+
+                val crops = sellerDoc.get("crops") as? List<Map<String, Any>> ?: run {
+                    Log.e("SellerBargain", "No negotiated crops found for seller: $sellerEmail")
+                    return@withContext null
+                }
+
+                val matchingCrop = crops.find { it["cropId"] as? String == cropId }
+
+                if (matchingCrop != null) {
+                    Log.d("SellerBargain", "Matching crop found for cropId: $cropId")
+
+                    return@withContext homeFragment.CropDetail(
+                        cropId = cropId,
+                        cropName = matchingCrop["cropName"] as? String ?: "",
+                        cropType = matchingCrop["cropType"] as? String ?: "",
+                        amount = (matchingCrop["amount"] as? Long)?.toInt() ?: 0,
+                        maxPrice = (matchingCrop["maxPrice"] as? Double)?.toFloat() ?: 0f,
+                        minPrice = (matchingCrop["minPrice"] as? Double)?.toFloat() ?: 0f,
+                        imageUrl = matchingCrop["imageUrl"] as? String ?: "",
+                        sellerUUId = sellerDoc.getString("uuid") ?: ""
+                    )
+                } else {
+                    Log.e("SellerBargain", "Crop not found in seller's crops: $cropId")
+                    return@withContext null
+                }
             } else {
-                Log.e("SellerBargain", "Crop document not found for ID: $cropId")
+                Log.e("SellerBargain", "Seller document not found for email: $sellerEmail")
                 return@withContext null
             }
         } catch (e: Exception) {
