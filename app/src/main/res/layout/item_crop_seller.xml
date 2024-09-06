@@ -1,61 +1,195 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
+    android:layout_margin="8dp"
     android:layout_height="wrap_content"
-    android:background="@color/ocher"
-    android:orientation="vertical"
-    android:padding="16dp">
+    app:cardBackgroundColor="@color/white1"
+    app:cardCornerRadius="20dp"
+    app:cardElevation="10dp"
+    >
 
-    <TextView
-        android:id="@+id/CCropName"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Crop Name"
-        android:textSize="18sp"
-        android:textStyle="bold" />
-
-    <TextView
-        android:id="@+id/CCropType"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Crop Type"
-        android:textSize="16sp" />
-    <TextView
-        android:id="@+id/CCropquantity"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Crop quantity"
-        android:textSize="16sp" />
-    <TextView
-        android:id="@+id/BuyerName"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Buyer Name"
-        android:textSize="16sp" />
-
-    <EditText
-        android:id="@+id/CCropPrice"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Price"
-        android:textSize="16sp" />
-
-    <ImageView
-        android:id="@+id/CCropImage"
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="200dp"
-        android:scaleType="centerCrop" />
+        android:layout_height="match_parent"
+        android:padding="16sp">
 
-    <Button
-        android:id="@+id/sendnewPRICEtoseller"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="send updated price" />
+        <ImageView
+            android:id="@+id/CCropImage"
+            android:layout_width="139dp"
+            android:layout_height="128dp"
+            android:layout_marginStart="4dp"
+            android:scaleType="centerCrop"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.0" />
 
-    <Button
-        android:id="@+id/acceptPrice"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="aceept price" />
+        <TextView
+            android:id="@+id/textView22"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="28dp"
 
-</LinearLayout>
+            android:text="फसल का नाम: "
+            android:textAlignment="viewEnd"
+            android:textColor="@color/black"
+            app:layout_constraintStart_toEndOf="@id/CCropImage"
+            app:layout_constraintTop_toTopOf="@+id/CCropImage" />
+
+        <TextView
+            android:id="@+id/CCropName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:text="Crop Name"
+            android:visibility="visible"
+
+            android:textAlignment="viewStart"
+            android:textColor="@color/translucent1"
+            android:textSize="16sp"
+            app:layout_constraintBottom_toBottomOf="@+id/textView22"
+            app:layout_constraintStart_toEndOf="@id/textView22"
+            app:layout_constraintTop_toTopOf="@+id/textView22"
+            app:layout_constraintVertical_bias="0.0" />
+
+        <TextView
+            android:id="@+id/textView23"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="8dp"
+            android:text="फसल की किस्म: "
+            android:textAlignment="viewEnd"
+            android:textColor="@color/black"
+            app:layout_constraintStart_toEndOf="@id/CCropImage"
+            app:layout_constraintTop_toBottomOf="@id/textView22" />
+
+        <TextView
+            android:id="@+id/CCropType"
+
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Crop Type"
+            android:textAlignment="viewStart"
+            android:textColor="@color/translucent1"
+            android:textSize="16sp"
+            android:visibility="visible"
+            app:layout_constraintBottom_toBottomOf="@+id/textView23"
+            app:layout_constraintStart_toStartOf="@+id/CCropName"
+            app:layout_constraintTop_toTopOf="@+id/textView23"
+            app:layout_constraintVertical_bias="1.0" />
+
+        <TextView
+            android:id="@+id/textView24"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="24dp"
+            android:layout_marginTop="8dp"
+            android:text="मात्रा क्विंटल में: "
+            android:textAlignment="viewEnd"
+            android:textColor="@color/black"
+            app:layout_constraintStart_toEndOf="@id/CCropImage"
+            app:layout_constraintTop_toBottomOf="@id/textView23" />
+
+        <TextView
+            android:id="@+id/CCropquantity"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Crop quantity"
+            android:textAlignment="viewStart"
+            android:textColor="@color/translucent1"
+            android:textSize="16sp"
+            android:visibility="visible"
+            app:layout_constraintBottom_toBottomOf="@+id/textView24"
+            app:layout_constraintStart_toStartOf="@+id/CCropType"
+            app:layout_constraintTop_toTopOf="@+id/textView24"
+            app:layout_constraintVertical_bias="1.0" />
+
+        <TextView
+            android:id="@+id/textView25"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="4dp"
+            android:layout_marginTop="8dp"
+            android:text="नई दर प्रति क्विंटल: "
+            android:textAlignment="viewEnd"
+            android:textColor="@color/black"
+            app:layout_constraintEnd_toEndOf="@+id/textView24"
+            app:layout_constraintStart_toEndOf="@id/CCropImage"
+            app:layout_constraintTop_toBottomOf="@id/textView24" />
+
+        <TextView
+            android:id="@+id/tv121"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="28dp"
+            android:layout_marginTop="40dp"
+            android:text="खरीदार का नाम: "
+            android:textAlignment="viewEnd"
+            android:textColor="@color/black"
+            app:layout_constraintEnd_toEndOf="@+id/textView25"
+            app:layout_constraintStart_toEndOf="@id/CCropImage"
+            app:layout_constraintTop_toBottomOf="@id/textView24" />
+
+        <TextView
+            android:id="@+id/BuyerName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+          android:hint="खरीदार का नाम:"
+            android:textAlignment="viewEnd"
+            android:textColor="@color/black"
+            app:layout_constraintBottom_toBottomOf="@+id/tv121"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="@+id/CCropPrice"
+            app:layout_constraintTop_toTopOf="@+id/tv121"
+            app:layout_constraintVertical_bias="1.0" />
+
+        <EditText
+            android:id="@+id/CCropPrice"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Price"
+            android:textAlignment="viewStart"
+            android:textColor="@color/translucent1"
+            android:textSize="16sp"
+            app:layout_constraintBottom_toBottomOf="@+id/textView25"
+            app:layout_constraintStart_toStartOf="@+id/CCropquantity"
+            app:layout_constraintTop_toTopOf="@+id/textView25"
+            app:layout_constraintVertical_bias="0.363" />
+
+        <Button
+            android:id="@+id/sendnewPRICEtoseller"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12sp"
+            android:backgroundTint="@color/olive"
+            android:text="मोल-तोल के लिए कीमत भेजें"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="1.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/CCropImage"
+            app:layout_constraintVertical_bias="0.075" />
+
+        <Button
+            android:id="@+id/acceptbtn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12sp"
+            android:backgroundTint="@color/olive"
+            android:text="यह कीमत स्वीकार करें"
+            android:textAlignment="center"
+
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="@+id/sendnewPRICEtoseller"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="@+id/sendnewPRICEtoseller"
+            app:layout_constraintTop_toBottomOf="@+id/sendnewPRICEtoseller"
+            app:layout_constraintVertical_bias="0.0" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.cardview.widget.CardView>

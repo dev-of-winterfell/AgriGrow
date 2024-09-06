@@ -1,16 +1,22 @@
 package com.example.agrigrow
 
+import android.app.Notification
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -27,7 +33,7 @@ class BuyerBargain : Fragment() {
     private lateinit var userNameTextView: TextView
     private val firestore = FirebaseFirestore.getInstance()
     private val auth = FirebaseAuth.getInstance()
-
+    private var notificationsListener: ValueEventListener? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         savedInstanceState?.let {
@@ -81,8 +87,57 @@ class BuyerBargain : Fragment() {
             val userName = fetchUserName()
             userNameTextView.text = userName
         }
+      //  startListeningForNotifications()
         return view
     }
+
+//    private fun startListeningForNotifications() {
+//        val userEmail = auth.currentUser?.email ?: return
+//        val db = FirebaseDatabase.getInstance()
+//        // Encode the email address to make it a valid Firebase path
+//        val encodedEmail = userEmail.replace(".", "_")
+//
+//        // Reference to the Notifications node for the current user
+//        val notificationsRef = db.getReference("Notifications").child(encodedEmail)
+//
+//        notificationsListener = notificationsRef.addValueEventListener(object : ValueEventListener {
+//            override fun onDataChange(snapshot: DataSnapshot) {
+//                for (notificationSnapshot in snapshot.children) {
+//                    val notification = notificationSnapshot.getValue(Notification::class.java)
+//                    notification?.let {
+//                        handleNotification(it)
+//                    }
+//                }
+//            }
+//
+//            override fun onCancelled(error: DatabaseError) {
+//                Log.e("BuyerBargain", "Error listening for notifications: ${error.message}")
+//            }
+//        })
+//    }
+//
+//
+//    private fun handleNotification(notification: Notification) {
+//        // Update the UI or show a Toast notification
+//        Toast.makeText(context, "Price accepted by seller", Toast.LENGTH_SHORT).show()
+//        // You can also update the RecyclerView or other UI elements here
+//    }
+//
+//    override fun onDestroyView() {
+//        super.onDestroyView()
+//        // Remove the listener when the view is destroyed
+//
+//
+//        val db = FirebaseDatabase.getInstance()
+//        val userEmail = auth.currentUser?.email ?: return
+//        val encodedEmail = userEmail.replace(".", "_")
+//        val notificationsRef = db.getReference("Notifications").child(encodedEmail)
+//        notificationsListener?.let { notificationsRef.removeEventListener(it) }
+//    }
+
+
+
+
     private suspend fun fetchUserName(): String = withContext(Dispatchers.IO) {
         try {
             val userEmail = auth.currentUser?.email ?: throw Exception("User not authenticated")

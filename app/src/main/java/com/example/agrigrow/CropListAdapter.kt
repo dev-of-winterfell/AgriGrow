@@ -50,13 +50,15 @@ class CropListAdapter(private val cropList: MutableList<homeFragment.CropDetail>
         private val cropPrice: EditText = itemView.findViewById(R.id.ropPrice)
         private val cropImage: ImageView = itemView.findViewById(R.id.ropImage)
         private val cropAmount: TextView = itemView.findViewById(R.id.ropquantity)
+
         private val sendNewPrice: Button = itemView.findViewById(R.id.sendnewPRICEtosellerfROMbUYER)
         private val addToCart: Button = itemView.findViewById(R.id.addtocart)
 
         fun bind(crop: homeFragment.CropDetail) {
             cropName.text = crop.cropName
             cropType.text = crop.cropType
-            cropAmount.text = crop.amount.toString()
+            cropAmount.text = "${crop.amount} क्विंटल"
+
             Glide.with(itemView.context)
                 .load(crop.imageUrl)
                 .placeholder(R.drawable.baseline_image_24)

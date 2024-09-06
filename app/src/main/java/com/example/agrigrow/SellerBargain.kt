@@ -5,6 +5,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -40,7 +41,8 @@ class SellerBargain : Fragment() {
         cropAdapter = CropListAdapterForSeller(cropList)
         recyclerView.adapter = cropAdapter
         recyclerView.layoutManager = LinearLayoutManager(context)
-
+val sellerName=view.findViewById<TextView>(R.id.tv)
+        setupSellerName(sellerName)
         Log.d("SellerBargain", "Initializing RecyclerView and Adapter")
 
         CoroutineScope(Dispatchers.Main).launch {
@@ -90,13 +92,18 @@ class SellerBargain : Fragment() {
                                 }
                             }
                         }
-
+                        val uniqueCropList = newCropList.distinctBy { it.cropId }
                         withContext(Dispatchers.Main) {
-                            cropList.clear()
-                            cropList.addAll(newCropList)
-                            cropAdapter.notifyDataSetChanged()
+                            cropAdapter.updateCrops(uniqueCropList)
                             Log.d("SellerBargain", "Updated crop list and notified adapter")
                         }
+
+//                        withContext(Dispatchers.Main) {
+//                            cropList.clear()
+//                            cropList.addAll(newCropList)
+//                            cropAdapter.notifyDataSetChanged()
+//                            Log.d("SellerBargain", "Updated crop list and notified adapter")
+//                        }
                     }
                 }
 
@@ -149,6 +156,25 @@ class SellerBargain : Fragment() {
         } catch (e: Exception) {
             Log.e("SellerBargain", "Error fetching crop details: ", e)
             return@withContext null
+        }
+    }
+    private fun setupSellerName(tvBuyer: TextView) {
+        val userId = FirebaseAuth.getInstance().currentUser?.email
+        if (userId != null) {
+            firestore.collection("SELLERS").document(userId)
+                .get()
+                .addOnSuccessListener { document ->
+                    if (document != null && document.exists()) {
+                        val userName = document.getString("Name") ?: "No Name Available"
+                        tvBuyer.text = userName
+                    } else {
+                        tvBuyer.text = "No user data available"
+                    }
+                }.addOnFailureListener {
+                    tvBuyer.text = "Failed to load user data"
+                }
+        } else {
+            tvBuyer.text = "User not logged in"
         }
     }
 
