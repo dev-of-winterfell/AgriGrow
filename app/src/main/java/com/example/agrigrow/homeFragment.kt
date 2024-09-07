@@ -71,8 +71,18 @@ class homeFragment : Fragment() {
         val tvBuyer = layout.findViewById<TextView>(R.id.tvbuyer)
         setupBuyerName(tvBuyer)
 
+        val userId = FirebaseAuth.getInstance().currentUser?.email
+        if (userId != null) {
+            firestore.collection("BUYERS").document(userId)
+                .get()
+                .addOnSuccessListener { document ->
+                    if (document != null && document.exists()) {
+                        val userName = document.getString("uuid") ?: "No Name Available"
+                        fetchCropDetails(userName)
+                    }
+                }
+        }
 
-        fetchCropDetails()
 
         return view
     }
@@ -146,17 +156,18 @@ class homeFragment : Fragment() {
         }
     }
 
-    private fun fetchCropDetails() {
+    private fun fetchCropDetails(buyerUUId: String) {
         firestore.collection("SELLERS")
             .get()
             .addOnSuccessListener { sellerDocuments ->
-                cropList.clear()
+                cropList.clear() // Clear the existing list before adding new data
                 for (sellerDocument in sellerDocuments) {
                     val sellerName = sellerDocument.getString("Name") ?: "Unknown Seller"
-                    val uuid = sellerDocument.getString("uuid") ?: "" // Fetch the uuid from the seller's document
+                    val sellerUUID = sellerDocument.getString("uuid") ?: "" // Fetch the uuid from the seller's document
                     val crops = sellerDocument.get("crops") as? List<Map<String, Any>> ?: continue
 
                     for (crop in crops) {
+                        // Create a CropDetail object for each crop in the seller's list
                         val cropDetail = CropDetail(
                             cropName = crop["cropName"] as? String ?: "",
                             cropType = crop["cropType"] as? String ?: "",
@@ -167,22 +178,21 @@ class homeFragment : Fragment() {
                             amount = (crop["amount"] as? Number)?.toInt() ?: 0,
                             imageUrl = crop["imageUrl"] as? String ?: "",
                             ownerName = sellerName,  // Set the seller's name as the owner
-                            cropId = crop["cropId"] as? String ?: "",
-                            sellerUUId = uuid // Assign the fetched uuid to the sellerUUId property
-                        )
+                            cropId = crop["cropId"] as? String ?: "", // Fetch cropId
+                            sellerUUId = sellerUUID,  // Assign the fetched uuid to the sellerUUId property
+                                                    )
+                        // Add the cropDetail to the list
                         cropList.add(cropDetail)
                     }
                 }
-                cropAdapter.notifyDataSetChanged()
+                cropAdapter.notifyDataSetChanged() // Notify the adapter about data changes
             }
             .addOnFailureListener { exception ->
-                Toast.makeText(
-                    context,
-                    "Error fetching crop data: ${exception.message}",
-                    Toast.LENGTH_SHORT
-                ).show()
+                // Handle any errors that occur during the Firestore query
+                Log.e("Firestore Error", "Error fetching crops: ${exception.message}")
             }
     }
+
 
 
 
@@ -233,6 +243,7 @@ class homeFragment : Fragment() {
         val imageUrl: String = "",
         val ownerName: String = "",
         var sellerUUId:String="",
+        var negotiatedPrice: Float = 0f
 
     ) : Parcelable
 

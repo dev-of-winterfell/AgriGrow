@@ -41,7 +41,7 @@ class SellerBargain : Fragment() {
         cropAdapter = CropListAdapterForSeller(cropList)
         recyclerView.adapter = cropAdapter
         recyclerView.layoutManager = LinearLayoutManager(context)
-val sellerName=view.findViewById<TextView>(R.id.tv)
+        val sellerName=view.findViewById<TextView>(R.id.tv)
         setupSellerName(sellerName)
         Log.d("SellerBargain", "Initializing RecyclerView and Adapter")
 
@@ -61,47 +61,37 @@ val sellerName=view.findViewById<TextView>(R.id.tv)
                 return@withContext
             }
 
-            Log.d("SellerBargain", "Current user email: $sellerEmail")
+            val sellerUUID = fetchSellerUUID(sellerEmail) ?: run {
+                Log.e("SellerBargain", "Failed to fetch seller UUID, exiting fetch")
+                return@withContext
+            }
 
-            val negotiationsRef = database.getReference("Negotiations")
+            Log.d("SellerBargain", "Current user email: $sellerEmail, UUID: $sellerUUID")
+
+            val negotiationsRef = database.getReference("Negotiations").child(sellerUUID)
 
             negotiationsRef.addListenerForSingleValueEvent(object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
                     Log.d("SellerBargain", "Received negotiations data snapshot: ${snapshot.childrenCount} children found")
 
                     CoroutineScope(Dispatchers.IO).launch {
-                        val newCropList = mutableListOf<homeFragment.CropDetail>()
+                        val newCropSet = mutableSetOf<homeFragment.CropDetail>()
 
-                        for (sellerSnapshot in snapshot.children) {
-                            Log.d("SellerBargain", "Processing sellerSnapshot: ${sellerSnapshot.key}")
+                        for (cropSnapshot in snapshot.children) {
+                            val cropId = cropSnapshot.key ?: continue
+                            Log.d("SellerBargain", "Fetching crop details for crop ID: $cropId")
 
-                            for (cropSnapshot in sellerSnapshot.children) {
-                                val cropId = cropSnapshot.key ?: run {
-                                    Log.e("SellerBargain", "Crop ID is null, skipping this crop")
-
-                                }
-
-                                Log.d("SellerBargain", "Fetching crop details for crop ID: $cropId")
-                                val crop = fetchCropDetails(sellerEmail, cropId.toString())
-
-                                if (crop != null) {
-                                    Log.d("SellerBargain", "Successfully fetched crop: $crop")
-                                    newCropList.add(crop)
-                                } else {
-                                    Log.e("SellerBargain", "Crop details are null for crop ID: $cropId")
-                                }
+                            val crop = fetchCropDetails(sellerEmail, cropId)
+                            if (crop != null) {
+                                Log.d("SellerBargain", "Successfully fetched crop: $crop")
+                                newCropSet.add(crop)
+                            } else {
+                                Log.e("SellerBargain", "Crop details are null for crop ID: $cropId")
                             }
                         }
 
-//                        withContext(Dispatchers.Main) {
-//                            cropAdapter.updateCrops(newCropList)
-//                            Log.d("SellerBargain", "Updated crop list and notified adapter")
-//                        }
-
                         withContext(Dispatchers.Main) {
-                            cropList.clear()
-                            cropList.addAll(newCropList)
-                            cropAdapter.notifyDataSetChanged()
+                            cropAdapter.updateCrops(newCropSet.toList())
                             Log.d("SellerBargain", "Updated crop list and notified adapter")
                         }
                     }
@@ -116,6 +106,15 @@ val sellerName=view.findViewById<TextView>(R.id.tv)
         }
     }
 
+    private suspend fun fetchSellerUUID(email: String): String? = withContext(Dispatchers.IO) {
+        try {
+            val sellerDoc = firestore.collection("SELLERS").document(email).get().await()
+            return@withContext sellerDoc.getString("uuid")
+        } catch (e: Exception) {
+            Log.e("SellerBargain", "Error fetching seller UUID: ${e.message}")
+            return@withContext null
+        }
+    }
     private suspend fun fetchCropDetails(sellerEmail: String, cropId: String): homeFragment.CropDetail? = withContext(Dispatchers.IO) {
         Log.d("SellerBargain", "Fetching crop details for seller: $sellerEmail and crop ID: $cropId")
 

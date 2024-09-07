@@ -79,7 +79,7 @@ class CropListAdapterForSeller(private var cropList: MutableList<homeFragment.Cr
 
             CoroutineScope(Dispatchers.Main).launch {
                 mspPrice = getCropPriceFromFirestore(crop.cropName)
-              // Set the initial MSP value
+                // Set the initial MSP value
             }
 
             CoroutineScope(Dispatchers.Main).launch {
@@ -119,7 +119,7 @@ class CropListAdapterForSeller(private var cropList: MutableList<homeFragment.Cr
 
                 CoroutineScope(Dispatchers.Main).launch {
                     updatePriceInDatabase(crop, newPrice)
-                   // Toast.makeText(itemView.context, "Price sent to buyer", Toast.LENGTH_SHORT).show()
+                    // Toast.makeText(itemView.context, "Price sent to buyer", Toast.LENGTH_SHORT).show()
                 }
             }
         }

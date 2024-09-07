@@ -230,9 +230,9 @@ class CropListAdapter(private val cropList: MutableList<homeFragment.CropDetail>
                 sellerNegotiationRef.child("negotiatedPrice").setValue(newPrice).await()
 
                 // Update price under buyer's UUID
-                val buyerNegotiationRef = database.getReference("Negotiations")
-                    .child(buyerUUID).child(cropId).child(sellerUUID)
-                buyerNegotiationRef.child("negotiatedPrice").setValue(newPrice).await()
+//                val buyerNegotiationRef = database.getReference("Negotiations")
+//                    .child(buyerUUID).child(cropId).child(sellerUUID)
+//                buyerNegotiationRef.child("negotiatedPrice").setValue(newPrice).await()
 
                 Log.d("CropListAdapter", "Price updated for buyer $buyerUUID and seller $sellerUUID")
             } catch (e: Exception) {

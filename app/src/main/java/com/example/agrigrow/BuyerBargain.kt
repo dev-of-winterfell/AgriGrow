@@ -87,7 +87,7 @@ class BuyerBargain : Fragment() {
             val userName = fetchUserName()
             userNameTextView.text = userName
         }
-      //  startListeningForNotifications()
+        //  startListeningForNotifications()
         return view
     }
 
