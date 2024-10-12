@@ -1,6 +1,7 @@
 package com.example.agrigrow
 
 import android.app.Notification
+import android.content.ContentValues.TAG
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -31,6 +32,8 @@ class BuyerBargain : Fragment() {
     private lateinit var cropAdapter: CropListAdapter
     private val cropList = mutableListOf<homeFragment.CropDetail>()
     private lateinit var userNameTextView: TextView
+    private lateinit var emptyTextView: TextView
+
     private val firestore = FirebaseFirestore.getInstance()
     private val auth = FirebaseAuth.getInstance()
     private var notificationsListener: ValueEventListener? = null
@@ -55,9 +58,12 @@ class BuyerBargain : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         val view = inflater.inflate(R.layout.fragment_connect, container, false) // Use correct layout
-
+        emptyTextView = view.findViewById(R.id.tv3)
         recyclerView = view.findViewById(R.id.rv)
-        cropAdapter = CropListAdapter(cropList)
+        cropAdapter = CropListAdapter(cropList){ cropDetail, newPrice ->
+            // This lambda is our onAddToCart callback
+            addToCart(cropDetail, newPrice)
+        }
         userNameTextView = view.findViewById(R.id.tv) //
         recyclerView.adapter = cropAdapter
         recyclerView.layoutManager = LinearLayoutManager(context)
@@ -68,12 +74,9 @@ class BuyerBargain : Fragment() {
             cropList.clear()
             cropList.addAll(crops)
             cropAdapter.notifyDataSetChanged()
+            updateEmptyViewVisibility()
         }
-        sharedViewModel.crops.observe(viewLifecycleOwner) { crops ->
-            cropList.clear()
-            cropList.addAll(crops)
-            cropAdapter.notifyDataSetChanged()
-        }
+
 
         // Fetch crop details from Firestore and update the RecyclerView
         CoroutineScope(Dispatchers.Main).launch {
@@ -81,14 +84,45 @@ class BuyerBargain : Fragment() {
             cropList.clear()
             cropList.addAll(fetchedCropList)
             cropAdapter.notifyDataSetChanged()
+            updateEmptyViewVisibility()
         }
 
         CoroutineScope(Dispatchers.Main).launch {
             val userName = fetchUserName()
             userNameTextView.text = userName
         }
+
+
+        recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                super.onScrolled(recyclerView, dx, dy)
+
+                val activity = activity as? BuyerLandingPage
+                if (dy > 0) {
+                    // User is scrolling up -> Hide Bottom Navigation
+                    Log.d("homeFragment", "User scrolling up, hiding BottomNav")
+                    activity?.hideBottomNavBar()
+                } else if (dy < 0) {
+                    // User is scrolling down -> Show Bottom Navigation
+                    Log.d("homeFragment", "User scrolling down, showing BottomNav")
+                    activity?.showBottomNavBar()
+                }
+            }
+        })
+
+
+
+
+
         //  startListeningForNotifications()
         return view
+    }
+    private fun updateEmptyViewVisibility() {
+        if (cropList.isNotEmpty()) {
+            emptyTextView.visibility = View.GONE
+        } else {
+            emptyTextView.visibility = View.VISIBLE
+        }
     }
 
 //    private fun startListeningForNotifications() {
@@ -136,7 +170,16 @@ class BuyerBargain : Fragment() {
 //    }
 
 
+    private fun addToCart(cropDetail: homeFragment.CropDetail, newPrice: Float) {
+        Log.d(TAG, "Adding to cart: ${cropDetail.cropName}, Price: $newPrice")
 
+        // Create a bundle to pass data to the AddToCart fragment
+        val bundle = Bundle().apply {
+            putParcelable("cropDetail", cropDetail)
+            putFloat("newPrice", newPrice)
+        }
+        Log.d(TAG, "Bundle created with crop details: ${cropDetail.cropName}, ${cropDetail.cropType}, $newPrice")
+    }
 
     private suspend fun fetchUserName(): String = withContext(Dispatchers.IO) {
         try {
@@ -175,6 +218,9 @@ class BuyerBargain : Fragment() {
             Log.e("com.example.agrigrow.BuyerBargain", "Error fetching negotiated crops from Firestore: ${e.message}")
             emptyList() // Return an empty list in case of error
         }
+
+
+
     }
 
 

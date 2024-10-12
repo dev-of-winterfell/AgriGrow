@@ -3,38 +3,77 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_margin="8dp"
+    android:layout_margin="10dp"
     android:layout_height="wrap_content"
-    app:cardBackgroundColor="@color/white1"
+    app:cardBackgroundColor="@color/ocher"
     app:cardCornerRadius="20dp"
     app:cardElevation="10dp"
+
     >
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:padding="16sp">
+        android:padding="6dp"
+        >
 
-        <ImageView
-            android:id="@+id/ropImage"
-            android:layout_width="139dp"
-            android:layout_height="128dp"
-            android:layout_marginStart="8dp"
-            android:scaleType="centerCrop"
-            app:layout_constraintBottom_toBottomOf="parent"
+        <TextView
+            android:id="@+id/textView27"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginBottom="7dp"
+            android:text="मालिक : "
+            android:textColor="@color/black"
+            android:textSize="15sp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toTopOf="@+id/ropImage"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_bias="0.0" />
 
         <TextView
+            android:id="@+id/ownername1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="12dp"
+            android:text="Navdeep singh"
+            android:elevation="18dp"
+            android:textColor="@color/translucent1"
+            android:textSize="15sp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="@+id/textView27"
+            app:layout_constraintEnd_toEndOf="@+id/ropImage"
+            app:layout_constraintHorizontal_bias="0.333"
+            app:layout_constraintStart_toEndOf="@+id/textView27"
+            app:layout_constraintTop_toTopOf="@+id/textView27"
+            app:layout_constraintVertical_bias="0.0" />
+
+        <ImageView
+            android:id="@+id/ropImage"
+            android:layout_width="140dp"
+
+            android:layout_height="150dp"
+            android:layout_marginStart="4dp"
+            android:scaleType="centerCrop"
+            app:civ_border_color="#A7C957"
+            app:civ_border_overlay="@null"
+            app:civ_border_width="3dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.165" />
+
+        <TextView
             android:id="@+id/textView22"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="28dp"
-
+            android:layout_marginStart="12dp"
+            android:layout_marginTop="8dp"
             android:text="फसल का नाम: "
             android:textAlignment="viewEnd"
             android:textColor="@color/black"
+            android:textSize="15dp"
             app:layout_constraintStart_toEndOf="@id/ropImage"
             app:layout_constraintTop_toTopOf="@+id/ropImage" />
 
@@ -42,13 +81,13 @@
             android:id="@+id/ropName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
+            android:layout_marginStart="4dp"
             android:text="Crop Name"
-            android:visibility="visible"
-
             android:textAlignment="viewStart"
             android:textColor="@color/translucent1"
-            android:textSize="16sp"
+            android:textSize="16dp"
+
+            android:visibility="visible"
             app:layout_constraintBottom_toBottomOf="@+id/textView22"
             app:layout_constraintStart_toEndOf="@id/textView22"
             app:layout_constraintTop_toTopOf="@+id/textView22"
@@ -58,12 +97,14 @@
             android:id="@+id/textView23"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="20dp"
+
+            android:layout_marginStart="4dp"
             android:layout_marginTop="8dp"
             android:text="फसल की किस्म: "
             android:textAlignment="viewEnd"
             android:textColor="@color/black"
-            app:layout_constraintStart_toEndOf="@id/ropImage"
+            android:textSize="15dp"
+            app:layout_constraintStart_toEndOf="@+id/ropImage"
             app:layout_constraintTop_toBottomOf="@id/textView22" />
 
         <TextView
@@ -71,26 +112,28 @@
 
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
             android:text="Crop Type"
-            android:visibility="visible"
             android:textAlignment="viewStart"
             android:textColor="@color/translucent1"
             android:textSize="16sp"
+            android:visibility="visible"
             app:layout_constraintBottom_toBottomOf="@+id/textView23"
-            app:layout_constraintStart_toEndOf="@id/textView23"
+            app:layout_constraintStart_toStartOf="@+id/ropName"
             app:layout_constraintTop_toTopOf="@+id/textView23"
-            app:layout_constraintVertical_bias="0.0" />
+            app:layout_constraintVertical_bias="1.0" />
 
         <TextView
             android:id="@+id/textView24"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="24dp"
+            android:layout_marginStart="12dp"
             android:layout_marginTop="8dp"
             android:text="मात्रा क्विंटल में: "
             android:textAlignment="viewEnd"
             android:textColor="@color/black"
+            android:textSize="15dp"
+            app:layout_constraintEnd_toEndOf="@+id/textView23"
+            app:layout_constraintHorizontal_bias="1.0"
             app:layout_constraintStart_toEndOf="@id/ropImage"
             app:layout_constraintTop_toBottomOf="@id/textView23" />
 
@@ -98,14 +141,13 @@
             android:id="@+id/ropquantity"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="12dp"
             android:text="Crop quantity"
-            android:visibility="visible"
             android:textAlignment="viewStart"
             android:textColor="@color/translucent1"
             android:textSize="16sp"
+            android:visibility="visible"
             app:layout_constraintBottom_toBottomOf="@+id/textView24"
-            app:layout_constraintStart_toEndOf="@id/textView24"
+            app:layout_constraintStart_toStartOf="@+id/ropType"
             app:layout_constraintTop_toTopOf="@+id/textView24"
             app:layout_constraintVertical_bias="1.0" />
 
@@ -113,42 +155,72 @@
             android:id="@+id/textView25"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="24dp"
+            android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
             android:text="प्रति क्विंटल दर: "
             android:textAlignment="viewEnd"
             android:textColor="@color/black"
+            android:textSize="15dp"
+            app:layout_constraintEnd_toEndOf="@+id/textView24"
+            app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toEndOf="@id/ropImage"
             app:layout_constraintTop_toBottomOf="@id/textView24" />
+
+        <TextView
+            android:id="@+id/textView26"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="28dp"
+            android:layout_marginTop="8dp"
+            android:text="उत्पाड का राज्य: "
+            android:textAlignment="viewEnd"
+            android:textColor="@color/black"
+            android:textSize="15dp"
+            app:layout_constraintEnd_toEndOf="@+id/textView25"
+            app:layout_constraintHorizontal_bias="1.0"
+            app:layout_constraintStart_toEndOf="@id/ropImage"
+            app:layout_constraintTop_toBottomOf="@+id/textView25" />
+
+        <TextView
+            android:id="@+id/state"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Crop State"
+            android:textAlignment="viewStart"
+            android:textColor="@color/translucent1"
+            android:textSize="16sp"
+            android:visibility="visible"
+            app:layout_constraintBottom_toBottomOf="@+id/textView26"
+            app:layout_constraintStart_toStartOf="@+id/ropPrice"
+            app:layout_constraintTop_toTopOf="@+id/textView26" />
 
         <EditText
             android:id="@+id/ropPrice"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="12dp"
             android:text="Price"
             android:textAlignment="viewStart"
             android:textColor="@color/translucent1"
             android:textSize="16sp"
             app:layout_constraintBottom_toBottomOf="@+id/textView25"
-            app:layout_constraintStart_toEndOf="@id/textView25"
+            app:layout_constraintStart_toStartOf="@+id/ropquantity"
             app:layout_constraintTop_toTopOf="@+id/textView25"
-            app:layout_constraintVertical_bias="0.363" />
+            app:layout_constraintVertical_bias="0.571" />
 
         <Button
             android:id="@+id/sendnewPRICEtosellerfROMbUYER"
-            android:backgroundTint="@color/olive"
-            android:textStyle="bold"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="12sp"
+            android:backgroundTint="#6A994E"
             android:text="मोल-तोल के लिए कीमत भेजें"
+            android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.275"
+            app:layout_constraintHorizontal_bias="0.987"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/ropImage"
-            app:layout_constraintVertical_bias="0.0" />
+            app:layout_constraintVertical_bias="0.078" />
 
         <Button
             android:id="@+id/addtocart"
@@ -156,10 +228,10 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="12sp"
             android:backgroundTint="@color/olive"
+            android:onClick="onAddToCartClicked"
+            android:text="कार्ट में जोड़ें"
             android:textAlignment="center"
             android:textStyle="bold"
-
-            android:text="कार्ट में जोड़ें"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="@+id/sendnewPRICEtosellerfROMbUYER"
             app:layout_constraintHorizontal_bias="0.0"

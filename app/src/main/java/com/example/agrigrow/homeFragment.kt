@@ -84,6 +84,26 @@ class homeFragment : Fragment() {
         }
 
 
+        recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                super.onScrolled(recyclerView, dx, dy)
+
+                val activity = activity as? BuyerLandingPage
+                if (dy > 0) {
+                    // User is scrolling up -> Hide Bottom Navigation
+                    Log.d("homeFragment", "User scrolling up, hiding BottomNav")
+                    activity?.hideBottomNavBar()
+                } else if (dy < 0) {
+                    // User is scrolling down -> Show Bottom Navigation
+                    Log.d("homeFragment", "User scrolling down, showing BottomNav")
+                    activity?.showBottomNavBar()
+                }
+            }
+        })
+
+
+
+
         return view
     }
     private fun navigateToCropDetail(cropDetail: CropDetail) {
@@ -133,7 +153,7 @@ class homeFragment : Fragment() {
             }
     }
 
-//    private fun onCropSelected(cropDetail: homeFragment.CropDetail) {
+    //    private fun onCropSelected(cropDetail: homeFragment.CropDetail) {
 //        sharedViewModel.addCrop(cropDetail)
 //    }
     private fun setupBuyerName(tvBuyer: TextView) {
@@ -166,7 +186,11 @@ class homeFragment : Fragment() {
                     val sellerUUID = sellerDocument.getString("uuid") ?: "" // Fetch the uuid from the seller's document
                     val crops = sellerDocument.get("crops") as? List<Map<String, Any>> ?: continue
 
+
                     for (crop in crops) {
+                        val imageUrls = crop["imageUrls"] as? List<String> ?: emptyList()
+                        val firstImageUrl = imageUrls.getOrNull(0) ?: ""
+                        val videoUrl = crop["videoUrl"] as? String ?: ""
                         // Create a CropDetail object for each crop in the seller's list
                         val cropDetail = CropDetail(
                             cropName = crop["cropName"] as? String ?: "",
@@ -176,11 +200,14 @@ class homeFragment : Fragment() {
                             maxPrice = (crop["maxPrice"] as? Number)?.toFloat() ?: 0f,
                             state = crop["state"] as? String ?: "",
                             amount = (crop["amount"] as? Number)?.toInt() ?: 0,
-                            imageUrl = crop["imageUrl"] as? String ?: "",
+                           // imageUrl = crop["imageUrl"] as? String ?: "",
+                            imageUrl = firstImageUrl,
+                            imageUrls = imageUrls,
+                            videoUrl = videoUrl,
                             ownerName = sellerName,  // Set the seller's name as the owner
                             cropId = crop["cropId"] as? String ?: "", // Fetch cropId
                             sellerUUId = sellerUUID,  // Assign the fetched uuid to the sellerUUId property
-                                                    )
+                        )
                         // Add the cropDetail to the list
                         cropList.add(cropDetail)
                     }
@@ -237,6 +264,8 @@ class homeFragment : Fragment() {
         val cropType: String = "",
         val growingMethod: String = "",
         val minPrice: Float = 0f,
+        val imageUrls: List<String> = emptyList(), // List of image URLs
+        val videoUrl: String = "", // Video URL
         val maxPrice: Float = 0f,
         val state: String = "",
         val amount: Int = 0,
@@ -364,6 +393,5 @@ class homeFragment : Fragment() {
 
     }
 }
-
 
 

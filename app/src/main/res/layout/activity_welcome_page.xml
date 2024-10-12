@@ -111,7 +111,7 @@
 
     <Button
         android:id="@+id/googlebutton2"
-        android:layout_width="153dp"
+        android:layout_width="300dp"
         android:layout_height="54dp"
         android:layout_marginTop="20dp"
         android:backgroundTint="@color/lightslate"
@@ -119,7 +119,7 @@
         android:shadowDx="2"
         android:shadowDy="2"
         android:shadowRadius="3"
-        android:text="      Google"
+        android:text="        Google"
         android:textAlignment="center"
         android:textColor="@color/white1"
         android:textStyle="bold"
@@ -136,7 +136,7 @@
         android:layout_height="54dp"
         app:layout_constraintBottom_toBottomOf="@+id/googlebutton2"
         app:layout_constraintEnd_toEndOf="@+id/googlebutton2"
-        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintHorizontal_bias="0.363"
         app:layout_constraintStart_toStartOf="@+id/googlebutton2"
         app:layout_constraintTop_toTopOf="@+id/googlebutton2"
         app:layout_constraintVertical_bias="0.0"

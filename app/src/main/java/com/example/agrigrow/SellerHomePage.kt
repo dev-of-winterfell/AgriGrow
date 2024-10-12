@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.text.Editable
 import android.text.Layout
 import android.text.TextWatcher
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -35,6 +36,7 @@ class SellerHomePage : Fragment() {
     private val cropList = mutableListOf<Crop>()
     private lateinit var auth: FirebaseAuth
     private lateinit var firestore: FirebaseFirestore
+    private lateinit var emptyTextView: TextView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -47,7 +49,7 @@ class SellerHomePage : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         val view = inflater.inflate(R.layout.fragment_seller_home, container, false)
-val layout=view.findViewById<LinearLayout>(R.id.linearLayout2)
+        val layout=view.findViewById<LinearLayout>(R.id.linearLayout2)
         val tv=layout.findViewById<TextView>(R.id.tv)
         // Retrieve the current logged-in user
         val userId = FirebaseAuth.getInstance().currentUser?.email
@@ -78,9 +80,36 @@ val layout=view.findViewById<LinearLayout>(R.id.linearLayout2)
 
         lifecycleScope.launch {
             fetchCrops()
+            updateEmptyViewVisibility()
         }
+        emptyTextView = view.findViewById(R.id.textView35)
+
+        cropRecyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                super.onScrolled(recyclerView, dx, dy)
+
+                val activity = activity as? SellerLandingPage
+                if (dy > 0) {
+                    // User is scrolling up -> Hide Bottom Navigation
+                    Log.d("homeFragment", "User scrolling up, hiding BottomNav")
+                    activity?.hideBottomNavBar()
+                } else if (dy < 0) {
+                    // User is scrolling down -> Show Bottom Navigation
+                    Log.d("homeFragment", "User scrolling down, showing BottomNav")
+                    activity?.showBottomNavBar()
+                }
+            }
+        })
+
 
         return view
+    }
+    private fun updateEmptyViewVisibility() {
+        if (cropList.isNotEmpty()) {
+            emptyTextView.visibility = View.GONE
+        } else {
+            emptyTextView.visibility = View.VISIBLE
+        }
     }
     private suspend fun fetchCrops() = withContext(Dispatchers.IO) {
         val currentUser = auth.currentUser
@@ -104,6 +133,7 @@ val layout=view.findViewById<LinearLayout>(R.id.linearLayout2)
                 cropList.clear()
 
                 for (cropData in cropsList) {
+                    val imageUrls = cropData["imageUrls"] as? List<String> ?: emptyList()
                     val crop = Crop(
                         name = cropData["cropName"] as String,
                         type = cropData["cropType"] as String,
@@ -112,7 +142,8 @@ val layout=view.findViewById<LinearLayout>(R.id.linearLayout2)
                         maxPrice = (cropData["maxPrice"] as Number).toFloat(),
                         state = cropData["state"] as String,
                         amount = (cropData["amount"] as Number).toInt(),
-                        imageUrl = cropData["imageUrl"] as String,
+                       // imageUrl = cropData["imageUrl"] as String,
+                        imageUrl = imageUrls.getOrNull(0) ?: "",
                         ownerName = sellerName // Set owner name here
                     )
                     cropList.add(crop)
@@ -128,7 +159,8 @@ val layout=view.findViewById<LinearLayout>(R.id.linearLayout2)
             }
         } catch (e: Exception) {
             withContext(Dispatchers.Main) {
-                Toast.makeText(context, "Error fetching crops: ${e.message}", Toast.LENGTH_SHORT).show()
+                Log.e("UploadNewCrops", "Error fetching crops: ${e.message}")
+
             }
         }
     }
@@ -148,7 +180,7 @@ val layout=view.findViewById<LinearLayout>(R.id.linearLayout2)
     inner class CropAdapter(private val crops: List<Crop>) : RecyclerView.Adapter<CropAdapter.CropViewHolder>() {
 
         inner class CropViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-           val ownerName: TextView = itemView.findViewById(R.id.ownername)
+            val ownerName: TextView = itemView.findViewById(R.id.ownername)
             val cropImage: ImageView = itemView.findViewById(R.id.cropImage)
             val cropName: TextView = itemView.findViewById(R.id.cropName)
             val cropType: TextView = itemView.findViewById(R.id.cropType)

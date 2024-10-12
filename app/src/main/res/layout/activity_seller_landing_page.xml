@@ -8,13 +8,14 @@
     android:background="@color/white"
     tools:context=".SellerLandingPage">
     <com.google.android.material.bottomnavigation.BottomNavigationView
-        android:id="@+id/bottom_navigationView1"
+        android:id="@+id/bottom_navigationView"
         style="@style/CustomBottomNavigationView"
-        android:layout_marginBottom="10dp"
-        android:layout_width="349dp"
+
+        android:layout_width="match_parent"
         android:elevation="15dp"
+        android:background="@color/ocher"
         android:layout_height="wrap_content"
-        android:background="@drawable/box_bg2"
+
         android:foregroundGravity="bottom"
 
         app:itemIconSize="30dp"
@@ -42,7 +43,7 @@
             android:layout_width="match_parent"
             android:layout_height="0dp"
 
-            app:layout_constraintBottom_toTopOf="@id/bottom_navigationView1"
+            app:layout_constraintBottom_toTopOf="@id/bottom_navigationView"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">

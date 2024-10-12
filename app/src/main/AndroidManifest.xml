@@ -5,6 +5,14 @@
     <uses-feature
         android:name="android.hardware.telephony"
         android:required="false" />
+    <uses-feature
+        android:name="android.hardware.camera"
+        android:required="false" />
+
+    <uses-permission android:name="android.permission.CAMERA"/>
+
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.READ_SMS" />
@@ -20,6 +28,7 @@
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
 
     <application
+
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
@@ -29,9 +38,22 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.AgriGrow"
         tools:targetApi="31">
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="${applicationId}.provider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths" />
+        </provider>
+
         <activity
-            android:name=".authForGoogleUsers"
+            android:name=".Payment"
+
+
             android:exported="false" />
+
         <activity
             android:name=".SellerLandingPage"
             android:exported="false" />
@@ -47,15 +69,11 @@
         <activity
             android:name=".BuyerLandingPage"
             android:exported="false" />
-        <activity
-            android:name=".OTPVerification"
-            android:exported="false" />
+
         <activity
             android:name=".WelcomePage"
             android:exported="false" />
-        <activity
-            android:name=".cropDataTransferFrombuyer"
-            android:exported="false" />
+
         <activity
             android:name=".MainActivity"
             android:exported="true">
@@ -65,6 +83,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
     </application>
 
 </manifest>

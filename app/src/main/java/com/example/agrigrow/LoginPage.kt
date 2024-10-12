@@ -5,6 +5,7 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
+import android.graphics.Color
 import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.text.method.HideReturnsTransformationMethod
@@ -16,6 +17,7 @@ import android.widget.ProgressBar
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.WindowCompat
 import androidx.lifecycle.lifecycleScope
 import com.example.agrigrow.databinding.ActivityLoginPageBinding
 import com.google.android.gms.auth.api.signin.GoogleSignIn
@@ -40,6 +42,13 @@ class LoginPage : AppCompatActivity() {
     private lateinit var db:FirebaseFirestore
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        WindowCompat.setDecorFitsSystemWindows(window, false)
+
+        // Make system bars transparent
+        window.statusBarColor = Color.TRANSPARENT
+        window.navigationBarColor = Color.TRANSPARENT
+
+
         binding=ActivityLoginPageBinding.inflate(layoutInflater)
         setContentView(binding.root)
         binding.pass.setupPasswordVisibilityToggle()

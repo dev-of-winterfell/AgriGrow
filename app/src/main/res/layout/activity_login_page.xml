@@ -110,8 +110,8 @@
 
     <Button
         android:id="@+id/googlesignup"
-        android:layout_width="130dp"
-        android:layout_height="wrap_content"
+        android:layout_width="0dp"
+        android:layout_height="54dp"
         android:layout_marginTop="100sp"
         android:layout_marginBottom="116dp"
         android:backgroundTint="@color/lightslate"
@@ -120,8 +120,9 @@
         android:shadowDx="2"
         android:shadowDy="2"
         android:shadowRadius="3"
-        android:text="Google"
-        android:textAlignment="viewEnd"
+
+        android:text="        Google"
+        android:textAlignment="center"
         android:textColor="@color/white1"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="@+id/login"
@@ -131,20 +132,20 @@
         app:layout_constraintTop_toBottomOf="@+id/login"
         app:layout_constraintVertical_bias="0.0" />
 
+
     <ImageView
         android:id="@+id/imageView12"
         android:layout_width="44dp"
-        android:layout_height="47dp"
+        android:layout_height="54dp"
 
 
         android:src="@drawable/google_foreground"
         app:layout_constraintBottom_toBottomOf="@+id/googlesignup"
         app:layout_constraintEnd_toEndOf="@+id/googlesignup"
-        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintHorizontal_bias="0.364"
         app:layout_constraintStart_toStartOf="@+id/googlesignup"
         app:layout_constraintTop_toTopOf="@+id/googlesignup"
         app:layout_constraintVertical_bias="1.0" />
-
 
     <TextView
         android:id="@+id/textView13"
@@ -159,10 +160,10 @@
 
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="@+id/googlesignup"
-        app:layout_constraintHorizontal_bias="0.626"
+        app:layout_constraintHorizontal_bias="0.273"
         app:layout_constraintStart_toStartOf="@+id/login"
         app:layout_constraintTop_toBottomOf="@+id/googlesignup"
-        app:layout_constraintVertical_bias="0.301" />
+        app:layout_constraintVertical_bias="0.297" />
 
     <Button
         android:id="@+id/signup"
@@ -208,14 +209,14 @@
         android:text="@string/sign_in_with"
         android:textAlignment="center"
         android:textColor="@color/translucent1"
-        android:textSize="16sp"
+        android:textSize="14sp"
         android:textStyle="bold"
         app:layout_constraintBottom_toTopOf="@+id/googlesignup"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.497"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/login"
-        app:layout_constraintVertical_bias="0.0" />
+        app:layout_constraintVertical_bias="0.285" />
 
     <ImageView
         android:id="@+id/imageView3"

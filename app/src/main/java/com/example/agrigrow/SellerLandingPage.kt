@@ -27,6 +27,7 @@ import com.bumptech.glide.Glide
 import com.example.agrigrow.databinding.ActivityLandingPageBinding
 import com.example.agrigrow.databinding.ActivitySellerLandingPageBinding
 import com.example.sellerProfileFragment
+import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.navigation.NavigationView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
@@ -83,6 +84,15 @@ class SellerLandingPage : AppCompatActivity() {
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
+
+            val isKeyboardVisible = insets.isVisible(WindowInsetsCompat.Type.ime())
+
+            if (isKeyboardVisible) {
+                binding.bottomNavigationView.visibility = View.GONE
+            } else {
+                binding.bottomNavigationView.visibility = View.VISIBLE
+            }
+
             insets
         }
 
@@ -140,7 +150,7 @@ class SellerLandingPage : AppCompatActivity() {
             }
         }
 
-        binding.bottomNavigationView1.setOnItemSelectedListener {
+        binding.bottomNavigationView.setOnItemSelectedListener {
             when (it.itemId) {
                 R.id.home -> FragmentHandler(SellerHomePage())
                 R.id.connect -> FragmentHandler(SellerBargain())
@@ -157,12 +167,12 @@ class SellerLandingPage : AppCompatActivity() {
 
             override fun onDrawerOpened(drawerView: View) {
                 // Hide BottomNavigationView when the drawer is opened
-                binding.bottomNavigationView1.visibility = View.GONE
+                binding.bottomNavigationView.visibility = View.GONE
             }
 
             override fun onDrawerClosed(drawerView: View) {
                 // Show BottomNavigationView when the drawer is closed
-                binding.bottomNavigationView1.visibility = View.VISIBLE
+                binding.bottomNavigationView.visibility = View.VISIBLE
             }
 
             override fun onDrawerStateChanged(newState: Int) {
@@ -171,9 +181,20 @@ class SellerLandingPage : AppCompatActivity() {
         })
 
         if (savedInstanceState == null) {
-            binding.bottomNavigationView1.selectedItemId = R.id.home
+            binding.bottomNavigationView.selectedItemId = R.id.home
         }
     }
+
+    fun hideBottomNavBar() {
+        val bottomNav = findViewById<BottomNavigationView>(R.id.bottom_navigationView)
+        bottomNav.animate().translationY(bottomNav.height.toFloat()).duration = 200
+    }
+
+    fun showBottomNavBar() {
+        val bottomNav = findViewById<BottomNavigationView>(R.id.bottom_navigationView)
+        bottomNav.animate().translationY(0f).duration = 200
+    }
+
 
     private fun FragmentHandler(fragment: Fragment) {
         supportFragmentManager.beginTransaction()

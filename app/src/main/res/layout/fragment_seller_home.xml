@@ -10,18 +10,35 @@
 
     <!-- TODO: Update blank fragment layout -->
 
+    <TextView
+        android:id="@+id/textView35"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:hint="नई फसलें अपलोड करें"
+        android:drawablePadding="15dp"
+
+        android:textAlignment="center"
+        android:textSize="28sp"
+        app:drawableEndCompat="@drawable/baseline_upload_24"
+        app:drawableTint="@color/translucent"
+        app:layout_constraintBottom_toBottomOf="@+id/cropRecyclerView"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/cropRecyclerView"
+        app:layout_constraintVertical_bias="0.415" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/cropRecyclerView"
-        android:layout_width="380dp"
-        android:layout_height="658dp"
+        android:layout_width="379dp"
+        android:layout_height="765dp"
 
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintEnd_toEndOf="@+id/linearLayout2"
         app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/linearLayout2"
         app:layout_constraintTop_toBottomOf="@+id/linearLayout2"
         app:layout_constraintVertical_bias="0.0" />
+
 
     <LinearLayout
         android:id="@+id/linearLayout2"
@@ -56,4 +73,5 @@
             android:textSize="28dp"
             android:textStyle="bold" />
     </LinearLayout>
+
 </androidx.constraintlayout.widget.ConstraintLayout>

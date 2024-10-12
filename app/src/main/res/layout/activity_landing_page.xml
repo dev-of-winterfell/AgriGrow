@@ -57,13 +57,13 @@ app:itemIconSize="28dp"
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottom_navigationView1"
         style="@style/CustomBottomNavigationView"
-android:layout_marginBottom="10dp"
 
-        android:layout_width="349dp"
+
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@drawable/box_bg2"
-        android:foregroundGravity="bottom"
 
+        android:foregroundGravity="bottom"
+android:background="@color/ocher"
         app:itemIconSize="30dp"
         app:itemIconTint="@drawable/bottom_nav_icon_color"
         app:labelVisibilityMode="labeled"

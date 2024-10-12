@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">AgriGrow</string>
     <string name="farming_made_easy_with_faster_delivery_at_your_doorstep">Farming made easy with faster\ndelivery at your doorstep...</string>
-    <string name="sign_in_with">या\nगूगल की मदद से साइन इन करें  </string>
+    <string name="sign_in_with"> या\nगूगल की मदद से साइन इन करें  </string>
     <string name="signin"><u>प्रवेश करे</u></string>
     <string name="default_web_client_id">default_web_client_id</string>
     <string name="_0">0</string>
@@ -39,4 +39,11 @@
     <string name="confirm_password">पासवर्ड पुनः लिखें</string>
     <string name="google">गूगल</string>
     <string name="register"><u>रजिस्टर करें</u></string>
+    <string name="paytem_history"><u>भुगतान इतिहास</u></string>
+    <string name="address"><u>आपका पता</u></string>
+    <string name="premium"><u>प्रीमियम सदस्यता</u></string>
+    <string name="order"><u>आपकी फ़सल का ऑर्डर</u></string>
+    <string name="documents"><u>सत्यापन के लिए दस्तावेज़</u></string>
+    <string name="notification"><u>ऐप की सूचनाएं प्रबंधित करें</u></string>
+    <string name="KYC"><u>के.वाई.सी. के बारे में विवरण</u></string>
 </resources>

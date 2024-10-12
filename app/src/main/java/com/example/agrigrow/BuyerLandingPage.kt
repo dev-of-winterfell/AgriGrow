@@ -48,6 +48,8 @@ class BuyerLandingPage : AppCompatActivity() {
         private const val PROFILE_IMAGE_URI_KEY = "ProfileImageUri"
         private const val SHARED_PREFS_KEY = "GradxPrefs"
     }
+
+
     private lateinit var googleSignInClient: GoogleSignInClient
     private lateinit var binding: ActivityLandingPageBinding
     lateinit var sharedViewModel: SharedViewModel
@@ -64,6 +66,15 @@ class BuyerLandingPage : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+
+
+
+        // Add this in your `onCreate()`
+
+
+
+
+
         binding = ActivityLandingPageBinding.inflate(layoutInflater)
         setContentView(binding.root)
         sharedViewModel = ViewModelProvider(this).get(SharedViewModel::class.java)
@@ -100,6 +111,18 @@ class BuyerLandingPage : AppCompatActivity() {
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
+
+            val isKeyboardVisible = insets.isVisible(WindowInsetsCompat.Type.ime())
+
+            if (isKeyboardVisible) {
+                binding.bottomNavigationView1.visibility = View.GONE
+            } else {
+                binding.bottomNavigationView1.visibility = View.VISIBLE
+            }
+
+
+
+
             insets
         }
 
@@ -192,6 +215,20 @@ class BuyerLandingPage : AppCompatActivity() {
             binding.bottomNavigationView1.selectedItemId = R.id.home
         }
     }
+
+
+
+    fun hideBottomNavBar() {
+        val bottomNav = findViewById<BottomNavigationView>(R.id.bottom_navigationView1)
+        bottomNav.animate().translationY(bottomNav.height.toFloat()).duration = 200
+    }
+
+    fun showBottomNavBar() {
+        val bottomNav = findViewById<BottomNavigationView>(R.id.bottom_navigationView1)
+        bottomNav.animate().translationY(0f).duration = 200
+    }
+
+
 
     private fun FragmentHandler(fragment: Fragment) {
         supportFragmentManager.beginTransaction()

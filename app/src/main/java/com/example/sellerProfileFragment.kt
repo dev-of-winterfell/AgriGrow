@@ -15,8 +15,8 @@ import com.google.firebase.firestore.FirebaseFirestore
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
+const val ARG_PARAM1 = "param1"
+const val ARG_PARAM2 = "param2"
 
 /**
  * A simple [Fragment] subclass.
@@ -108,7 +108,7 @@ class sellerProfileFragment : Fragment() {
         locationTextView: TextView
     ) {
         val name = document.getString("Name") ?: "No Name"
-        val location = document.getString("Location") ?: "No Location"
+        val location = document.getString("Location") ?: "by pass road near icici bank Robertaganj Sonebhadra Uttar Pradesh 231216"
         val profileImageUrl = document.getString("profileImageUrl")
 
         nameTextView.text = name

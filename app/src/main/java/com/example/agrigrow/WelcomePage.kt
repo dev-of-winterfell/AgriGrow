@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
+import android.graphics.Color
 import android.os.Bundle
 import android.view.View
 import android.widget.Button
@@ -12,6 +13,7 @@ import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
+import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.lifecycleScope
 import com.example.agrigrow.databinding.ActivityWelcomePageBinding
@@ -38,6 +40,9 @@ private lateinit var progressBar8:ProgressBar
 private lateinit var progressBar9:ProgressBar
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        WindowCompat.setDecorFitsSystemWindows(window, false)
+        window.statusBarColor = Color.TRANSPARENT
+        window.navigationBarColor = Color.TRANSPARENT
         db = FirebaseFirestore.getInstance()
         auth = FirebaseAuth.getInstance()
         binding = ActivityWelcomePageBinding.inflate(layoutInflater)
@@ -68,8 +73,9 @@ progressBar8=binding.progressBar8
 
         val phoneAuth = findViewById<Button>(R.id.button3)
         phoneAuth.setOnClickListener {
-            startActivity(Intent(this@WelcomePage,phoneAuthUserDetailsPage::class.java))
-//            showProgressBar()
+            showProgressBar()
+          startActivity(Intent(this@WelcomePage,phoneAuthUserDetailsPage::class.java))
+
 //            val existingDialog = supportFragmentManager.findFragmentByTag("PhoneVerificationDialog") as? ItemsSharedDialogFragment
 //            if (existingDialog == null) {
 //                val dialog = ItemsSharedDialogFragment()

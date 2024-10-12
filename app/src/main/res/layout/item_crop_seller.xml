@@ -3,9 +3,9 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_margin="8dp"
+    android:layout_margin="10dp"
     android:layout_height="wrap_content"
-    app:cardBackgroundColor="@color/white1"
+    app:cardBackgroundColor="@color/ocher"
     app:cardCornerRadius="20dp"
     app:cardElevation="10dp"
     >
@@ -17,8 +17,8 @@
 
         <ImageView
             android:id="@+id/CCropImage"
-            android:layout_width="139dp"
-            android:layout_height="128dp"
+            android:layout_width="140dp"
+            android:layout_height="150dp"
             android:layout_marginStart="4dp"
             android:scaleType="centerCrop"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -31,7 +31,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="28dp"
-
+            android:textSize="15dp"
             android:text="फसल का नाम: "
             android:textAlignment="viewEnd"
             android:textColor="@color/black"
@@ -56,6 +56,7 @@
 
         <TextView
             android:id="@+id/textView23"
+            android:textSize="15dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="20dp"
@@ -86,6 +87,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="24dp"
+            android:textSize="15dp"
             android:layout_marginTop="8dp"
             android:text="मात्रा क्विंटल में: "
             android:textAlignment="viewEnd"
@@ -115,6 +117,7 @@
             android:layout_marginTop="8dp"
             android:text="नई दर प्रति क्विंटल: "
             android:textAlignment="viewEnd"
+            android:textSize="15dp"
             android:textColor="@color/black"
             app:layout_constraintEnd_toEndOf="@+id/textView24"
             app:layout_constraintStart_toEndOf="@id/CCropImage"
@@ -125,20 +128,21 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="28dp"
-            android:layout_marginTop="40dp"
             android:text="खरीदार का नाम: "
+android:layout_marginTop="8dp"
             android:textAlignment="viewEnd"
             android:textColor="@color/black"
+            android:textSize="15dp"
             app:layout_constraintEnd_toEndOf="@+id/textView25"
             app:layout_constraintStart_toEndOf="@id/CCropImage"
-            app:layout_constraintTop_toBottomOf="@id/textView24" />
+            app:layout_constraintTop_toBottomOf="@+id/textView25" />
 
         <TextView
             android:id="@+id/BuyerName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
           android:hint="खरीदार का नाम:"
-            android:textAlignment="viewEnd"
+            android:textAlignment="viewStart"
             android:textColor="@color/black"
             app:layout_constraintBottom_toBottomOf="@+id/tv121"
             app:layout_constraintEnd_toEndOf="parent"
@@ -152,20 +156,21 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Price"
+            android:textStyle="bold"
             android:textAlignment="viewStart"
             android:textColor="@color/translucent1"
             android:textSize="16sp"
             app:layout_constraintBottom_toBottomOf="@+id/textView25"
             app:layout_constraintStart_toStartOf="@+id/CCropquantity"
             app:layout_constraintTop_toTopOf="@+id/textView25"
-            app:layout_constraintVertical_bias="0.363" />
+            app:layout_constraintVertical_bias="0.619" />
 
         <Button
             android:id="@+id/sendnewPRICEtoseller"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="12sp"
-            android:backgroundTint="@color/olive"
+            android:backgroundTint="#6A994E"
             android:text="मोल-तोल के लिए कीमत भेजें"
             android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="parent"

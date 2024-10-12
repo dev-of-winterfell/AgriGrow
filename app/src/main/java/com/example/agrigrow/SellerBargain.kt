@@ -48,6 +48,24 @@ class SellerBargain : Fragment() {
         CoroutineScope(Dispatchers.Main).launch {
             fetchCropsForNegotiation()
         }
+        recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                super.onScrolled(recyclerView, dx, dy)
+
+                val activity = activity as? SellerLandingPage
+                if (dy > 0) {
+                    // User is scrolling up -> Hide Bottom Navigation
+                    Log.d("homeFragment", "User scrolling up, hiding BottomNav")
+                    activity?.hideBottomNavBar()
+                } else if (dy < 0) {
+                    // User is scrolling down -> Show Bottom Navigation
+                    Log.d("homeFragment", "User scrolling down, showing BottomNav")
+                    activity?.showBottomNavBar()
+                }
+            }
+        })
+
+
 
         return view
     }

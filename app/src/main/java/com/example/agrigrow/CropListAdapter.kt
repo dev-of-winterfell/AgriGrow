@@ -28,7 +28,8 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 
-class CropListAdapter(private val cropList: MutableList<homeFragment.CropDetail>) :
+class CropListAdapter(private val cropList: MutableList<homeFragment.CropDetail>,
+                      private val onAddToCart: (homeFragment.CropDetail, Float) -> Unit) :
     RecyclerView.Adapter<CropListAdapter.CropViewHolder>() {
 
     private val auth = FirebaseAuth.getInstance()
@@ -53,9 +54,11 @@ class CropListAdapter(private val cropList: MutableList<homeFragment.CropDetail>
         private val cropPrice: EditText = itemView.findViewById(R.id.ropPrice)
         private val cropImage: ImageView = itemView.findViewById(R.id.ropImage)
         private val cropAmount: TextView = itemView.findViewById(R.id.ropquantity)
-
+        private val AddToCart: Button = itemView.findViewById(R.id.addtocart)
         private val sendNewPrice: Button = itemView.findViewById(R.id.sendnewPRICEtosellerfROMbUYER)
-        private val addToCart: Button = itemView.findViewById(R.id.addtocart)
+        private val ownername:TextView=itemView.findViewById(R.id.ownername1)
+        private val state:TextView=itemView.findViewById(R.id.state)
+
 
         private var mspPrice: Float = 0f
 
@@ -63,7 +66,8 @@ class CropListAdapter(private val cropList: MutableList<homeFragment.CropDetail>
             cropName.text = crop.cropName
             cropType.text = crop.cropType
             cropAmount.text = "${crop.amount} क्विंटल"
-
+            state.text=crop.state
+            fetchSellerName(crop.sellerUUId)
             Glide.with(itemView.context)
                 .load(crop.imageUrl)
                 .placeholder(R.drawable.baseline_image_24)
@@ -104,11 +108,11 @@ class CropListAdapter(private val cropList: MutableList<homeFragment.CropDetail>
 
                             if (newPrice < mspPrice) {
                                 sendNewPrice.isEnabled = false
-                                addToCart.isEnabled = false
+                                AddToCart.isEnabled = false
                                 cropPrice.error = "कीमत एम.एस.पी. से कम नहीं हो सकती"
                             } else {
                                 sendNewPrice.isEnabled = true
-                                addToCart.isEnabled = true
+                                AddToCart.isEnabled = true
                                 cropPrice.error = null
                             }
                         }
@@ -135,7 +139,144 @@ class CropListAdapter(private val cropList: MutableList<homeFragment.CropDetail>
                             ).show()
                         }
                     }
+
+
+                    AddToCart.setOnClickListener {
+                        val cropDetail = cropList[adapterPosition]
+                        val newPriceString = cropPrice.text.toString().removePrefix("₹")
+                        val newPrice = newPriceString.toFloatOrNull() ?: cropDetail.maxPrice
+                        Log.d("AddToCart", "Extracted newPrice: $newPrice for crop: ${cropDetail.cropName}")
+                        CoroutineScope(Dispatchers.Main).launch {
+                            transferCropToCart(crop, newPrice, buyerUid)
+                            fetchBuyerUid { buyerUid ->
+                                if (buyerUid != null) {
+
+                                    // Remove the item from Firestore
+                                    removeNegotiationDataFromFirestore(cropDetail)
+                                    // Remove the item from the current list
+                                    removeItem(adapterPosition)
+                                    // Call the callback to add the item to the cart
+                                    onAddToCart(cropDetail, newPrice)
+                                } else {
+                                    Log.e("AddToCart", "Failed to fetch buyer UID")
+                                    Toast.makeText(
+                                        itemView.context,
+                                        "Failed to add item to cart",
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+                                }
+                            }
+                        }
+
+                    }
+
+
+
+
+
+
                 }
+            }
+
+
+        }
+        private fun fetchSellerName(sellerUUID: String) {
+            val sellerRef = db.collection("SELLERS").whereEqualTo("uuid", sellerUUID)
+            sellerRef.get()
+                .addOnSuccessListener { querySnapshot ->
+                    if (!querySnapshot.isEmpty) {
+                        val document = querySnapshot.documents[0]
+                        val sellerName = document.getString("Name") ?: "Unknown Seller"
+                        ownername.text = sellerName  // Update the TextView with the seller's name
+                    } else {
+                        Log.e("fetchSellerName", "No seller found with UUID: $sellerUUID")
+                        ownername.text = "Unknown Seller"
+                    }
+                }
+                .addOnFailureListener { exception ->
+                    Log.e("fetchSellerName", "Failed to fetch seller name: ${exception.message}")
+                    ownername.text = "Error fetching seller"
+                }
+        }
+
+
+        private suspend fun transferCropToCart(
+            crop: homeFragment.CropDetail,
+            newPrice: Float,
+            buyerUUID: String
+        ) = withContext(Dispatchers.IO) {
+            try {
+                val user = auth.currentUser
+                if (user != null) {
+                    val userEmail = user.email ?: run {
+                        Log.e("Firestore", "User email is null.")
+                        return@withContext
+                    }
+
+                    // Create the cart item data
+                    val cartItem = hashMapOf(
+                        "cropId" to crop.cropId,
+                        "cropName" to crop.cropName,
+                        "cropType" to crop.cropType,
+                        "amount" to crop.amount,
+                        "newPrice" to newPrice,
+                        "imageUrl" to crop.imageUrl,
+                        "sellerUUID" to crop.sellerUUId,
+                        "buyerUUID" to buyerUUID
+                    )
+
+                    // Reference the CART_ITEMS collection under the same user document path
+                    val userDocumentRef = db.collection("BUYERS").document(userEmail)
+                    userDocumentRef.collection("CART_ITEMS")
+                        .document(crop.cropId)  // Use the cropId as the document ID
+                        .set(cartItem)
+                        .await()
+
+                    Log.d("Firestore", "Crop transferred to CART_ITEMS: ${crop.cropName}")
+                }
+            } catch (e: Exception) {
+                Log.e("Firestore", "Error transferring crop to CART_ITEMS: ${e.message}")
+            }
+        }
+
+
+
+        private fun removeNegotiationDataFromFirestore(crop: homeFragment.CropDetail) {
+            val user = auth.currentUser
+            if (user != null) {
+                val userEmail = user.email ?: run {
+                    Log.e("Firestore", "User email is null.")
+                    Toast.makeText(itemView.context, "User email is null.", Toast.LENGTH_SHORT).show()
+                    return
+                }
+                val userDocumentRef = db.collection("BUYERS").document(userEmail)
+
+                userDocumentRef.collection("NEGOTIATED_CROPS").document(crop.cropId).delete()
+                    .addOnSuccessListener {
+                        Log.d("Firestore", "Negotiation data removed successfully for cropID:${crop.cropId}")
+                        Toast.makeText(itemView.context, "Crop removed from cart and Firestore", Toast.LENGTH_SHORT).show()
+                    }
+                    .addOnFailureListener { e ->
+                        Log.e("Firestore", "Failed to remove negotiation data", e)
+                        Toast.makeText(itemView.context, "Failed to remove crop from Firestore: ${e.message}", Toast.LENGTH_SHORT).show()
+                    }
+            } else {
+                Log.e("Firestore", "User not authenticated.")
+                Toast.makeText(itemView.context, "User not authenticated", Toast.LENGTH_SHORT).show()
+            }
+        }
+
+        private fun removeItem(position: Int) {
+            if (position in 0 until cropList.size) {
+                val removedCrop = cropList[position]
+                cropList.removeAt(position)
+                notifyItemRemoved(position)
+                notifyItemRangeChanged(position, cropList.size)
+                // Log the removal
+                Log.d(TAG, "Item removed from adapter: ${removedCrop.cropName} at position $position")
+            } else {
+                // Log if the position is invalid
+                Log.w(TAG, "Attempted to remove item at invalid position: $position")
             }
         }
 
@@ -240,5 +381,6 @@ class CropListAdapter(private val cropList: MutableList<homeFragment.CropDetail>
             }
         }
     }
+
 
 }

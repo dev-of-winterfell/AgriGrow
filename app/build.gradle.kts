@@ -13,7 +13,7 @@ android {
 
     defaultConfig {
         applicationId = "com.example.agrigrow"
-        minSdk = 27
+        minSdk = 28
         targetSdk = 34
         versionCode = 1
         versionName = "1.0"
@@ -52,7 +52,10 @@ dependencies {
     implementation (libs.androidx.navigation.fragment.ktx)
     implementation (libs.androidx.navigation.ui.ktx)
     //noinspection UseTomlInstead
-    implementation ("com.squareup.okhttp3:okhttp:4.11.0")
+
+    implementation ("com.razorpay:checkout:1.6.21")
+    implementation (libs.shimmer)
+    implementation (libs.okhttp)
     implementation(libs.firebase.analytics)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
@@ -65,6 +68,7 @@ dependencies {
     implementation(libs.androidx.media3.common)
     implementation(libs.androidx.room.ktx)
     implementation(libs.firebase.database)
+    implementation(libs.car.ui.lib)
     annotationProcessor (libs.compiler)
     implementation (libs.play.services.auth)
     implementation(platform(libs.firebase.bom))

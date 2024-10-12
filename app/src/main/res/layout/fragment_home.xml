@@ -27,7 +27,7 @@
 
             android:text="आपका स्वागत है"
             android:textColor="@color/black"
-            android:textSize="14dp"
+            android:textSize="20dp"
             />
 
         <TextView
@@ -35,58 +35,58 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:capitalize="characters"
-            android:hint="NAME"
+            android:text="Navdeep singh"
             android:inputType="textCapSentences"
             android:textColor="#386641"
             android:textSize="28dp"
             android:textStyle="bold" />
     </LinearLayout>
 
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerView"
-        android:layout_width="380dp"
-        android:layout_height="490dp"
+        android:layout_width="match_parent"
+        android:layout_height="540dp"
+        android:layout_marginTop="10dp"
         android:foregroundGravity="center"
         android:padding="2dp"
+
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintHorizontal_bias="0.0"
+
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/linearLayoutbuyer"
-        app:layout_constraintVertical_bias="0.664" />
+        app:layout_constraintTop_toBottomOf="@+id/searchView"
+        app:layout_constraintVertical_bias="1.0" />
 
+    <SearchView
+        android:id="@+id/searchView"
+        android:layout_width="357dp"
+        android:layout_height="48dp"
+        android:layout_marginTop="10dp"
+        android:background="@drawable/boxbg"
+        android:hint="फसल की खोज करें / नए किसानों से मिलें"
 
+        android:queryHint="search for crops"
+        app:layout_constraintEnd_toEndOf="@+id/horizontalScrollView"
+        app:layout_constraintHorizontal_bias="0.571"
+        app:layout_constraintStart_toStartOf="@+id/horizontalScrollView"
+        app:layout_constraintTop_toBottomOf="@+id/horizontalScrollView" />
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/horizontalScrollView"
-        android:layout_width="380dp"
+        android:layout_width="match_parent"
         android:layout_height="112dp"
         android:orientation="horizontal"
 
         android:padding="2dp"
 
-        app:layout_constraintBottom_toTopOf="@+id/recyclerView"
+
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/linearLayoutbuyer"
         app:layout_constraintVertical_bias="0.0" />
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:foregroundGravity="center"
-        android:gravity="center"
-        android:text="नई फसल का अन्वेषण करें"
 
-        android:textColor="@color/black"
-        android:textSize="12dp"
-        android:textStyle="bold"
-        app:layout_constraintBottom_toTopOf="@+id/recyclerView"
-        app:layout_constraintEnd_toEndOf="@+id/horizontalScrollView"
-        app:layout_constraintHorizontal_bias="0.497"
-        app:layout_constraintStart_toStartOf="@+id/horizontalScrollView"
-        app:layout_constraintTop_toBottomOf="@+id/horizontalScrollView"
-        app:layout_constraintVertical_bias="0.941" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
